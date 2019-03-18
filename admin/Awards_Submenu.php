@@ -18,7 +18,7 @@
 			 * as to what page we'd like to display, then default to our $view_main
 			 */
 
-			if ( ! empty( $_GET['section'] ) )
+			if ( empty( $_GET['section'] ) )
 			{
 				$viewfile = $this->view_main;
 			}
