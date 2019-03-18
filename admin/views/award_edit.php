@@ -5,7 +5,7 @@
 	/** @var Get the award object from the database and output it as
 		an associative array
 	 */
-	$award = $this->db->getAward( $award_id, ARRAY_A );
+	$award = $this->deserializer->get( $award_id ); // ARRAY_A
 ?>
 
 <div class="wrap">

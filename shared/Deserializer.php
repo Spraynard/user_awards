@@ -2,12 +2,12 @@
 /**
  * Class used to take data from the DB in order to display it.
  */
-class Deserialzier {
+class Deserializer {
 
 
 	private $Database;
 
-	__construct( $Database )
+	function __construct( $Database )
 	{
 		$this->Database = $Database;
 	}

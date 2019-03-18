@@ -10,7 +10,7 @@
 		</thead>
 		<tbody>
 	<?php
-		foreach( $this->desearializer->get() as $award ) {
+		foreach( $this->deserializer->get() as $award ) {
 			?>
 			<tr class="award-row">
 				<td class="award-id"><?php echo $award->id; ?></td>

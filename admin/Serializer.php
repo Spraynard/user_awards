@@ -5,7 +5,7 @@
 class Serializer {
 	private $Database;
 
-	__construct( $Database ) {
+	function __construct( $Database ) {
 		$this->Database = $Database;
 	}
 
@@ -17,6 +17,11 @@ class Serializer {
 	 * @return [type]     [description]
 	 */
 	function save( $id ) {
+
+	}
+
+	// Deletes an award if and only if the ID is avalid and the person has the correct permissions
+	function delete( $id ) {
 
 	}
 }
