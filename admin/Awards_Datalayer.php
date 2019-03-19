@@ -2,7 +2,7 @@
 	/**
 	 * Controller for handling Award Plugin level database operations.
 	 */
-	class Awards_DB {
+	class Awards_Datalayer {
 		private $wpdb;
 
 		function __construct() {
@@ -37,7 +37,7 @@
 			require_once( ABSPATH . 'wp-admin/includes/upgrade.php' ); // for dbDelta
 			dbDelta( $sql );
 
-			add_option( 'awards_db_version', 'Awards_DB::get_db_version' );
+			add_option( 'awards_db_version', 'Awards_Datalayer::get_db_version' );
 		}
 
 		/** Function to handle plugin deactivation */
