@@ -24,6 +24,7 @@
 			}
 			else
 			{
+				echo $_GET['section'];
 				$viewfile = $this->view_hidden_routes[$_GET['section']];
 			}
 

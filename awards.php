@@ -26,26 +26,27 @@ foreach( glob( plugin_dir_path( __FILE__ ) . 'admin/*.php') as $file ) {
 include_once( plugin_dir_path( __FILE__ ) . 'shared/Deserializer.php');
 
 /** Action applied when we activate the plugin */
-register_activation_hook( __FILE__, 'Awards_DB::awards_activate' );
+register_activation_hook( __FILE__, 'Awards_Datalayer::awards_activate' );
 
 /** Action applied when we deactivate the plugin */
-register_deactivation_hook( __FILE__, 'Awards_DB::awards_deactivate' );
+register_deactivation_hook( __FILE__, 'Awards_Datalayer::awards_deactivate' );
 
 /** Action applied when we uninstall the plugin */
-register_uninstall_hook( __FILE__, 'Awards_DB::awards_uninstall' );
+register_uninstall_hook( __FILE__, 'Awards_Datalayer::awards_uninstall' );
 
 // Start up the plugin functionality when all other plugins are loaded
 add_action('plugins_loaded', 'awards_plugin_admin_interface' );
 
 function awards_plugin_admin_interface() {
-	$Database = new Awards_DB();
+	$Database = new Awards_Datalayer();
 
 	$Serializer = new Serializer($Database);
 	$Deserializer = new Deserializer($Database);
 
 	// Routes we will use for the dashboard view based on 'section' param in URL.
 	$Dashboard_View_Routes = [
-		'award-edit' => 'award_edit.php'
+		'award-edit' => 'award_edit.php',
+		'award-new' => 'award_new.php'
 	];
 
 	$Dashboard_View = new Awards_View(

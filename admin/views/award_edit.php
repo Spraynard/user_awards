@@ -9,48 +9,32 @@
 ?>
 
 <div class="wrap">
-	<form action="">
+	<form action="<?php echo admin_url('admin-post.php'); ?>" method="POST">
+		<!-- Hidden Input For ID -->
+		<input type="hidden" name="award_id" value="<?php echo $award->id; ?>"/>
+
+		<!-- Action Field -->
+		<input type="hidden" name="action" value="update_award"/>
+
+		<!-- Name Input -->
+		<label for="award-name">Award Title</label>
+		<input id="award-name" name="award_title" value="<?php echo $award->title; ?>" type="text"/><br/>
+
+		<!-- Description Input -->
+		<label for="award-description">Award Description</label>
+		<textarea id="award-description" name="award_description"><?php echo $award->description; ?></textarea><br/>
+
+		<!-- Date Created -->
+		<label for="award-date-created"></label>
+		<input id="award-date-created" name="date_created" value="<?php echo $award->date_created; ?>" type="text" readonly /><br/>
+
+		<!-- Date Modified -->
+		<label for="award-date-modified"></label>
+		<input id="award-date-created" name="date_modified" value="<?php echo $award->date_modified; ?>" type="text" readonly /><br/>
+
+		<!-- Submit -->
 		<?php
-			foreach( $award as $award_item_type => $award_item_value ) {
-				?>
-				<div class="award-entry">
-					<?php
-					// Hidden Inputs
-					$award_item_id = $award_item_type . "-input";
-					if ( $award_item_type === "id" )
-					{
-						echo <<<HTML
-						<input type="hidden" name="{$award_item_type}" value="{$award_item_value}"/>
-						HTML;
-					}
-					// Readonly on the date blocks
-					else if ( $award_item_type === "date_created" || $award_item_type === "date_modified" )
-					{
-						echo <<<HTML
-						<label for="{$award_item_id}">{$award_item_type}</label>
-						<input id="{$award_item_id}" name="{$award_item_type}" type="text" value="{$award_item_value}" readonly/>
-						HTML;
-					}
-					// Textbox
-					else if ( $award_item_type == "description" )
-					{
-						echo <<<HTML
-						<label for="{$award_item_id}">{$award_item_type}</label>
-						<textarea id="{$award_item_id}" name="{$award_item_type}">{$award_item_value}</textarea>
-						HTML;
-					}
-					// General Input
-					else
-					{
-						echo <<<HTML
-						<label for="{$award_item_id}">{$award_item_type}</label>
-						<input id="{$award_item_id}" name="{$award_item_type}" type="text" value="{$award_item_value}"/>
-						HTML;
-					}
-					?>
-				</div>
-			<?php
-			}
+			wp_nonce_field("update_award_{$award->id}");
 			submit_button();
 		?>
 	</form>

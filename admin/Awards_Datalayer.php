@@ -81,10 +81,62 @@
 		 * Update Award Information
 		 * @param int $id - ID of the award
 		 */
-		function UpdateAward( $id ) {
-			$sql = "SELECT * FROM $this->tablename_awards WHERE id = %d";
+		function UpdateAward( $id, $title, $description ) {
 
-			return $this->wpdb->get_row($this->wpdb->prepare($sql, $id));
+			return $this->wpdb->update(
+				$this->tablename_awards,
+				[
+					'title' => $title,
+					'description' => $description
+				],
+				[
+					'id' => $id
+				],
+				[
+					'%s',
+					'%s'
+				],
+				[
+					'%d'
+				]
+			);
+		}
+
+		/**
+		 * Insert Awards
+		 * return - false if failed, else true
+		 */
+
+		function InsertAward( $title, $description ) {
+			return $this->wpdb->insert(
+				$this->tablename_awards,
+				array(
+					'title' => $title,
+					'description' => $description
+				),
+				array(
+					'%s',
+					'%s'
+				)
+			);
+		}
+
+		/**
+		 * Delete Award
+		 * @param int $id - ID of the item we'd like to delete
+		 */
+		function DeleteAward( $id ) {
+			echo "Award ID: $id";
+			$sql = "DELETE FROM $this->tablename_awards WHERE id = %d";
+
+			try {
+				$this->wpdb->query($this->wpdb->prepare($sql, $id));
+			} catch ( Exception $e ) {
+				echo "Delete Exception: $e";
+				return false;
+			}
+
+			return true;
 		}
 	}
 ?>

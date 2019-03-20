@@ -18,7 +18,7 @@
 					<a class="award-title" href="<?php echo admin_url("admin.php?page=award-dashboard&section=award-edit&award_id=$award->id"); ?>"><?php echo $award->title; ?></a>
 					<div class="award-actions">
 						<span class="award-action award-edit"><a href="<?php echo admin_url("admin.php?page=award-dashboard&section=award-edit&award_id=$award->id"); ?>">Edit</a></span>
-						<span class="award-action award-delete"><a href="<?php echo admin_url("admin.php?page=awards&action=delete_award&award_id=$award->id"); ?>">Delete</a></span>
+						<span class="award-action award-delete"><a href="<?php echo wp_nonce_url(admin_url("admin-post.php?action=delete_award&award_id=$award->id"),"delete_award_{$award->id}"); ?>">Delete</a></span>
 					</div>
 				</td>
 				<td><?php echo $award->description; ?></td>
@@ -28,4 +28,7 @@
 	?>
 		</tbody>
 	</table>
+	<a href="<?php echo admin_url('admin.php?page=award-dashboard&section=award-new');?>">
+		<button class="button-primary">Add Award</button>
+	</a>
 </div>
