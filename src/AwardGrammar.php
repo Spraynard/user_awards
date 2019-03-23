@@ -4,7 +4,7 @@
  * Class that contains the rules for our grammar that will parse out our query and see if there is a need to trigger an award to be given to a user.
  *
  * The base structure for our grammar will be:
- * [ entity ] [ trigger_type ] WHERE [ trigger ]
+ * [ entity ] [ trigger_type ] WHERE [ triggers ]
  *
  * [ entity ]
  * 	- CURRENT_USER_META
@@ -14,7 +14,7 @@
  * - CREATED
  * - EXCLUDED
  *
- * [ trigger ] - [ trigger_descriptor ] [ trigger_control_operator ] [ trigger_control ]
+ * [ triggers ] - [ trigger_descriptor ] [ trigger_control_operator ] [ trigger_control ]
  * 	- [ trigger_descriptor ]
  * 		- [ entity_type ] = [ value ]
  * 		ex: name = hours
@@ -40,10 +40,12 @@
 
 namespace WPAward;
 
-class AwardGrammar {
-	public $entity, $trigger_type, $trigger_descriptor, $trigger_control_operator, $trigger_control;
-	public $input_string;
+class AwardGrammar extends AwardGrammarType {
+	public $entity, $trigger_type, $trigger, $input_string;
 
+	/**
+	 * Validation items for our grammar
+	 */
 	private $valid_entities = [
 		'current_user_meta'
 	];
@@ -54,22 +56,17 @@ class AwardGrammar {
 		'excluded'
 	];
 
-	private $valid_trigger_control_operators = [
-		'gt',
-		'lt',
-		'eq',
-		'gteq',
-		'lteq'
-	];
+	/** End validation items. */
 
 	function __construct( $string ) {
-		$this->input_string = $string;
+		parent::__construct( $string );
 	}
 
+	// General function that throws an error if we don't have an item in an array.
 	private function throwIfNotValidated( $valid_items, $item, $eMsg ) {
-		if ( ! in_array( $valid_items, $item ) )
+		if ( ! in_array( $item, $valid_items ) )
 		{
-			throw new Exception( $eMsg );
+			throw new \InvalidArgumentException( $eMsg );
 		}
 
 		return true;
@@ -90,7 +87,7 @@ class AwardGrammar {
 	}
 
 	private function validate_trigger_descriptor( $input ) {
-
+		return $input;
 	}
 
 	private function validate_trigger_control_operator( $input ) {
@@ -101,23 +98,52 @@ class AwardGrammar {
 	}
 
 	private function validate_trigger_control( $input ) {
-
+		return $input;
 	}
 
-	public function parse( $grammar_string ) {
+	protected function parse( $grammar_string ) {
 
 		if ( empty( $grammar_string ) )
 		{
-			throw new Exception("Award Grammar parse function, empty string");
+			throw new \InvalidArgumentException("Award Grammar parse function, empty string");
 		}
 
-		$serialized = explode(" ", $grammar_string);
 
-		$this->entity = $serialized[0];
-		$this->trigger_type = $serialized[1];
-		$this->trigger_descriptor = $serialized[2];
-		$this->trigger_control_operator = $serialized[3];
-		$this->trigger_control = $serialized[4];
+		$parseCount = 0;
+		$parseValue;
+
+		$serialized = explode(" ", strtolower($grammar_string));
+
+		// Parse our string up until the WHERE clause, because that brings in a whole bunch of processing that we need to do.
+		while ( $parseValue != "where" )
+		{
+			$parseValue = array_shift( $serialized );
+
+			switch ( $parseCount ) {
+				case 0:
+					$this->entity = $this->validate_entity($parseValue);
+					break;
+				case 1:
+					$this->trigger_type = $this->validate_trigger_type($parseValue);
+					break;
+				default:
+					break;
+			}
+
+			// Possible malforming of the string wont include our where clause, which we "need" in order to make sure we are
+			// getting our trigger statement.
+			if ( empty( $serialized ) )
+			{
+				throw new \InvalidArgumentException("You must include a \"WHERE\" clause in your statement");
+			}
+
+			$parseCount++;
+		}
+
+		// Re-Stringify the query in order to get the "trigger" portion of it
+		$serialized = implode(" ", $serialized);
+
+		$this->trigger = new AwardGrammarTrigger( $serialized );
 	}
 }
 ?>
