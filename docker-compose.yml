@@ -1,0 +1,38 @@
+version: '3.3'
+
+services:
+  # Wordpress Image
+  wordpress:
+    image: wordpress:latest
+    ports:
+      - "8000:80"
+    restart: always
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: somewordpresspassword
+      WORDPRESS_DB_NAME: somewordpress
+    volumes:
+      - wp_data:/var/www/html
+
+  # Command Line Interface Image
+  cli:
+    image: wordpress:cli
+    volumes:
+      - /Users/kwmartin/bin/projects/awards_wp_plugin:/var/www/html/wp-content/plugins/awards
+      - wp_data:/var/www/html
+
+  # Database Image
+  db:
+    image: mysql:5.7
+    volumes:
+      - db_data:/var/lib/mysql
+    environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: somewordpresspassword
+      MYSQL_DATABASE: somewordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: somewordpresspassword
+
+volumes:
+  db_data:
+  wp_data:

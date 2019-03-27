@@ -1,0 +1,7 @@
+.dockerignore
+.gitignore
+composer.json
+composer.lock
+docker-compose.yml
+phpunit.xml
+vendor/
