@@ -1,6 +1,10 @@
 <?php
 namespace WPAward;
 
+/**
+ * Abstract class that's basically a nice placeholder for the basic idea of our grammar parsing functions.
+ */
+
 abstract class AwardGrammarType {
 	public $input_string;
 

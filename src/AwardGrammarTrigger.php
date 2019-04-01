@@ -1,6 +1,25 @@
 <?php
 namespace WPAward;
 
+/**
+ * Class used to contain all trigger related functionality. This is a help because of the fact that
+ * we're able to abstract all the details of our trigger into specific class variables
+ *
+ * [ triggers ] - [ trigger_descriptor ] [ trigger_control_operator ] [ trigger_control ]
+ * 	- [ trigger_descriptor ]
+ * 		- [ entity_type ] = [ value ]
+ * 		ex: name = hours
+ *
+ * 	- [ trigger_control_operator ]
+ * 		- GT - greater than
+ * 		- LT - less than
+ * 		- EQ - equal to
+ * 	 	- GTEQ - greater than equal to
+ * 	 	- LTEQ - less than equal to
+ *
+ *  - [ trigger_control ]
+ *  	- Value used to compare against. e.g. 2
+ */
 class AwardGrammarTrigger extends AwardGrammarType {
 	public $trigger_descriptor, $trigger_control_operator, $trigger_control;
 

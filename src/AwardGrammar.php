@@ -17,7 +17,7 @@
  * [ triggers ] - [ trigger_descriptor ] [ trigger_control_operator ] [ trigger_control ]
  * 	- [ trigger_descriptor ]
  * 		- [ entity_type ] = [ value ]
- * 		ex: name = hours
+ * 		ex: key = hours
  *
  * 	- [ trigger_control_operator ]
  * 		- GT - greater than
@@ -30,7 +30,7 @@
  *  	- Value used to compare against. e.g. 2
  *
  * EXAMPLE:
- * CURRENT_USER_META UPDATED WHERE name=total_hours GT 600
+ * CURRENT_USER_META UPDATED WHERE key=total_hours GT 600
  *
  * This example creates a wp action handler that only applies when a user's meta tags are updated.
  * In the handler, we will compare the meta tag being updated to the given comparitors in the [ trigger ].
@@ -101,6 +101,11 @@ class AwardGrammar extends AwardGrammarType {
 		return $input;
 	}
 
+	/**
+	 * Function use to parse our trigger lang and apply basic information to our object. Very important.
+	 * @param  string $grammar_string - Trigger lang applied to our award that specifies how we are awarding.
+	 * @return void
+	 */
 	protected function parse( $grammar_string ) {
 
 		if ( empty( $grammar_string ) )

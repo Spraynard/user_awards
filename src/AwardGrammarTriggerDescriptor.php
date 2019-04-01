@@ -1,6 +1,12 @@
 <?php
 namespace WPAward;
 
+/**
+ * Maybe a little too much abstraction....
+ * [ trigger_descriptor ]
+ * 		- [ entity_type ] = [ value ]
+ * 		ex: name = hours
+ */
 class AwardGrammarTriggerDescriptor extends AwardGrammarType {
 	public $input_string;
 	public $key, $value;

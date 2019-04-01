@@ -1,1 +1,10 @@
 vendor/
+dockerDir/
+
+# wp scaffold plugin-tests data...
+phpunit.xml.dist
+.travis.yml
+bin/
+tests/bootstrap.php
+tests/test-sample.php
+.phpcs.xml.dist
