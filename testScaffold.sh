@@ -12,7 +12,7 @@ PLUGIN_NAME=wp_awards
 
 echo "Starting Docker Containers"
 # Spin up our docker servers
-docker-compose up -d >/dev/null
+docker-compose up -d
 
 # Host port obtained by pattern matching the port that comes from docker output
 HOST_PORT=$(docker-compose port wordpress 80 | awk -F : '{printf $2}')
@@ -35,13 +35,13 @@ docker-compose run --rm cli wp core install --url=example \
 # Update our current file system with the wp scaffold items if the information is not available
 if [ ! -f ./bin/install-wp-tests.sh ]; then
 	echo "Scaffolding our plugin tests since no files are apparent in your project folder"
-	docker-compose run --rm cli wp scaffold plugin-tests $PLUGIN_NAME
+	docker-compose run --rm cli wp scaffold plugin-tests $PLUGIN_NAME >/dev/null
 fi
 
 echo "Running \"install-wp-tests.sh\""
 
 # Install Wp Tests
-docker-compose run --rm wordpress_phpunit /app/bin/install-wp-tests.sh $DB_NAME $DB_USER $DB_PASS $DB_HOST >/dev/null
+docker-compose run --rm wordpress_phpunit /app/bin/install-wp-tests.sh somewordpress wordpress somewordpresspassword db >/dev/null
 
 echo "All done, should be able to run commands like"
 echo "docker-compose run --rm wordpress_phpunit phpunit --configuration phpunit.xml.dist"
