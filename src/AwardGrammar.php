@@ -14,19 +14,19 @@
  * - CREATED
  * - EXCLUDED
  *
- * [ triggers ] - [ trigger_descriptor ] [ trigger_control_operator ] [ trigger_control ]
- * 	- [ trigger_descriptor ]
+ * [ triggers ] - [ descriptor ] [ operator ] [ control ]
+ * 	- [ descriptor ]
  * 		- [ entity_type ] = [ value ]
  * 		ex: key = hours
  *
- * 	- [ trigger_control_operator ]
+ * 	- [ operator ]
  * 		- GT - greater than
  * 		- LT - less than
  * 		- EQ - equal to
  * 	 	- GTEQ - greater than equal to
  * 	 	- LTEQ - less than equal to
  *
- *  - [ trigger_control ]
+ *  - [ control ]
  *  	- Value used to compare against. e.g. 2
  *
  * EXAMPLE:
