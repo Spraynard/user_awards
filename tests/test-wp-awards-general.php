@@ -16,11 +16,11 @@ class Award_GrammarTest extends TestCase {
 		$this->assertEquals($grammar->trigger->input_string, "key=hours gt 2");
 
 		// Testing the trigger
-		$this->assertEquals($grammar->trigger->trigger_descriptor->input_string, "key=hours");
-		$this->assertEquals($grammar->trigger->trigger_descriptor->key, "key");
-		$this->assertEquals($grammar->trigger->trigger_descriptor->value, "hours");
-		$this->assertEquals($grammar->trigger->trigger_control_operator, "gt");
-		$this->assertEquals($grammar->trigger->trigger_control, 2);
+		$this->assertEquals($grammar->trigger->descriptor->input_string, "key=hours");
+		$this->assertEquals($grammar->trigger->descriptor->key, "key");
+		$this->assertEquals($grammar->trigger->descriptor->value, "hours");
+		$this->assertEquals($grammar->trigger->operator, "gt");
+		$this->assertEquals($grammar->trigger->control, 2);
 	}
 
 	// No Where clause in our string should cause an exception
@@ -44,11 +44,11 @@ class Award_GrammarTest extends TestCase {
 		$acceptGrammarString = $this->typeString . " WHERE key=hours eq hello";
 		$grammar = new WPAward\AwardGrammar($acceptGrammarString);
 
-		$this->assertEquals($grammar->trigger->trigger_descriptor->input_string, "key=hours");
-		$this->assertEquals($grammar->trigger->trigger_descriptor->key, "key");
-		$this->assertEquals($grammar->trigger->trigger_descriptor->value, "hours");
-		$this->assertEquals($grammar->trigger->trigger_control_operator, "eq");
-		$this->assertEquals($grammar->trigger->trigger_control, "hello");
+		$this->assertEquals($grammar->trigger->descriptor->input_string, "key=hours");
+		$this->assertEquals($grammar->trigger->descriptor->key, "key");
+		$this->assertEquals($grammar->trigger->descriptor->value, "hours");
+		$this->assertEquals($grammar->trigger->operator, "eq");
+		$this->assertEquals($grammar->trigger->control, "hello");
 	}
 }
 ?>
