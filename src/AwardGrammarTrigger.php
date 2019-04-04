@@ -5,29 +5,29 @@ namespace WPAward;
  * Class used to contain all trigger related functionality. This is a help because of the fact that
  * we're able to abstract all the details of our trigger into specific class variables
  *
- * [ triggers ] - [ trigger_descriptor ] [ trigger_control_operator ] [ trigger_control ]
- * 	- [ trigger_descriptor ]
+ * [ triggers ] - [ descriptor ] [ operator ] [ control ]
+ * 	- [ descriptor ]
  * 		- [ entity_type ] = [ value ]
  * 		ex: name = hours
  *
- * 	- [ trigger_control_operator ]
+ * 	- [ operator ]
  * 		- GT - greater than
  * 		- LT - less than
  * 		- EQ - equal to
  * 	 	- GTEQ - greater than equal to
  * 	 	- LTEQ - less than equal to
  *
- *  - [ trigger_control ]
+ *  - [ control ]
  *  	- Value used to compare against. e.g. 2
  */
 class AwardGrammarTrigger extends AwardGrammarType {
-	public $trigger_descriptor, $trigger_control_operator, $trigger_control;
+	public $descriptor, $operator, $control;
 
 	function __construct( $string ) {
 		parent::__construct($string);
 	}
 
-	private $valid_trigger_control_operators = [
+	private $valid_operators = [
 		'gt',
 		'lt',
 		'eq',
@@ -44,15 +44,15 @@ class AwardGrammarTrigger extends AwardGrammarType {
 
 		return true;
 	}
-	private function validate_trigger_control_operator( $input ) {
-		if ( $this->throwIfNotValidated( $this->valid_trigger_control_operators, $input, "Trigger Control Operator Not Valid" ) )
+	private function validate_operator( $input ) {
+		if ( $this->throwIfNotValidated( $this->valid_operators, $input, "Trigger Control Operator Not Valid" ) )
 		{
 			return $input;
 		}
 	}
 
 	private function validateTriggerControl( $input ) {
-		if ( $this->trigger_control_operator !== "eq" )
+		if ( $this->operator !== "eq" )
 		{
 			$input = intval( $input );
 		}
@@ -72,9 +72,9 @@ class AwardGrammarTrigger extends AwardGrammarType {
 			throw new \InvalidArgumentException("AwardGrammarTrigger parse string must not be empty");
 		}
 
-		$this->trigger_descriptor = new AwardGrammarTriggerDescriptor( $serialized[0] );
-		$this->trigger_control_operator = $this->validate_trigger_control_operator($serialized[1]);
-		$this->trigger_control = $this->validateTriggerControl($serialized[2]);
+		$this->descriptor = new AwardGrammarTriggerDescriptor( $serialized[0] );
+		$this->operator = $this->validate_operator($serialized[1]);
+		$this->control = $this->validateTriggerControl($serialized[2]);
 	}
 }
 ?>
