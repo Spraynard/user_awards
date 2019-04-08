@@ -31,11 +31,11 @@ services:
       - .:/app
       - testsuite:/tmp
 
-  # # Composer
-  # composer:
-  #   image: composer
-  #   volumes:
-  #     - .:/app
+  # Composer
+  composer:
+    image: composer
+    volumes:
+      - .:/app
 
   # Database Image
   db:

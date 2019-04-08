@@ -14,6 +14,7 @@
 class WPAwardsTest extends WP_UnitTestCase {
 	// Post type to test against.
 	private $post;
+	private $user;
 
 	// Set up award posts before we run any tests.
 	public function setUp() {
@@ -32,12 +33,43 @@ class WPAwardsTest extends WP_UnitTestCase {
 				'wap_grammar' => "CURRENT_USER_META UPDATED WHERE key=total_hours GTEQ 50"
 			)
 		));
+
+		// Create a user
+		$this->user = $this->factory->user->create_and_get();
+
+		// Set the named user as the current user
+		wp_set_current_user( $this->user->get('ID') );
 	}
 
-	public function testNumberOne() {
+	// Test whether a user who passes an award's trigger recieves an award.
+	public function testSuccessfulAwardApplication() {
+		$posts = get_posts(['post_type' => 'wap_award']);
+		$user = get_current_user();
 
-		print_r( $this->post );
-		$this->assertTrue(true);
+		foreach( $posts as $post )
+		{
+			$wap_grammar = get_post_meta( $post->ID, 'wap_grammar' )[0];
+
+			// Fail test if we do not listen correctly
+			try {
+				$listener = new WPAward\AwardListener( $wap_grammar );
+				$listener->add_listeners( $user );
+			} catch ( Exception $e ) {
+				$this->fail("Test Failure Occured: " . $e->getMessage() . "\nFile: " . $e->getFile() . "\nLine: " . $e->getLine() );
+			}
+		}
+
+		// Listeners should be available now. Add meta to our users.
+		add_user_meta( $user, 'total_hours', 60 );
+
+		// Check to see if our listener added our award
+		$award_meta = get_user_meta( $user, 'wap_fifty_hours_worked', true );
+
+		echo "Award Meta: " . $award_meta;
+
+		$this->assertTrue( ! empty( $award_meta ), "Assertion that there is an award given to our user after we set up the necessary details\nCurrent award meta: " . $award_meta);
+
+		// $this->assertTrue(true);
 	}
 }
 

@@ -19,7 +19,7 @@ class Award_GrammarTest extends TestCase {
 		$this->assertEquals($grammar->trigger->descriptor->input_string, "key=hours");
 		$this->assertEquals($grammar->trigger->descriptor->key, "key");
 		$this->assertEquals($grammar->trigger->descriptor->value, "hours");
-		$this->assertEquals($grammar->trigger->operator, "gt");
+		$this->assertEquals($grammar->trigger->operator, ">");
 		$this->assertEquals($grammar->trigger->control, 2);
 	}
 
@@ -47,7 +47,7 @@ class Award_GrammarTest extends TestCase {
 		$this->assertEquals($grammar->trigger->descriptor->input_string, "key=hours");
 		$this->assertEquals($grammar->trigger->descriptor->key, "key");
 		$this->assertEquals($grammar->trigger->descriptor->value, "hours");
-		$this->assertEquals($grammar->trigger->operator, "eq");
+		$this->assertEquals($grammar->trigger->operator, "===");
 		$this->assertEquals($grammar->trigger->control, "hello");
 	}
 }

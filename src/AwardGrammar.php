@@ -59,7 +59,7 @@ class AwardGrammar extends AwardGrammarType {
 	/** End validation items. */
 
 	function __construct( $string ) {
-		parent::__construct( $string );
+		parent::__construct( strtolower($string) );
 	}
 
 	// General function that throws an error if we don't have an item in an array.
@@ -115,13 +115,15 @@ class AwardGrammar extends AwardGrammarType {
 
 
 		$parseCount = 0;
-		$parseValue;
 
 		$serialized = explode(" ", strtolower($grammar_string));
+
+		$parseValue = NULL;
 
 		// Parse our string up until the WHERE clause, because that brings in a whole bunch of processing that we need to do.
 		while ( $parseValue != "where" )
 		{
+
 			$parseValue = array_shift( $serialized );
 
 			switch ( $parseCount ) {
