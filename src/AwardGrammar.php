@@ -152,5 +152,10 @@ class AwardGrammar extends AwardGrammarType {
 
 		$this->trigger = new AwardGrammarTrigger( $serialized );
 	}
+
+	// Reserved for special users in which the trigger type can be changed.
+	public function change_trigger_type( $trigger_type ) {
+		$this->trigger_type = $trigger_type;
+	}
 }
 ?>
