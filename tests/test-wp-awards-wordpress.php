@@ -42,9 +42,15 @@ class WPAwardsTest extends WP_UnitTestCase {
 	}
 
 	// Test whether a user who passes an award's trigger recieves an award.
-	public function testSuccessfulAwardApplication() {
+	public function testSuccessfulAwardOnUpdate() {
 		$posts = get_posts(['post_type' => 'wap_award']);
-		$user = get_current_user();
+		$user = wp_get_current_user();
+
+		// Update/Create before we trip the successful award update.
+		$user_meta_updated = update_user_meta( $user->ID, 'total_hours', 5 );
+
+
+		echo "User Type: ", gettype( $user );
 
 		foreach( $posts as $post )
 		{
@@ -60,10 +66,14 @@ class WPAwardsTest extends WP_UnitTestCase {
 		}
 
 		// Listeners should be available now. Add meta to our users.
-		add_user_meta( $user, 'total_hours', 60 );
+		$user_meta_updated = update_user_meta( $user->ID, 'total_hours', 60 );
+
+		if ( ! $user_meta_updated ) {
+			$this->fail("User Meta was not updated correctly");
+		}
 
 		// Check to see if our listener added our award
-		$award_meta = get_user_meta( $user, 'wap_fifty_hours_worked', true );
+		$award_meta = get_user_meta( $user->ID, 'wap_fifty_hours_worked', true );
 
 		echo "Award Meta: " . $award_meta;
 
