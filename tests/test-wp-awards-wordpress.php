@@ -48,9 +48,7 @@ class WPAwardsTest extends WP_UnitTestCase {
 
 		// Update/Create before we trip the successful award update.
 		$user_meta_updated = update_user_meta( $user->ID, 'total_hours', 5 );
-
-
-		echo "User Type: ", gettype( $user );
+		$awarder = new WPAward\WPAward();
 
 		foreach( $posts as $post )
 		{
@@ -58,7 +56,7 @@ class WPAwardsTest extends WP_UnitTestCase {
 
 			// Fail test if we do not listen correctly
 			try {
-				$listener = new WPAward\AwardListener( $wap_grammar );
+				$listener = new WPAward\AwardListener( $post->ID, $wap_grammar, $awarder );
 				$listener->add_listeners( $user );
 			} catch ( Exception $e ) {
 				$this->fail("Test Failure Occured: " . $e->getMessage() . "\nFile: " . $e->getFile() . "\nLine: " . $e->getLine() );
@@ -74,8 +72,6 @@ class WPAwardsTest extends WP_UnitTestCase {
 
 		// Check to see if our listener added our award
 		$award_meta = get_user_meta( $user->ID, 'wap_fifty_hours_worked', true );
-
-		echo "Award Meta: " . $award_meta;
 
 		$this->assertTrue( ! empty( $award_meta ), "Assertion that there is an award given to our user after we set up the necessary details\nCurrent award meta: " . $award_meta);
 
