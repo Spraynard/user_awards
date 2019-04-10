@@ -2,11 +2,21 @@
 namespace WPAward;
 
 class AwardListener {
+	private $award_id;
 	private $grammar = null;
 	private $grammarFunction = null;
-	function __construct( $grammar_string ) {
-		$this->grammar = new AwardGrammar( $grammar_string );
+	private $awarder = null;
+
+	/**
+	 * Class Constructor
+	 * @param string $award_grammar_string - String of our trigger grammar to use that will put a listener up
+	 * @param WPAward $awarder       - Awarder that performs award operations on a user, such as checking if the user should have an award or what not.
+	 */
+	function __construct( $award_id, $award_grammar_string $awarder ) {
+		$this->award_id = $award_id;
+		$this->grammar = new AwardGrammar( $award_grammar_string );
 		$this->grammarFunction = $this->grammar->entity . '_' . $this->grammar->trigger_type;
+		$this->awarder = $awarder;
 	}
 
 	public function add_listeners( $user ) {
@@ -55,21 +65,32 @@ class AwardListener {
 	 * Here we will test our grammar conditions
 	 */
 	function current_user_meta_updated( $meta_id, $object_id, $meta_key, $_meta_value ) {
-		echo "Current User Meta Getting Updated";
-		echo "VALUES:\n$meta_id\n, $object_id\n, $meta_key\n, $_meta_value\n";
-		// Award user if our current user's meta key passes the grammar control
-		$user_meta = get_user_meta( $object_id );
-		$descriptor = $this->grammar->trigger->descriptor->key;
 
-		// Check to see if our entity has a trigger descriptor associated with it.
-		if ( ! is_array($user_meta) || empty( $user_meta[$descriptor] ) )
+		// Award user if our current user's meta key passes the grammar control
+		$descriptor = $this->grammar->trigger->descriptor->value;
+
+		echo "\nCurrent User Meta Getting Updated\n";
+		echo "VALUES:\n$meta_id\n, $object_id\n, $meta_key\n, $_meta_value\n";
+		echo "Descriptor: $descriptor\n";
+
+		// Check if the updated meta key is the same as the meta key we are listening for
+		if ( $meta_key !== $descriptor )
 		{
 			return;
 		}
 
-		echo "User Meta";
-		print_r( $user_meta );
-		// if ( )
+		// Testing whether we should apply an award to a user.
+		if ( ! $this->awarder->shouldApplyAward(
+			$_meta_value,
+			$this->grammar->trigger->control,
+			$this->grammar->trigger->operator
+		) )
+		{
+			return;
+		}
+
+		// Finally, assign our award if we make it this far
+		$this->awarder->AssignAward( $this->award_id ,$object_id );
 	}
 
 	function current_user_meta_excluded() {
