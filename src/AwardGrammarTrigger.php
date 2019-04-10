@@ -35,20 +35,7 @@ class AwardGrammarTrigger extends AwardGrammarType {
 		'lteq'
 	];
 
-	private function map_trigger_operators( $operator ) {
-		switch ( $operator ) {
-			case 'gt':
-				return '>';
-			case 'lt':
-				return '<';
-			case 'eq':
-				return '===';
-			case 'gteq':
-				return '>=';
-			case 'lteq':
-				return '<=';
-		}
-	}
+
 
 	// General function that throws an error if we don't have an item in an array.
 	private function throwIfNotValidated( $valid_items, $item, $eMsg ) {
@@ -59,15 +46,15 @@ class AwardGrammarTrigger extends AwardGrammarType {
 
 		return true;
 	}
-	private function validate_operator( $input ) {
+	private function validateOperator( $input ) {
 		if ( $this->throwIfNotValidated( $this->valid_operators, $input, "Trigger Control Operator Not Valid" ) )
 		{
-			return $this->map_trigger_operators($input);
+			return $input;
 		}
 	}
 
 	private function validateTriggerControl( $input ) {
-		if ( $this->operator !== "===" )
+		if ( $this->operator !== "eq" )
 		{
 			$input = intval( $input );
 		}
@@ -88,7 +75,7 @@ class AwardGrammarTrigger extends AwardGrammarType {
 		}
 
 		$this->descriptor = new AwardGrammarTriggerDescriptor( $serialized[0] );
-		$this->operator = $this->validate_operator($serialized[1]);
+		$this->operator = $this->validateOperator($serialized[1]);
 		$this->control = $this->validateTriggerControl($serialized[2]);
 	}
 }
