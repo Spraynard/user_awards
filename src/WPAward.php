@@ -9,25 +9,26 @@ namespace WPAward;
  */
 class WPAward {
 	private $db;
+	private $db_table;
+	private $db_collation;
+	private $db_version = "0.1"
 
 	function __construct( $db ) {
 		$this->db = $db;
+		$this->db_table = $this->db->prefix . "awards";
+		$this->db_collation = $this->db->get_charset_collate();
 	}
 
 	/** Function to handle plugin activation */
 	function Activate( $dbVersion ) {
-		$charset_collate = $this->db->get_charset_collate();
-
-		$table_name = $this->db->prefix . "awards";
-
-		$sql = "CREATE TABLE IF NOT EXISTS {$table_name} (
+		$sql = "CREATE TABLE IF NOT EXISTS {$this->db_table} (
 				id mediumint(9) NOT NULL AUTO_INCREMENT,
 				user_id mediumint(9) NOT NULL,
 				award_id mediumint(9) NOT NULL,
 				date_assigned datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
 				date_given datetime DEFAULT '0000-00-00 00:00:00',
 				PRIMARY KEY  (id)
-			) $charset_collate;";
+			) {$this->db_collation};";
 
 		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' ); // for dbDelta
 		dbDelta( $sql );
@@ -39,8 +40,11 @@ class WPAward {
 
 	}
 
+	/** Function to handle plugin uninstallation */
 	function Uninstall() {
-
+		$sql = "DROP TABLE IF EXISTS $this->tablename_awards";
+		$this->db->query( $sql );
+		delete_option('awards_db_version');
 	}
 
 	/** Give out awards to users */
