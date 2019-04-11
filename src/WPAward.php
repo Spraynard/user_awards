@@ -8,15 +8,17 @@ namespace WPAward;
  * own functionality and interact with our abstraction.
  */
 class WPAward {
-	function __construct() {
+	private $db;
 
+	function __construct( $db ) {
+		$this->db = $db;
 	}
 
 	/** Function to handle plugin activation */
 	function Activate( $dbVersion ) {
-		$charset_collate = $this->wpdb->get_charset_collate();
+		$charset_collate = $this->db->get_charset_collate();
 
-		$table_name = $this->wpdb->prefix . "awards";
+		$table_name = $this->db->prefix . "awards";
 
 		$sql = "CREATE TABLE IF NOT EXISTS {$table_name} (
 				id mediumint(9) NOT NULL AUTO_INCREMENT,
@@ -31,6 +33,14 @@ class WPAward {
 		dbDelta( $sql );
 
 		add_option( 'awards_db_version', $dbVersion );
+	}
+
+	function Deactivate() {
+
+	}
+
+	function Uninstall() {
+
 	}
 
 	/** Give out awards to users */
@@ -48,6 +58,13 @@ class WPAward {
 		// Check if award is available
 		// Check if user has award
 		// Remove Award
+	}
+
+	function HasAward( $award_id, $user_id ) {
+		if ( )
+		// Check if award is available
+		// Check if user has award
+		// Return based on this check
 	}
 
 	/**
