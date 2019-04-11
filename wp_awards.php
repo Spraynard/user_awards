@@ -16,9 +16,19 @@ Author URI: http://kellanmartin.com
 
 defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
 
+// Include our scripts
+require_once __DIR__ . "/vendor/autoload.php";
+
 //-- Start Plugin Initialization Scripts
 add_action('plugins_loaded', 'wp_awards_plugin_init');
 add_action('wp_loaded', 'apply_award_type_listeners');
+
+//-- Activation, Deactivation, Uninstall
+$WPAward = new WPAward\WPAward();
+
+register_activation_hook( __FILE__, [ $WPAward, 'Activate' ] );
+register_deactivation_hook( __FILE__, [ $WPAward, 'Deactivate' ] );
+register_uninstall_hook( __FILE__, [ $WPAward, 'Uninstall' ] );
 
 function wp_awards_plugin_init() {
 	add_action('init', 'wp_awards_post_type');
