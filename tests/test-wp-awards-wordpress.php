@@ -15,10 +15,15 @@ class WPAwardsTest extends WP_UnitTestCase {
 	// Post type to test against.
 	private $post;
 	private $user;
+	private $wpdb;
 
 	// Set up award posts before we run any tests.
 	public function setUp() {
 		parent::setUp();
+
+		// Get an instance of the wordpress db
+		global $wpdb;
+		$this->wpdb = $wpdb;
 
 		// Testing that we have our custom post type
 		$this->assertTrue(post_type_exists('wap_award'));
@@ -48,7 +53,7 @@ class WPAwardsTest extends WP_UnitTestCase {
 
 		// Update/Create before we trip the successful award update.
 		$user_meta_updated = update_user_meta( $user->ID, 'total_hours', 5 );
-		$awarder = new WPAward\WPAward();
+		$awarder = new WPAward\WPAward( $this->wpdb );
 
 		foreach( $posts as $post )
 		{
