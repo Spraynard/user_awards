@@ -12,7 +12,7 @@ class AwardListener {
 	 * @param string $award_grammar_string - String of our trigger grammar to use that will put a listener up
 	 * @param WPAward $awarder       - Awarder that performs award operations on a user, such as checking if the user should have an award or what not.
 	 */
-	function __construct( $award_id, $award_grammar_string $awarder ) {
+	function __construct( $award_id, $award_grammar_string, $awarder ) {
 		$this->award_id = $award_id;
 		$this->grammar = new AwardGrammar( $award_grammar_string );
 		$this->grammarFunction = $this->grammar->entity . '_' . $this->grammar->trigger_type;
