@@ -11,7 +11,7 @@
  * functionality needed for this plugin
  * is supported.
  */
-class WPAwardsTest extends WP_UnitTestCase {
+class WPAwardsGeneralTest extends WP_UnitTestCase {
 	// Post type to test against.
 	private $post;
 	private $user;
