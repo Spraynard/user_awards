@@ -11,11 +11,12 @@
  * functionality needed for this plugin
  * is supported.
  */
-class WPAwardsGeneralTest extends WP_UnitTestCase {
+class Test_WP_Awards_Listener extends WP_UnitTestCase {
 	// Post type to test against.
 	private $post;
 	private $user;
 	private $wpdb;
+	private $plugin_basename;
 
 	// Set up award posts before we run any tests.
 	public function setUp() {
@@ -24,6 +25,16 @@ class WPAwardsGeneralTest extends WP_UnitTestCase {
 		// Get an instance of the wordpress db
 		global $wpdb;
 		$this->wpdb = $wpdb;
+
+		// // Activate our plugin
+		// $this->plugin_basename = dirname( __DIR__ ) . '/wp_awards.php';
+		// echo "Plugin Basename 2: " . $this->plugin_basename . "\n";
+		// $plugin_activated = activate_plugin($this->plugin_basename);
+
+		// if ( is_wp_error( $plugin_activated ) )
+		// {
+		// 	$this->fail($plugin_activated->get_error_message());
+		// }
 
 		// Testing that we have our custom post type
 		$this->assertTrue(post_type_exists('wap_award'));

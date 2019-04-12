@@ -11,12 +11,13 @@
  * functionality needed for this plugin
  * is supported.
  */
-class WPAwardUnitTest extends WP_UnitTestCase {
+class Test_WP_Awards extends WP_UnitTestCase {
 	// Post type to test against.
 	private $post;
 	private $user;
 	private $wpdb;
-	private $award_instance;
+	private $wp_award;
+	private $plugin_basename;
 
 	// Set up award posts before we run any tests.
 	public function setUp() {
@@ -26,8 +27,15 @@ class WPAwardUnitTest extends WP_UnitTestCase {
 		global $wpdb;
 		$this->wpdb = $wpdb;
 
-		// Testing that we have our custom post type
-		$this->assertTrue(post_type_exists('wap_award'));
+		// // Activate our plugin
+		// $this->plugin_basename = dirname( __DIR__ ) . '/wp_awards.php';
+		// echo "Plugin Basename: " . $this->plugin_basename . "\n";
+		// $plugin_activated = activate_plugin($this->plugin_basename);
+
+		// if ( is_wp_error( $plugin_activated ) )
+		// {
+		// 	$this->fail($plugin_activated->get_error_message());
+		// }
 
 		// Assigning to our post variable.
 		$this->post = $this->factory->post->create_and_get(array(
@@ -46,11 +54,11 @@ class WPAwardUnitTest extends WP_UnitTestCase {
 		// Set the named user as the current user
 		wp_set_current_user( $this->user->get('ID') );
 
-		$this->$award_instance = new WPAward\WPAward( $this->wpdb );
+		$this->wp_award = new WPAward\WPAward( $this->wpdb );
 	}
 
-	public function testGetAwardFailure() {
-		$this->assertTrue(true);
+	public function testGetUserAwardNoAssignments() {
+		$user
 	}
 
 	public function testGetAwardSuccess() {

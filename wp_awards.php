@@ -20,11 +20,16 @@ defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
 require_once __DIR__ . "/vendor/autoload.php";
 
 //-- Activation, Deactivation, Uninstall
-$WPAward = new WPAward\WPAward();
+register_activation_hook( __FILE__, [ 'WPAward\WPAwardPluginHooks', 'Activate' ] );
+register_deactivation_hook( __FILE__, [ 'WPAward\WPAwardPluginHooks', 'Deactivate' ] );
+register_uninstall_hook( __FILE__, [ 'WPAward\WPAwardPluginHooks', 'Uninstall' ] );
 
-register_activation_hook( __FILE__, [ $WPAward, 'Activate' ] );
-register_deactivation_hook( __FILE__, [ $WPAward, 'Deactivate' ] );
-register_uninstall_hook( __FILE__, [ $WPAward, 'Uninstall' ] );
+// Initialize WPAward Instance
+global $wpdb;
+$WPAward = new WPAward\WPAward($wpdb);
+
+//-- User deletion should trigger a mass delete of all of the awards for the user that we're deleting.
+add_action('delete_user', [ $WPAward, 'RemoveAward'] );
 
 //-- Start Plugin Initialization Scripts
 add_action('plugins_loaded', 'wp_awards_plugin_init');

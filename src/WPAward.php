@@ -10,45 +10,14 @@ namespace WPAward;
 class WPAward {
 	private $db;
 	private $db_table;
-	private $db_collation;
-	private $db_version = "0.1"; // Change this when you change the version of your DB.
 
 	function __construct( $db ) {
 		$this->db = $db;
 		$this->db_table = $this->db->prefix . "awards";
-		$this->db_collation = $this->db->get_charset_collate();
 	}
 
 	private function __auto_give_award( $award_id ) {
 		return get_post_meta( $award_id, 'wap_auto_give', true );
-	}
-
-	/** Function to handle plugin activation */
-	function Activate() {
-		$sql = "CREATE TABLE IF NOT EXISTS {$this->db_table} (
-				id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-				user_id bigint(20) unsigned NOT NULL,
-				award_id bigint(20) unsigned NOT NULL,
-				date_assigned datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
-				date_given datetime DEFAULT NULL,
-				PRIMARY KEY  (id)
-			) {$this->db_collation};";
-
-		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' ); // for dbDelta
-		dbDelta( $sql );
-
-		add_option( 'awards_db_version', $this->db_version );
-	}
-
-	function Deactivate() {
-		// Don't really know what I'd do for deactivation.
-	}
-
-	/** Function to handle plugin uninstallation */
-	function Uninstall() {
-		$sql = "DROP TABLE IF EXISTS {$this->db_table}";
-		$this->db->query( $sql );
-		delete_option('awards_db_version');
 	}
 
 	/**
@@ -161,8 +130,9 @@ class WPAward {
 	 * @param int $user_id  - ID of the user that we are "awarding" the award to
 	 * @param int $award_id - ID of the award that we are "awarding"
 	 */
-	function GetAward( $user_id, $award_id = NULL) {
-		// $awards = $this->wp->get_results();
+	function GetUserAward( $user_id, $award_id = NULL) {
+		$query = "SELECT * FROM {$this->db_table}"
+		$awards = $this->wp->get_results();
 	}
 
 	/**

@@ -2,7 +2,7 @@
 
 use PHPUnit\Framework\TestCase;
 
-class Award_GrammarTest extends TestCase {
+class Test_WP_Awards_Grammar extends TestCase {
 
 	private $typeString = "CURRENT_USER_META UPDATED";
 
