@@ -20,7 +20,7 @@ class WPAward {
 	}
 
 	private function __auto_give_award( $award_id ) {
-		return get_post_meta( $award_id, 'wap_auto_give', true )
+		return get_post_meta( $award_id, 'wap_auto_give', true );
 	}
 
 	/** Function to handle plugin activation */
@@ -105,7 +105,7 @@ class WPAward {
 				'user_id' => '%d',
 				'award_id' => '%d'
 			]
-		)
+		);
 
 		if ( ! $award_assigned )
 		{
@@ -128,23 +128,41 @@ class WPAward {
 	 * @param int $award_id - ID of the award that we are "awarding"
 	 */
 	function RemoveAward( $user_id, $award_id = NULL ) {
-		// Check if award is available
-		// Check if user has award
-		// Remove Award
-		//
 
+		$where_clause = [
+			'user_id' => $user_id,
+		];
+
+		$where_format = [
+			'user_id' => '%d'
+		];
+
+		// Add in our award id to the where clase if it is available. There's a chance that it isn't.
+		if ( $award_id )
+		{
+			$where_clause['award_id'] = $award_id;
+			$where_format['award_id'] = '%d';
+		}
+
+		$award_deleted = $this->db->delete(
+			$this->db_table,
+			$where_clause,
+			$where_format
+		);
+
+		return $award_deleted;
 	}
 
 	/**
-	 * [HasAward description]
+	 * Function that grabs as many awards assigned to the user as we can based on the parameters given.
+	 * For example, if just a user_id is supplied, then we will return all of the awards with that user_id.
+	 * If an award_id is supplied along with our user_id then we will probably get only one award. Hopefully
+	 *
 	 * @param int $user_id  - ID of the user that we are "awarding" the award to
 	 * @param int $award_id - ID of the award that we are "awarding"
 	 */
-	function HasAward( $user_id, $award_id ) {
-		if ( )
-		// Check if award is available
-		// Check if user has award
-		// Return based on this check
+	function GetAward( $user_id, $award_id = NULL) {
+		// $awards = $this->wp->get_results();
 	}
 
 	/**
