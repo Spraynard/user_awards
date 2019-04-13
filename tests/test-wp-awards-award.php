@@ -246,6 +246,9 @@ class Test_WP_Awards extends WP_UnitTestCase {
 		$this->assertEmpty( $award_data );
 	}
 
+	/**
+	 * Testing return value of our remove award function, which should be the amount of rows that are deleted.
+	 */
 	public function testRemoveAwardReturn()
 	{
 		// Link a user to an award. Since the posts 'wap_auto_give' is true, then we should automatically give the award out.
@@ -261,6 +264,9 @@ class Test_WP_Awards extends WP_UnitTestCase {
 		$this->assertGreaterThan( 0, $award_deleted );
 	}
 
+	/**
+	 * Testing that we can delete multiple awards from a user if we just supply only a user ID into our function
+	 */
 	public function testRemoveAwardMultiple()
 	{
 		// Link a user to an award
