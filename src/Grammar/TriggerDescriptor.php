@@ -1,5 +1,5 @@
 <?php
-namespace WPAward;
+namespace WPAward\Grammar;
 
 /**
  * Maybe a little too much abstraction....
@@ -7,7 +7,7 @@ namespace WPAward;
  * 		- [ entity_type ] = [ value ]
  * 		ex: name = hours
  */
-class AwardGrammarTriggerDescriptor extends AwardGrammarType {
+class TriggerDescriptor extends GrammarType {
 	public $input_string;
 	public $key, $value;
 	function __construct( $input_string ) {

@@ -283,6 +283,113 @@ class Test_WP_Awards extends WP_UnitTestCase {
 
 		$this->assertGreaterThan( 1, $award_deleted );
 	}
+
+	/** Test Expected Behavior of $val_1 > $val_2 when $val_1 > $val_2 */
+	public function testShouldApplyAwardGTSuccess()
+	{
+		$this->assertTrue(
+			$this->WPAward->ShouldApplyAward(2, 1, 'gt')
+		);
+	}
+
+	/** Test Expected Behavior of $val_1 > $val_2 when val_1 < val_2 */
+	public function testShouldApplyAwardGTFailure()
+	{
+		$this->assertFalse(
+			$this->WPAward->ShouldApplyAward(1, 2, 'gt')
+		);
+	}
+
+	public function testShouldApplyAwardGTFailureEqual()
+	{
+		$this->assertFalse(
+			$this->WPAward->ShouldApplyAward(1, 1, 'gt')
+		);
+	}
+
+	public function testShouldApplyAwardLTSuccess()
+	{
+		$this->assertTrue(
+			$this->WPAward->ShouldApplyAward(1, 2, 'lt')
+		);
+	}
+
+	public function testShouldApplyAwardLTFailure()
+	{
+		$this->assertFalse(
+			$this->WPAward->ShouldApplyAward(2, 1, 'lt')
+		);
+	}
+
+	public function testShouldApplyAwardLTFailureEqual()
+	{
+		$this->assertFalse(
+			$this->WPAward->ShouldApplyAward(2, 2, 'lt')
+		);
+	}
+
+	public function testShouldApplyAwardEQSuccess()
+	{
+		$this->assertTrue(
+			$this->WPAward->ShouldApplyAward(50, 50, 'eq')
+		);
+	}
+
+	public function testShouldApplyAwardEQSuccessStr()
+	{
+		$this->assertTrue(
+			$this->WPAward->ShouldApplyAward("Hello", "Hello", 'eq')
+		);
+	}
+
+	public function testShouldApplyAwardEQFailure()
+	{
+		$this->assertFalse(
+			$this->WPAward->ShouldApplyAward(1, 50, 'eq')
+		);
+	}
+
+	public function testShouldApplyAwardGTEQSuccess()
+	{
+		$this->assertTrue(
+			$this->WPAward->ShouldApplyAward(20, 2, 'gteq')
+		);
+	}
+
+	public function testShouldApplyAwardGTEQSuccessEqual()
+	{
+		$this->assertTrue(
+			$this->WPAward->ShouldApplyAward(20, 20, 'gteq')
+		);
+	}
+
+	public function testShouldApplyAwardGTEQFailure()
+	{
+		$this->assertFalse(
+			$this->WPAward->ShouldApplyAward(1, 50, 'gteq')
+		);
+	}
+
+	public function testShouldApplyAwardLTEQSuccess()
+	{
+		$this->assertTrue(
+			$this->WPAward->ShouldApplyAward(10, 20, 'lteq')
+		);
+	}
+
+	public function testShouldApplyAwardLTEQSuccessEqual()
+	{
+		$this->assertTrue(
+			$this->WPAward->ShouldApplyAward(20, 20, 'lteq')
+		);
+	}
+
+	public function testShouldApplyAwardLTEQFailure()
+	{
+		$this->assertFalse(
+			$this->WPAward->ShouldApplyAward(50, 1, 'lteq')
+		);
+	}
 }
 
 ?>

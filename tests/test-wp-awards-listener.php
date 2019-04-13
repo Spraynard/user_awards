@@ -26,16 +26,6 @@ class Test_WP_Awards_Listener extends WP_UnitTestCase {
 		global $wpdb;
 		$this->wpdb = $wpdb;
 
-		// // Activate our plugin
-		// $this->plugin_basename = dirname( __DIR__ ) . '/wp_awards.php';
-		// echo "Plugin Basename 2: " . $this->plugin_basename . "\n";
-		// $plugin_activated = activate_plugin($this->plugin_basename);
-
-		// if ( is_wp_error( $plugin_activated ) )
-		// {
-		// 	$this->fail($plugin_activated->get_error_message());
-		// }
-
 		// Testing that we have our custom post type
 		$this->assertTrue(post_type_exists('wap_award'));
 
@@ -64,7 +54,7 @@ class Test_WP_Awards_Listener extends WP_UnitTestCase {
 
 		// Update/Create before we trip the successful award update.
 		$user_meta_updated = update_user_meta( $user->ID, 'total_hours', 5 );
-		$awarder = new WPAward\WPAward( $this->wpdb );
+		$WPAward = new WPAward\WPAward( $this->wpdb );
 
 		foreach( $posts as $post )
 		{
@@ -72,7 +62,7 @@ class Test_WP_Awards_Listener extends WP_UnitTestCase {
 
 			// Fail test if we do not listen correctly
 			try {
-				$listener = new WPAward\AwardListener( $post->ID, $wap_grammar, $awarder );
+				$listener = new WPAward\AwardListener( $post->ID, $wap_grammar, $WPAward );
 				$listener->add_listeners( $user );
 			} catch ( Exception $e ) {
 				$this->fail("Test Failure Occured: " . $e->getMessage() . "\nFile: " . $e->getFile() . "\nLine: " . $e->getLine() );
@@ -86,12 +76,10 @@ class Test_WP_Awards_Listener extends WP_UnitTestCase {
 			$this->fail("User Meta was not updated correctly");
 		}
 
-		// Check to see if our listener added our award
-		$award_meta = get_user_meta( $user->ID, 'wap_fifty_hours_worked', true );
+		// Check to see if our listener assigned an award to this user
+		$award_data = $WPAward->GetUserAward( $user->ID );
 
-		$this->assertTrue( ! empty( $award_meta ), "Assertion that there is an award given to our user after we set up the necessary details\nCurrent award meta: " . $award_meta);
-
-		// $this->assertTrue(true);
+		$this->assertNotEmpty($award_data, "Should have an award assigned to our user, but our data does not show as such.");
 	}
 }
 

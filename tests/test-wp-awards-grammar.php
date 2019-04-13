@@ -9,7 +9,7 @@ class Test_WP_Awards_Grammar extends TestCase {
 	// Perfectly formed string
 	public function testAcceptableParsing() {
 		$acceptGrammarString = $this->typeString . " WHERE key=hours GT 2";
-		$grammar = new WPAward\AwardGrammar($acceptGrammarString);
+		$grammar = new WPAward\Grammar\Core($acceptGrammarString);
 
 		$this->assertEquals($grammar->entity, "current_user_meta");
 		$this->assertEquals($grammar->trigger_type, "updated");
@@ -28,7 +28,7 @@ class Test_WP_Awards_Grammar extends TestCase {
 
 		$this->expectException(InvalidArgumentException::class);
 		$unacceptGrammarString = $this->typeString . " key=hours GT 2";
-		$grammar = new WPAward\AwardGrammar($unacceptGrammarString);
+		$grammar = new WPAward\Grammar\Core($unacceptGrammarString);
 	}
 
 
@@ -37,12 +37,12 @@ class Test_WP_Awards_Grammar extends TestCase {
 		$this->expectException(InvalidArgumentException::class);
 		$this->expectExceptionMessage("Trigger control must be a numeric if you're not testing equality");
 		$unacceptGrammarString = $this->typeString . " WHERE key=hours GT hello";
-		$grammar = new WPAward\AwardGrammar($unacceptGrammarString);
+		$grammar = new WPAward\Grammar\Core($unacceptGrammarString);
 	}
 
 	public function testAcceptableParsingTriggerControlStringOperator() {
 		$acceptGrammarString = $this->typeString . " WHERE key=hours eq hello";
-		$grammar = new WPAward\AwardGrammar($acceptGrammarString);
+		$grammar = new WPAward\Grammar\Core($acceptGrammarString);
 
 		$this->assertEquals($grammar->trigger->descriptor->input_string, "key=hours");
 		$this->assertEquals($grammar->trigger->descriptor->key, "key");

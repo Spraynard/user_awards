@@ -1,5 +1,5 @@
 <?php
-namespace WPAward;
+namespace WPAward\Grammar;
 
 /**
  * Class used to contain all trigger related functionality. This is a help because of the fact that
@@ -20,7 +20,7 @@ namespace WPAward;
  *  - [ control ]
  *  	- Value used to compare against. e.g. 2
  */
-class AwardGrammarTrigger extends AwardGrammarType {
+class Trigger extends GrammarType {
 	public $descriptor, $operator, $control;
 
 	function __construct( $string ) {
@@ -74,7 +74,7 @@ class AwardGrammarTrigger extends AwardGrammarType {
 			throw new \InvalidArgumentException("AwardGrammarTrigger parse string must not be empty");
 		}
 
-		$this->descriptor = new AwardGrammarTriggerDescriptor( $serialized[0] );
+		$this->descriptor = new TriggerDescriptor( $serialized[0] );
 		$this->operator = $this->validateOperator($serialized[1]);
 		$this->control = $this->validateTriggerControl($serialized[2]);
 	}

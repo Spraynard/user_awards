@@ -38,9 +38,9 @@
  * greater than 600. If that's the case then we return true, if not we return negative.
  */
 
-namespace WPAward;
+namespace WPAward\Grammar;
 
-class AwardGrammar extends AwardGrammarType {
+class Core extends GrammarType {
 	public $entity, $trigger_type, $trigger, $input_string;
 
 	/**
@@ -150,7 +150,7 @@ class AwardGrammar extends AwardGrammarType {
 		// Re-Stringify the query in order to get the "trigger" portion of it
 		$serialized = implode(" ", $serialized);
 
-		$this->trigger = new AwardGrammarTrigger( $serialized );
+		$this->trigger = new Trigger( $serialized );
 	}
 
 	// Reserved for special users in which the trigger type can be changed.
