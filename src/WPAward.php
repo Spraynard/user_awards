@@ -31,7 +31,12 @@ class WPAward {
 	 * @param int $award_id - ID of the award that we are "awarding"
 	 *
 	 */
-	function GiveAward( $user_id, $award_id ) {
+	public function GiveAward( $user_id, $award_id ) {
+
+		if ( empty( $this->GetUserAward( $user_id, $award_id ) ) )
+		{
+			$this->AssignAward( $user_id, $award_id );
+		}
 
 		// Marks the award as given to the user, instead of just assigned to the user
 		$award_given = $this->db->update(
@@ -62,7 +67,7 @@ class WPAward {
 	 * @param int $user_id  - ID of the user that we are "awarding" the award to
 	 * @param int $award_id - ID of the award that we are "awarding"
 	 */
-	function AssignAward( $user_id, $award_id ) {
+	public function AssignAward( $user_id, $award_id ) {
 
 		$award_assigned = $this->db->insert(
 			$this->db_table,
@@ -81,7 +86,7 @@ class WPAward {
 			return false;
 		}
 
-		if ( $this->__auto_give_award( $award_id ) )
+		if ( $this->__auto_give_award( $award_id ) === "yes" )
 		{
 			$award_given = $this->GiveAward( $award_id, $user_id );
 		}
@@ -96,7 +101,7 @@ class WPAward {
 	 * @param int $user_id  - ID of the user that we are "awarding" the award to
 	 * @param int $award_id - ID of the award that we are "awarding"
 	 */
-	function RemoveAward( $user_id, $award_id = NULL ) {
+	public function RemoveAward( $user_id, $award_id = NULL ) {
 
 		$where_clause = [
 			'user_id' => $user_id,
@@ -130,9 +135,22 @@ class WPAward {
 	 * @param int $user_id  - ID of the user that we are "awarding" the award to
 	 * @param int $award_id - ID of the award that we are "awarding"
 	 */
-	function GetUserAward( $user_id, $award_id = NULL) {
-		$query = "SELECT * FROM {$this->db_table}"
-		$awards = $this->wp->get_results();
+	public function GetUserAward( $user_id, $award_id = NULL) {
+		$query = "SELECT * FROM {$this->db_table} WHERE `user_id` = %d";
+
+		$prep_params = [ $user_id ];
+
+		if ( ! empty( $award_id ) )
+		{
+			$query .= " AND `award_id` = %d";
+			$prep_params[] = $award_id;
+		}
+
+		$prep_query = $this->db->prepare($query, $prep_params);
+
+		$awards = $this->db->get_results($prep_query);
+
+		return $awards;
 	}
 
 	/**
@@ -141,7 +159,7 @@ class WPAward {
 	 * @param mixed $val_2
 	 * @param string $op    - Operator.
 	 */
-	function ShouldApplyAward( $val_1, $val_2, $op ) {
+	public function ShouldApplyAward( $val_1, $val_2, $op ) {
 		switch ( $op ) {
 			case 'gt':
 				return $val_1 > $val_2;
