@@ -40,7 +40,7 @@
 
 namespace WPAward\Grammar;
 
-class Core extends GrammarType {
+class Core implements ParserInterface {
 	public $entity, $trigger_type, $trigger, $input_string;
 
 	/**
@@ -57,10 +57,6 @@ class Core extends GrammarType {
 	];
 
 	/** End validation items. */
-
-	function __construct( $string ) {
-		parent::__construct( strtolower($string) );
-	}
 
 	// General function that throws an error if we don't have an item in an array.
 	private function throwIfNotValidated( $valid_items, $item, $eMsg ) {
@@ -106,13 +102,12 @@ class Core extends GrammarType {
 	 * @param  string $grammar_string - Trigger lang applied to our award that specifies how we are awarding.
 	 * @return void
 	 */
-	protected function parse( $grammar_string ) {
+	public function parse( $grammar_string ) {
 
 		if ( empty( $grammar_string ) )
 		{
 			throw new \InvalidArgumentException("Award Grammar parse function, empty string");
 		}
-
 
 		$parseCount = 0;
 

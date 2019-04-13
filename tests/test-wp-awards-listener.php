@@ -55,14 +55,16 @@ class Test_WP_Awards_Listener extends WP_UnitTestCase {
 		// Update/Create before we trip the successful award update.
 		$user_meta_updated = update_user_meta( $user->ID, 'total_hours', 5 );
 		$WPAward = new WPAward\WPAward( $this->wpdb );
+		$Grammar = new WPAward\Grammar\Core();
 
 		foreach( $posts as $post )
 		{
 			$wap_grammar = get_post_meta( $post->ID, 'wap_grammar' )[0];
+			$Grammar->parse($wap_grammar);
 
 			// Fail test if we do not listen correctly
 			try {
-				$listener = new WPAward\AwardListener( $post->ID, $wap_grammar, $WPAward );
+				$listener = new WPAward\Listener\Core( $post->ID, $Grammar, $WPAward );
 				$listener->add_listeners( $user );
 			} catch ( Exception $e ) {
 				$this->fail("Test Failure Occured: " . $e->getMessage() . "\nFile: " . $e->getFile() . "\nLine: " . $e->getLine() );

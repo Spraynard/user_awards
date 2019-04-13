@@ -20,7 +20,7 @@ namespace WPAward\Grammar;
  *  - [ control ]
  *  	- Value used to compare against. e.g. 2
  */
-class Trigger extends GrammarType {
+class Trigger extends AutoParser implements ParserInterface {
 	public $descriptor, $operator, $control;
 
 	function __construct( $string ) {
@@ -34,8 +34,6 @@ class Trigger extends GrammarType {
 		'gteq',
 		'lteq'
 	];
-
-
 
 	// General function that throws an error if we don't have an item in an array.
 	private function throwIfNotValidated( $valid_items, $item, $eMsg ) {

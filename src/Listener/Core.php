@@ -1,7 +1,7 @@
 <?php
-namespace WPAward;
+namespace WPAward\Listener;
 
-class AwardListener {
+class Core {
 	private $award_id;
 	private $grammar = null;
 	private $grammarFunction = null;
@@ -12,9 +12,9 @@ class AwardListener {
 	 * @param string $award_grammar_string - String of our trigger grammar to use that will put a listener up
 	 * @param WPAward $WPAward       - WPAward that performs award operations on a user, such as checking if the user should have an award or what not.
 	 */
-	function __construct( $award_id, $award_grammar_string, $WPAward ) {
+	function __construct( $award_id, $Grammar, $WPAward ) {
 		$this->award_id = $award_id;
-		$this->grammar = new Grammar\Core( $award_grammar_string );
+		$this->grammar = $Grammar;
 		$this->grammarFunction = $this->grammar->entity . '_' . $this->grammar->trigger_type;
 		$this->WPAward = $WPAward;
 	}
