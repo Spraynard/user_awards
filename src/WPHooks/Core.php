@@ -1,8 +1,8 @@
 <?php
 
-namespace WPAward;
+namespace WPAward\WPHooks;
 
-class WPAwardPluginHooks {
+class Core {
 	private $wpdb;
 	private $db_version = "0.1";
 
