@@ -11,7 +11,7 @@
  * functionality needed for this plugin
  * is supported.
  */
-class Test_WP_Awards extends WP_UnitTestCase {
+class Test_WP_Awards_Award extends WP_UnitTestCase {
 	// Post type to test against.
 	private $post;
 	private $post_2;
