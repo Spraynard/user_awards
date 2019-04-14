@@ -29,8 +29,10 @@ echo "Server Running at http://localhost:$HOST_PORT"
 echo "---------------------------------------------"
 echo "Installing Core WordPress Files on our docker container"
 # Install wordpress files on our server through CLI
-docker-compose run --rm cli wp core install --url=example \
---title=test-example --admin_user=kellan --admin_email=kellan.martin@gmail.com >/dev/null
+ADMIN_PW=$(docker-compose run --rm cli wp core install --url=localhost:8080 \
+--title=Example --admin_user=kellan --admin_email=kellan.martin@gmail.com)
+
+echo "ADMIN PASSWORD {$ADMIN_PW}"
 
 # Update our current file system with the wp scaffold items if the information is not available
 if [ ! -f ./bin/install-wp-tests.sh ]; then
