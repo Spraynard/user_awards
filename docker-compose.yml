@@ -49,6 +49,7 @@ services:
       MYSQL_USER: wordpress
       MYSQL_PASSWORD: somewordpresspassword
 
+  # Adminer
   adminer:
     image: adminer
     restart: always
