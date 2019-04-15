@@ -19,51 +19,31 @@ defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
 // Include our scripts
 require_once __DIR__ . "/vendor/autoload.php";
 
-//-- Activation, Deactivation, Uninstall
-register_activation_hook( __FILE__, [ 'WPAward\WPAwardPluginHooks', 'Activate' ] );
-register_deactivation_hook( __FILE__, [ 'WPAward\WPAwardPluginHooks', 'Deactivate' ] );
-register_uninstall_hook( __FILE__, [ 'WPAward\WPAwardPluginHooks', 'Uninstall' ] );
-
-// Initialize WPAward Instance
+// Grab our database instance
 global $wpdb;
-$WPAward = new WPAward\WPAward($wpdb);
 
-//-- User deletion should trigger a mass delete of all of the awards for the user that we're deleting.
-add_action('delete_user', [ $WPAward, 'RemoveAward'] );
+// Global variable acessible throughout WP in order to apply awards to users.
+global $WPAward;
 
-//-- Start Plugin Initialization Scripts
+// Holds our Activation/Deactivation/Uninstall hooks
+$RegistrationHooks = new WPAward\PluginLogic\RegistrationHooks($wpdb);
+
+// Holds our user awards business logic
+$WPAward = new WPAward\BusinessLogic\Core($wpdb);
+
+// Holds our plugin logic, which includes Post and Meta type additions
+$WPAwardPlugin = new WPAward\PluginLogic\Core('wordpress_awards');
+
+// Activation, Deactivation, Uninstall
+register_activation_hook( __FILE__, [ 'WPAward\PluginLogic\RegistrationHooks', 'Activate' ] );
+register_deactivation_hook( __FILE__, [ 'WPAward\PluginLogic\RegistrationHooks', 'Deactivate' ] );
+register_uninstall_hook( __FILE__, [ 'WPAward\PluginLogic\RegistrationHooks', 'Uninstall' ] );
+
+// Start Plugin Initialization Scripts
 add_action('plugins_loaded', 'wp_awards_plugin_init');
-add_action('wp_loaded', 'apply_award_type_listeners');
 
-
+// Initialization function.
 function wp_awards_plugin_init() {
-	add_action('init', 'wp_awards_post_type');
 
-	// Apply listeners to specific entities based on our award
-	apply_award_type_listeners();
-}
-
-function apply_award_type_listeners() {
-	// $post_type_args = array(
-	// 	'posts_per_page' => '-1',
-	// 	'post_type' => 'wap_awards'
-	// );
-
-	// $wap_awards_posts = get_posts( $post_type_args );
-
-	// echo "These are our posts\n";
-	// print_r( $wap_awards_posts );
-
-}
-
-//-- New Post Type Created: wp_awards_plugin
-function wp_awards_post_type() {
-
-	$args = [
-		'labels' => [ 'name' => 'Awards', 'singular_name' => 'Award' ],
-		'show_ui' => true
-	];
-
-	register_post_type('wap_award', $args);
 }
 ?>

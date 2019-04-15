@@ -1,5 +1,5 @@
 <?php
-namespace WPAward;
+namespace WPAward\BusinessLogic;
 
 /**
  * API for our plugin
@@ -7,17 +7,20 @@ namespace WPAward;
  * to wordpress in order to easily add
  * own functionality and interact with our abstraction.
  */
-class WPAward {
+class Core {
 	private $db;
 	private $db_table;
 
 	function __construct( $db ) {
 		$this->db = $db;
 		$this->db_table = $this->db->prefix . "awards";
+
+		// Signal to wordpress to delete all of our user associated links to "awards" if we delete that user from the db
+		add_action( 'delete_user', [$this, 'RemoveAward'], 10, 1 );
 	}
 
 	private function __auto_give_award( $award_id ) {
-		return get_post_meta( $award_id, 'wap_auto_give', true );
+		return get_post_meta( $award_id, 'WPAward_Auto_Give', true );
 	}
 
 	/**
@@ -86,7 +89,9 @@ class WPAward {
 			return false;
 		}
 
-		if ( $this->__auto_give_award( $award_id ) === "yes" )
+		$auto_give_award = $this->__auto_give_award( $award_id );
+
+		if ( ! empty( $auto_give_award ) )
 		{
 			$award_given = $this->GiveAward( $award_id, $user_id );
 		}

@@ -45,7 +45,7 @@ class Test_WP_Awards_Award extends WP_UnitTestCase {
 			'post_content' => 'Awarded to users if they have more than 50 hours worked for us. They are really nice people',
 			'post_author' => 1,
 			'meta_input' => array(
-				'wap_grammar' => "CURRENT_USER_META UPDATED WHERE key=total_hours GTEQ 50"
+				'WPAward_Grammar' => "CURRENT_USER_META UPDATED WHERE key=total_hours GTEQ 50"
 			)
 		));
 
@@ -55,7 +55,7 @@ class Test_WP_Awards_Award extends WP_UnitTestCase {
 			'post_content' => 'Awarded to users if they have more than 60 hours worked for us. They are really nice people',
 			'post_author' => 1,
 			'meta_input' => array(
-				'wap_grammar' => "CURRENT_USER_META UPDATED WHERE key=total_hours GTEQ 60"
+				'WPAward_Grammar' => "CURRENT_USER_META UPDATED WHERE key=total_hours GTEQ 60"
 			)
 		));
 
@@ -65,7 +65,7 @@ class Test_WP_Awards_Award extends WP_UnitTestCase {
 		// Set the named user as the current user
 		wp_set_current_user( $this->user->get('ID') );
 
-		$this->WPAward = new WPAward\WPAward( $this->wpdb );
+		$this->WPAward = new WPAward\BusinessLogic\Core( $this->wpdb );
 	}
 
 	// Should return empty with $user_id supplied
@@ -203,9 +203,9 @@ class Test_WP_Awards_Award extends WP_UnitTestCase {
 
 	public function testAutoGiveAwardOnAssign()
 	{
-		add_post_meta( $this->post->ID, 'wap_auto_give', "yes", false );
+		add_post_meta( $this->post->ID, 'WPAward_Auto_Give', true, false );
 
-		// Link a user to an award. Since the posts 'wap_auto_give' is true, then we should automatically give the award out.
+		// Link a user to an award. Since the posts 'WPAward_Auto_Give' is true, then we should automatically give the award out.
 		$assigned = $this->WPAward->AssignAward($this->user->ID, $this->post->ID);
 
 		if ( ! $assigned )
@@ -229,7 +229,7 @@ class Test_WP_Awards_Award extends WP_UnitTestCase {
 	 */
 	public function testRemoveAward()
 	{
-		// Link a user to an award. Since the posts 'wap_auto_give' is true, then we should automatically give the award out.
+		// Link a user to an award. Since the posts 'WPAward_Auto_Give' is true, then we should automatically give the award out.
 		$assigned = $this->WPAward->AssignAward($this->user->ID, $this->post->ID);
 
 		if ( ! $assigned )
@@ -251,7 +251,7 @@ class Test_WP_Awards_Award extends WP_UnitTestCase {
 	 */
 	public function testRemoveAwardReturn()
 	{
-		// Link a user to an award. Since the posts 'wap_auto_give' is true, then we should automatically give the award out.
+		// Link a user to an award. Since the posts 'WPAward_Auto_Give' is true, then we should automatically give the award out.
 		$assigned = $this->WPAward->AssignAward($this->user->ID, $this->post->ID);
 
 		if ( ! $assigned )
