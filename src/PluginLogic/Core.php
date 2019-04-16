@@ -180,8 +180,10 @@ HTML;
 			// Save the meta box data as post meta
 			update_post_meta( $post_id, 'WPAward_Auto_Give', $_POST['WPAward_Auto_Give'] );
 		}
-		// We will trip this if we do not have "Auto Give" selected on our post type admin window.
-		// Throughout our application we will check to see if the WPAward_Auto_Give meta value is even associated with our post.
+		/**
+		 * We are not posting a WPAward Auto Give Value, which means that the user has NOT selected
+		 * it in the admin view. This is an innate functionality of <input type="checkbox">'es
+		 */
 		else if ( get_post_type( $post_id ) === $this->post_type_name )
 		{
 			delete_post_meta( $post_id, 'WPAward_Auto_Give');
