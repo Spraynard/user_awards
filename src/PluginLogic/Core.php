@@ -15,6 +15,13 @@ class Core {
 		add_action('init', [$this, 'PostType']); // Adds our custom post type
 		add_action('add_meta_boxes_' . $this->post_type_name, [$this, 'PostTypeMetaBoxes']); // Adds meta boxes to our custom post
 		add_action('save_post', [$this, 'WPAwardsSaveMetaBoxes']); // Adds ability to save our meta values with our post
+
+
+		// Adding in custom columns to our post type.
+		add_filter('manage_' . $this->post_type_name . '_posts_columns', [$this, 'PostTypeAdminColumns']);
+
+		// Adding in data for each of our columns
+		add_action('manage_' . $this->post_type_name . '_posts_custom_column', [$this, 'PostTypeAdminColumnsData'] ,10, 2);
 	}
 
 	/**
@@ -22,11 +29,54 @@ class Core {
 	 */
 	public function PostType() {
 		$args = [
-			'labels' => [ 'name' => 'Awards', 'singular_name' => 'Award' ],
+			'labels' => [
+				'name' => 'Awards', // Name of our custom post type
+				'singular_name' => 'Award', // Singular version of the name
+				'add_new' => 'Add New Award',
+				'add_new_item' => 'Add New Award', // Add New Page Header
+				'edit_item' => 'Edit Award', // Edit Page
+				'view_item' => 'View Award', // Text for viewing a single entry
+				'search_items' => 'Search Awards', // Text displayed for searching
+				'not_found' => 'No Awards Found', // Text displayed when no awards were found in a search
+				'not_found_in_trash' => 'No Awards Found in Trash', // Test shown when awards found in trash
+				'menu_name' => 'Awards'
+			],
 			'show_ui' => true
 		];
 
 		register_post_type($this->post_type_name, $args);
+	}
+
+	/**
+	 * Adding custom columns to post lists
+	 */
+	public function PostTypeAdminColumns( $columns )
+	{
+
+		$columns = [
+			'cb' => $columns['cb'],
+			'title' => $columns['title'],
+			'trigger' => 'Trigger',
+			'auto_give' => 'Auto Give',
+			'date' => $columns['date']
+		];
+
+		return $columns;
+	}
+
+	public function PostTypeAdminColumnsData( $column, $post_id )
+	{
+		switch( $column ) {
+			case 'trigger':
+				$value = get_post_meta( $post_id, 'WPAward_Grammar', true);
+				$value = empty($value) ? "[No Trigger Currently]" : $value;
+				break;
+			case 'auto_give':
+				$value = empty( get_post_meta( $post_id, 'WPAward_Auto_Give', true) ) ? "No" : "Yes";
+				break;
+		}
+
+		echo $value;
 	}
 
 	/**
