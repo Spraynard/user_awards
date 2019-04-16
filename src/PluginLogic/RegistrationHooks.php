@@ -3,7 +3,7 @@ namespace WPAward\PluginLogic;
 
 class RegistrationHooks {
 	/** Function to handle plugin activation */
-	function Activate() {
+	static function Activate() {
 		global $wpdb;
 		$wpdb_table = $wpdb->prefix . "awards";
 		$wpdb_collation = $wpdb->get_charset_collate();
@@ -23,12 +23,12 @@ class RegistrationHooks {
 		add_option( 'awards_db_version', "0.1" );
 	}
 
-	function Deactivate() {
+	static function Deactivate() {
 		// Don't really know what I'd do for deactivation.
 	}
 
 	/** Function to handle plugin uninstallation */
-	function Uninstall() {
+	static function Uninstall() {
 		global $wpdb;
 		$wpdb_table = $wpdb->prefix . "awards";
 
