@@ -180,6 +180,8 @@ HTML;
 			// Save the meta box data as post meta
 			update_post_meta( $post_id, 'WPAward_Auto_Give', $_POST['WPAward_Auto_Give'] );
 		}
+		// We will trip this if we do not have "Auto Give" selected on our post type admin window.
+		// Throughout our application we will check to see if the WPAward_Auto_Give meta value is even associated with our post.
 		else if ( get_post_type( $post_id ) === $this->post_type_name )
 		{
 			delete_post_meta( $post_id, 'WPAward_Auto_Give');
