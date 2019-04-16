@@ -25,9 +25,6 @@ global $wpdb;
 // Global variable acessible throughout WP in order to apply awards to users.
 global $WPAward;
 
-// Holds our Activation/Deactivation/Uninstall hooks
-$RegistrationHooks = new WPAward\PluginLogic\RegistrationHooks($wpdb);
-
 // Holds our user awards business logic
 $WPAward = new WPAward\BusinessLogic\Core($wpdb);
 
