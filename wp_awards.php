@@ -25,22 +25,35 @@ global $wpdb;
 // Global variable acessible throughout WP in order to apply awards to users.
 global $WPAward;
 
-// Holds our user awards business logic
-$WPAward = new WPAward\BusinessLogic\Core($wpdb);
-
-// Holds our plugin logic, which includes Post and Meta type additions
-$WPAwardPlugin = new WPAward\PluginLogic\Core('wordpress_awards');
-
 // Activation, Deactivation, Uninstall
 register_activation_hook( __FILE__, [ 'WPAward\PluginLogic\RegistrationHooks', 'Activate' ] );
 register_deactivation_hook( __FILE__, [ 'WPAward\PluginLogic\RegistrationHooks', 'Deactivate' ] );
 register_uninstall_hook( __FILE__, [ 'WPAward\PluginLogic\RegistrationHooks', 'Uninstall' ] );
 
-// Start Plugin Initialization Scripts
-add_action('plugins_loaded', 'wp_awards_plugin_init');
+// Enqueuing our plugin assets such as styles and scripts (if needed)
+add_action( 'admin_enqueue_scripts', 'enqueue_plugin_assets' );
 
-// Initialization function.
-function wp_awards_plugin_init() {
+// Plugin post type name
+$custom_post_type_name = 'wordpress_awards';
 
+function enqueue_plugin_assets( $hook ) {
+	global $post;
+	global $custom_post_type_name;
+
+	if ( $hook === "post.php" && get_post_type( $post ) === $custom_post_type_name )
+	{
+		wp_enqueue_style( 'general_award_styles', plugins_url( 'wp_awards_styles.css', __FILE__ ) );
+
+	}
 }
+
+// Holds our user awards business logic
+$WPAward = new WPAward\BusinessLogic\Core($wpdb);
+
+// Holds our plugin logic, which includes Post and Meta type additions
+$WPAwardPlugin = new WPAward\PluginLogic\Core( $custom_post_type_name );
+
+// At this point we should be going through the entire amount of awards that are defined.
+// We should then apply listeners for them to be applied for the current user instance.
+
 ?>
