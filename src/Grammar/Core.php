@@ -9,9 +9,10 @@
  * [ entity ]
  * 	- CURRENT_USER_META
  *
- * [ trigger_type ]
+ * [ trigger_type ] -- These all consider the entity to per
  * - UPDATED
  * - CREATED
+ * - ASSIGNED
  * - EXCLUDED
  *
  * [ triggers ] - [ descriptor ] [ operator ] [ control ]
@@ -58,7 +59,7 @@ class Core implements ParserInterface {
 
 	/** End validation items. */
 
-	// General function that throws an error if we don't have an item in an array.
+	// General function that throws an error if we don't have an $item within $valid_items
 	private function throwIfNotValidated( $valid_items, $item, $eMsg ) {
 		if ( ! in_array( $item, $valid_items ) )
 		{
@@ -68,33 +69,16 @@ class Core implements ParserInterface {
 		return true;
 	}
 
-	private function validate_entity( $input ) {
-		if ( $this->throwIfNotValidated( $this->valid_entities, $input, "Entity Not Valid" ) )
+	private function _validate( $input, $valid_entities, $eMsg ) {
+		if ( $this->throwIfNotValidated( $valid_entities, $input, $eMsg ) )
 		{
 			return $input;
 		}
 	}
 
-	private function validate_trigger_type( $input ) {
-		if ( $this->throwIfNotValidated( $this->valid_trigger_types, $input, "Trigger Type Not Valid" ) )
-		{
-			return $input;
-		}
-	}
-
-	private function validate_trigger_descriptor( $input ) {
-		return $input;
-	}
-
-	private function validate_trigger_control_operator( $input ) {
-		if ( $this->throwIfNotValidated( $this->valid_trigger_control_operators, $input, "Trigger Control Operator Not Valid" ) )
-		{
-			return $input;
-		}
-	}
-
-	private function validate_trigger_control( $input ) {
-		return $input;
+	// Reserved for special users in which the trigger type can be changed. -- What?
+	public function change_trigger_type( $trigger_type ) {
+		$this->trigger_type = $trigger_type;
 	}
 
 	/**
@@ -115,7 +99,9 @@ class Core implements ParserInterface {
 
 		$parseValue = NULL;
 
-		// Parse our string up until the WHERE clause, because that brings in a whole bunch of processing that we need to do.
+		// Parse our string up until the WHERE clause
+		// We process that whole string within our Trigger object
+		// to build its properties.
 		while ( $parseValue != "where" )
 		{
 
@@ -123,10 +109,10 @@ class Core implements ParserInterface {
 
 			switch ( $parseCount ) {
 				case 0:
-					$this->entity = $this->validate_entity($parseValue);
+					$this->entity = $this->_validate($parseValue, $this->valid_entities, "Entity not");
 					break;
 				case 1:
-					$this->trigger_type = $this->validate_trigger_type($parseValue);
+					$this->trigger_type = $this->_validate($parseValue, $this->valid_trigger_types, "Trigger type not valid");
 					break;
 				default:
 					break;
@@ -146,11 +132,6 @@ class Core implements ParserInterface {
 		$serialized = implode(" ", $serialized);
 
 		$this->trigger = new Trigger( $serialized );
-	}
-
-	// Reserved for special users in which the trigger type can be changed.
-	public function change_trigger_type( $trigger_type ) {
-		$this->trigger_type = $trigger_type;
 	}
 }
 ?>
