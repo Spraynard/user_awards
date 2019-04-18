@@ -69,6 +69,13 @@ class Core implements ParserInterface {
 		return true;
 	}
 
+	/**
+	 * Fuction to validate our entries
+	 * @param  string $input          - Item to check against our valid entities
+	 * @param  array $valid_entities  - Items to reference against our input. We're considering these items as valid input
+	 * @param  string $eMsg           - Error message shown if our input item is validated.
+	 * @return string
+	 */
 	private function _validate( $input, $valid_entities, $eMsg ) {
 		if ( $this->throwIfNotValidated( $valid_entities, $input, $eMsg ) )
 		{
