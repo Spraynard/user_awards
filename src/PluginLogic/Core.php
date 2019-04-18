@@ -12,10 +12,13 @@ class Core {
 
 	function __construct( $post_type_name ) {
 		$this->post_type_name = $post_type_name;
-		add_action('init', [$this, 'PostType']); // Adds our custom post type
-		add_action('add_meta_boxes_' . $this->post_type_name, [$this, 'PostTypeMetaBoxes']); // Adds meta boxes to our custom post
-		add_action('save_post', [$this, 'WPAwardsSaveMetaBoxes']); // Adds ability to save our meta values with our post
 
+		// Adds our custom post type
+		add_action('init', [$this, 'PostType']);
+
+		// Add meta boxes to post type and provide option to edit those values
+		add_action('add_meta_boxes_' . $this->post_type_name, [$this, 'PostTypeMetaBoxes']);
+		add_action('save_post', [$this, 'WPAwardsSaveMetaBoxes']); // Adds ability to save our meta values with our post
 
 		// Adding in custom columns to our post type.
 		add_filter('manage_' . $this->post_type_name . '_posts_columns', [$this, 'PostTypeAdminColumns']);
