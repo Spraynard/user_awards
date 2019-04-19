@@ -9,12 +9,20 @@ namespace WPAward\PluginLogic;
 
 class Core {
 	private $post_type_name;
+	private $WPAward; // Business Logic Layer
 
-	function __construct( $post_type_name ) {
+	function __construct( $post_type_name, $WPAward = NULL ) {
 		$this->post_type_name = $post_type_name;
 
+		if ( ! empty( $WPAward ) )
+		{
+			$this->WPAward = $WPAward;
+		}
 		// Adds our custom post type
 		add_action('init', [$this, 'PostType']);
+
+		// Adding in "User Awards" admin interface
+		add_action('admin_menu', [$this, 'UserAwards']);
 
 		// Add meta boxes to post type and provide option to edit those values
 		add_action('add_meta_boxes_' . $this->post_type_name, [$this, 'PostTypeMetaBoxes']);
@@ -24,7 +32,30 @@ class Core {
 		add_filter('manage_' . $this->post_type_name . '_posts_columns', [$this, 'PostTypeAdminColumns']);
 
 		// Adding in data for each of our columns
-		add_action('manage_' . $this->post_type_name . '_posts_custom_column', [$this, 'PostTypeAdminColumnsData'] ,10, 2);
+		add_action('manage_' . $this->post_type_name . '_posts_custom_column', [$this, 'PostTypeAdminColumnsData'] , 10, 2);
+
+		// Defining BULK ACTIONS fors our custom post type edit window.
+		add_filter('bulk_actions-edit-wordpress_awards', [$this, 'register_wordpress_awards_bulk_actions']);
+
+		// Handling submission of the bulk action
+		add_filter('handle_bulk_actions-wordpress_awards', [$this, 'handle_wordpress_awards_bulk_actions'], 10, 3 );
+	}
+
+	public function UserAwardsHTML() {
+		$userAwardsTable = new UserAwardsTable();
+		$userAwardsTable->prepare_items(); ?>
+		<div class="wrap">
+			<h1>User Awards</h1>
+			<p>This window shows you which awards are assigned to specific users.</p>
+			<p>This is also the interface where you can <em>assign your awards</em> to users by clicking on the <strong>Give To User</strong> button on the specific row of data.</p>
+			<!-- Include this table inside a form if we want to enable bulk actions for the table -->
+			<?php $userAwardsTable->display(); ?>
+		</div>
+		<?php
+	}
+
+	public function UserAwards() {
+		add_submenu_page( 'edit.php?post_type=' . $this->post_type_name, 'User Awards', 'User Awards', 'manage_options', 'user-awards-admin-view', [$this, 'UserAwardsHTML'] );
 	}
 
 	/**
@@ -50,12 +81,40 @@ class Core {
 		register_post_type($this->post_type_name, $args);
 	}
 
+
+	function register_wordpress_awards_bulk_actions( $bulk_actions ) {
+		$bulk_actions['assign_to_user'] = __('Assign to User', 'assign_to_user');
+		return $bulk_actions;
+	}
+
+	function handle_wordpress_awards_bulk_actions( $redirect_to, $action, $post_ids )
+	{
+		switch ( $action ) {
+			case 'assign_to_user':
+				// $this->WPAward->AssignAwards( $post_id);
+				break;
+			default:
+				return $redirect_to;
+		}
+
+		if ( $action !== 'assign_to_user' )
+		{
+			return $redirect_to;
+		}
+
+		// Perform action on each user
+		foreach( $post_ids as $post_id )
+		{
+
+		}
+
+	}
+
 	/**
 	 * Adding custom columns to post lists
 	 */
 	public function PostTypeAdminColumns( $columns )
 	{
-
 		$columns = [
 			'cb' => $columns['cb'],
 			'title' => $columns['title'],
