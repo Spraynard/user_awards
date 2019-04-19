@@ -16,11 +16,52 @@ class Core {
 		$this->db_table = $this->db->prefix . "awards";
 
 		// Signal to wordpress to delete all of our user associated links to "awards" if we delete that user from the db
-		add_action( 'delete_user', [$this, 'RemoveAward'], 10, 1 );
+		add_action( 'delete_user', [$this, 'RemoveUserAward'], 10, 1 );
 	}
 
 	private function __auto_give_award( $award_id ) {
 		return get_post_meta( $award_id, 'WPAward_Auto_Give', true );
+	}
+
+	/**
+	 * Assign multiple awards to users
+	 */
+	public function AssignAwards( $user_id, $award_ids )
+	{
+		try
+		{
+			foreach( $award_ids as $award_id )
+			{
+				$this->AssignAward( $user_id, $award_id );
+			}
+		}
+		catch ( Exception $e )
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+
+	/**
+	 * Give multiple awards to users
+	 */
+	public function GiveAwards( $user_id, $award_ids )
+	{
+		try
+		{
+			foreach( $award_ids as $award_id )
+			{
+				$this->GiveAward( $user_id, $award_id );
+			}
+		}
+		catch ( Exception $e )
+		{
+			return false;
+		}
+
+		return true;
 	}
 
 	/**
@@ -106,7 +147,7 @@ class Core {
 	 * @param int $user_id  - ID of the user that we are "awarding" the award to
 	 * @param int $award_id - ID of the award that we are "awarding"
 	 */
-	public function RemoveAward( $user_id, $award_id = NULL ) {
+	public function RemoveUserAward( $user_id, $award_id = NULL ) {
 
 		$where_clause = [
 			'user_id' => $user_id,
@@ -156,6 +197,22 @@ class Core {
 		$awards = $this->db->get_results($prep_query);
 
 		return $awards;
+	}
+
+	public function GetUserAwards( $values = NULL ) {
+		$selector = NULL;
+
+		// If we have a values array, then we limit the values that are returned.
+		if ( $values && is_array($values) )
+		{
+			$selector = implode(", ", $values);
+		}
+		else
+		{
+			$selector = "*";
+		}
+
+		$query = "SELECT ". $selector . " FROM {$this->db_table}";
 	}
 
 	/**
