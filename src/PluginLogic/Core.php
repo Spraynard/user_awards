@@ -19,16 +19,20 @@ class Core {
 
 		if ( empty( $this->WPAward ) )
 		{
-			return new WP_Error("Missing WPAward Dependency");
+			return new \WP_Error("Missing WPAward Dependency");
 		}
 
 		if ( empty( $this->MetaBoxes ) )
 		{
-			return new WP_Error("Missing MetaBoxes Dependency");
+			return new \WP_Error("Missing MetaBoxes Dependency");
 		}
 
 		// Adds our custom post type
 		add_action('init', [$this, 'PostType']);
+
+		// Add meta boxes to post type and provide option to edit those values
+		add_action('add_meta_boxes_' . $this->post_type, [$this->MetaBoxes, 'PostTypeMetaBoxes']);
+		add_action('save_post', [$this->MetaBoxes, 'WPAwardsSaveMetaBoxes']); // Adds ability to save our meta values with our post
 
 		// Adding in "User Awards" admin interface
 		add_action('admin_menu', [$this, 'UserAwardsPage']);
