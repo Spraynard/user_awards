@@ -7,4 +7,11 @@
 	margin: 15px 0px;
 }
 
+#WPAward_Apply_Award_To_User {
+	margin: 15px 0px;
+}
+
+.WPAward_Actions {
+	text-align: right;
+}
 /* End Admin Specific Styles */
