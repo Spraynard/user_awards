@@ -20,7 +20,7 @@ class RegistrationHooks {
 		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' ); // for dbDelta
 		dbDelta( $sql );
 
-		add_option( 'awards_db_version', "0.1" );
+		add_option( WP_AWARDS_VERSION_KEY, WP_AWARDS_VERSION );
 	}
 
 	static function Deactivate() {
