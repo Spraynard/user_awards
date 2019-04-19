@@ -16,6 +16,22 @@ Author URI: http://kellanmartin.com
 
 defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
 
+/**
+ * DEFINES
+ */
+
+if ( ! defined('WP_AWARDS_VERSION_KEY') )
+{
+	define('WP_AWARDS_VERSION_KEY', 'wp_awards_version');
+}
+
+if ( ! defined('WP_AWARDS_VERSION') )
+{
+	define('WP_AWARDS_VERSION', '0.1');
+}
+
+/* End Defines */
+
 // Include our scripts
 require_once __DIR__ . "/vendor/autoload.php";
 
@@ -82,7 +98,6 @@ function enqueue_plugin_assets( $hook ) {
 	global $post;
 	global $custom_post_type_name;
 
-	echo $hook;
 	// Post Specific page - New Post, Edit Post
 	if ( $hook === "post.php" )
 	{
