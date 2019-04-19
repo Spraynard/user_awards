@@ -6,19 +6,14 @@ class MetaBoxes {
 
 	function __construct( $post_type ) {
 		$this->post_type = $post_type;
-
-		// Add meta boxes to post type and provide option to edit those values
-		add_action('add_meta_boxes_' . $this->post_type, [$this, 'PostTypeMetaBoxes']);
-		add_action('save_post', [$this, 'WPAwardsSaveMetaBoxes']); // Adds ability to save our meta values with our post
-
 	}
 /**
  * Main function to output our post meta box fields
  */
 	public function PostTypeMetaBoxes() {
 		$this->_addGrammarMeta(); // Trigger Meta Box
-		$this->_addAutoGiveAwardMeta();
 		$this->_applyAwardToUserMeta();
+		$this->_addAutoGiveAwardMeta();
 	}
 
 	private function _addGrammarMeta() {
@@ -77,6 +72,58 @@ HTML;
 		echo <<<HTML
 		<input type="checkbox" name="WPAward_Auto_Give" id="WPAward_Auto_Give" value="on" {$checked_box}/>
 		<label for="WPAward_Auto_Give">Checking this box will automatically give award to user when they trigger the award</label>
+HTML;
+	}
+
+	function _applyAwardToUserMeta() {
+		add_meta_box(
+			$this->post_type . "_apply_award", // CSS ID Attribute
+			'Apply Award To User', // Title
+			[$this, '_applyAwardToUserHTML'], // Callback
+			$this->post_type, // Page
+			'side', // Context
+			'default', // priority
+			null // Callback Args
+		);
+	}
+
+	/**
+	 * Meta box will display a list of the the users that are available.
+	 * Enabling the ability to select a user out of the bunch, and apply the award to a user.
+	 * @param  WP_Post $post - Post we are currently editing
+	 * @return void
+	 */
+	function _applyAwardToUserHTML( $post ) {
+		$users = get_users(); // Array of WP_User objects
+
+		wp_nonce_field( plugin_basename(__FILE__), 'WPAward_Apply_Award_To_User');
+
+		// Haha, what the fuck even is PHP?
+		echo <<<HTML
+		<form method="POST">
+		<label for="WPAward_Apply_Award_To_User">Select a user from this dropdown and submit in order to apply this award to the user.</label>
+		<br/>
+		<select id="WPAward_Apply_Award_To_User" name="WPAward_Apply_Award_To_User">
+		<option value="0">Select A User</option>
+HTML;
+
+		foreach ( $users as $user )
+		{
+			$user_id = esc_attr( $user->ID );
+			$user_nicename = ucfirst($user->data->user_nicename);
+			$user_email = $user->data->user_email;
+
+			echo <<<HTML
+			<option value="{$user_id}">{$user_nicename} - ({$user_email})</option>
+HTML;
+		}
+
+		echo <<<HTML
+		</select>
+		<div class="WPAward_Actions">
+			<button type="submit" class="button-primary button-large">Apply</button>
+		</div>
+		</form>
 HTML;
 	}
 
