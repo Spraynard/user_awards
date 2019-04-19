@@ -12,9 +12,9 @@ class Core {
 	 * @param string $award_grammar_string - String of our trigger grammar to use that will put a listener up
 	 * @param WPAward $WPAward       - WPAward that performs award operations on a user, such as checking if the user should have an award or what not.
 	 */
-	function __construct( $award_id, $Grammar, $WPAward ) {
+	function __construct( $award_id, $grammar, $WPAward ) {
 		$this->award_id = $award_id;
-		$this->grammar = $Grammar;
+		$this->grammar = $grammar;
 		$this->grammarFunction = $this->grammar->entity . '_' . $this->grammar->trigger_type;
 		$this->WPAward = $WPAward;
 	}
