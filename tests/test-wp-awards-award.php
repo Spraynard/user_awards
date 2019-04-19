@@ -227,7 +227,7 @@ class Test_WP_Awards_Award extends WP_UnitTestCase {
 	 * Test that an award is removed based on a return
 	 * value from the database ( coming from GetUserAward )
 	 */
-	public function testRemoveAward()
+	public function testRemoveUserAward()
 	{
 		// Link a user to an award. Since the posts 'WPAward_Auto_Give' is true, then we should automatically give the award out.
 		$assigned = $this->WPAward->AssignAward($this->user->ID, $this->post->ID);
@@ -237,7 +237,7 @@ class Test_WP_Awards_Award extends WP_UnitTestCase {
 			$this->fail("Award not assigned");
 		}
 
-		$this->WPAward->RemoveAward( $this->user->ID, $this->post->ID );
+		$this->WPAward->RemoveUserAward( $this->user->ID, $this->post->ID );
 
 		// Get the data of the given award
 		$award_data = $this->WPAward->GetUserAward( $this->user->ID, $this->post->ID );
@@ -249,7 +249,7 @@ class Test_WP_Awards_Award extends WP_UnitTestCase {
 	/**
 	 * Testing return value of our remove award function, which should be the amount of rows that are deleted.
 	 */
-	public function testRemoveAwardReturn()
+	public function testRemoveUserAwardReturn()
 	{
 		// Link a user to an award. Since the posts 'WPAward_Auto_Give' is true, then we should automatically give the award out.
 		$assigned = $this->WPAward->AssignAward($this->user->ID, $this->post->ID);
@@ -259,7 +259,7 @@ class Test_WP_Awards_Award extends WP_UnitTestCase {
 			$this->fail("Award not assigned");
 		}
 
-		$award_deleted = $this->WPAward->RemoveAward( $this->user->ID, $this->post->ID );
+		$award_deleted = $this->WPAward->RemoveUserAward( $this->user->ID, $this->post->ID );
 
 		$this->assertGreaterThan( 0, $award_deleted );
 	}
@@ -267,7 +267,7 @@ class Test_WP_Awards_Award extends WP_UnitTestCase {
 	/**
 	 * Testing that we can delete multiple awards from a user if we just supply only a user ID into our function
 	 */
-	public function testRemoveAwardMultiple()
+	public function testRemoveUserAwardMultiple()
 	{
 		// Link a user to an award
 		$assigned = $this->WPAward->AssignAward($this->user->ID, $this->post->ID);
@@ -279,7 +279,7 @@ class Test_WP_Awards_Award extends WP_UnitTestCase {
 			$this->fail("Award not assigned");
 		}
 
-		$award_deleted = $this->WPAward->RemoveAward( $this->user->ID );
+		$award_deleted = $this->WPAward->RemoveUserAward( $this->user->ID );
 
 		$this->assertGreaterThan( 1, $award_deleted );
 	}
