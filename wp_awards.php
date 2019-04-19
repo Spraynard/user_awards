@@ -58,8 +58,11 @@ $custom_post_type_name = 'wordpress_awards';
 // Holds our user awards business logic
 $WPAward = new WPAward\BusinessLogic\Core($wpdb);
 
+// Plugin meta box handling
+$WPAwardMetaBoxes = new WPAward\PluginLogic\PostType\MetaBoxes( $custom_post_type_name );
+
 // Holds our plugin logic, which includes Post and Meta type additions
-$WPAwardPlugin = new WPAward\PluginLogic\Core( $custom_post_type_name, $WPAward );
+$WPAwardPlugin = new WPAward\PluginLogic\Core( $custom_post_type_name, $WPAward, $WPAwardMetaBoxes );
 
 /**
  * Loop through all the defined awards.
