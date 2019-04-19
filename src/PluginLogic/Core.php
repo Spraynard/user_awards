@@ -8,31 +8,36 @@
 namespace WPAward\PluginLogic;
 
 class Core {
-	private $post_type_name;
+	private $post_type;
 	private $WPAward; // Business Logic Layer
+	private $MetaBoxes; // Meta box
 
-	function __construct( $post_type_name, $WPAward = NULL ) {
-		$this->post_type_name = $post_type_name;
+	function __construct( $post_type, $WPAward = NULL, $MetaBoxes = NULL ) {
+		$this->post_type = $post_type;
+		$this->WPAward = $WPAward;
+		$this->MetaBoxes = $MetaBoxes;
 
-		if ( ! empty( $WPAward ) )
+		if ( empty( $this->WPAward ) )
 		{
-			$this->WPAward = $WPAward;
+			return new WP_Error("Missing WPAward Dependency");
 		}
+
+		if ( empty( $this->MetaBoxes ) )
+		{
+			return new WP_Error("Missing MetaBoxes Dependency");
+		}
+
 		// Adds our custom post type
 		add_action('init', [$this, 'PostType']);
 
 		// Adding in "User Awards" admin interface
-		add_action('admin_menu', [$this, 'UserAwards']);
-
-		// Add meta boxes to post type and provide option to edit those values
-		add_action('add_meta_boxes_' . $this->post_type_name, [$this, 'PostTypeMetaBoxes']);
-		add_action('save_post', [$this, 'WPAwardsSaveMetaBoxes']); // Adds ability to save our meta values with our post
+		add_action('admin_menu', [$this, 'UserAwardsPage']);
 
 		// Adding in custom columns to our post type.
-		add_filter('manage_' . $this->post_type_name . '_posts_columns', [$this, 'PostTypeAdminColumns']);
+		add_filter('manage_' . $this->post_type . '_posts_columns', [$this, 'PostTypeAdminColumns']);
 
 		// Adding in data for each of our columns
-		add_action('manage_' . $this->post_type_name . '_posts_custom_column', [$this, 'PostTypeAdminColumnsData'] , 10, 2);
+		add_action('manage_' . $this->post_type . '_posts_custom_column', [$this, 'PostTypeAdminColumnsData'] , 10, 2);
 
 		// Defining BULK ACTIONS fors our custom post type edit window.
 		add_filter('bulk_actions-edit-wordpress_awards', [$this, 'register_wordpress_awards_bulk_actions']);
@@ -41,7 +46,18 @@ class Core {
 		add_filter('handle_bulk_actions-wordpress_awards', [$this, 'handle_wordpress_awards_bulk_actions'], 10, 3 );
 	}
 
-	public function UserAwardsHTML() {
+	/**
+	 * Custom post type submenu page that displays all of the awards that are associated with users.
+	 */
+	public function UserAwardsPage() {
+		add_submenu_page( 'edit.php?post_type=' . $this->post_type, 'User Awards', 'User Awards', 'manage_options', 'user-awards-admin-view', [$this, 'UserAwardsPageHTML'] );
+	}
+
+	/**
+	 * HTML For the user awards page.
+	 * This is used to display our table that shows the awards that are assigned to users.
+	 */
+	public function UserAwardsPageHTML() {
 		$userAwardsTable = new UserAwardsTable();
 		$userAwardsTable->prepare_items(); ?>
 		<div class="wrap">
@@ -52,10 +68,6 @@ class Core {
 			<?php $userAwardsTable->display(); ?>
 		</div>
 		<?php
-	}
-
-	public function UserAwards() {
-		add_submenu_page( 'edit.php?post_type=' . $this->post_type_name, 'User Awards', 'User Awards', 'manage_options', 'user-awards-admin-view', [$this, 'UserAwardsHTML'] );
 	}
 
 	/**
@@ -78,7 +90,7 @@ class Core {
 			'show_ui' => true
 		];
 
-		register_post_type($this->post_type_name, $args);
+		register_post_type($this->post_type, $args);
 	}
 
 
@@ -86,6 +98,7 @@ class Core {
 		$bulk_actions['assign_to_user'] = __('Assign to User', 'assign_to_user');
 		return $bulk_actions;
 	}
+
 
 	function handle_wordpress_awards_bulk_actions( $redirect_to, $action, $post_ids )
 	{
@@ -105,9 +118,8 @@ class Core {
 		// Perform action on each user
 		foreach( $post_ids as $post_id )
 		{
-
+			// todo
 		}
-
 	}
 
 	/**
@@ -139,117 +151,6 @@ class Core {
 		}
 
 		echo $value;
-	}
-
-	/**
-	 * Main function to output our post meta box fields
-	 */
-	public function PostTypeMetaBoxes() {
-		$this->_addGrammarMeta();
-		$this->_addAutoGiveAwardMeta();
-	}
-
-	private function _addGrammarMeta() {
-		add_meta_box(
-			$this->post_type_name . "_grammar", // CSS ID Attribute
-			'Award Trigger', // Title
-			[$this, '_grammarMetaHTML'], // Callback
-			$this->post_type_name, // Page
-			'advanced', // Context
-			'default', // priority
-			null // Callback Args
-		);
-	}
-
-	/**
-	 * HTML for grammar meta text input for awards
-	 * @param  WP_Award $post - The full post that is being edited currently
-	 * @return void
-	 */
-	function _grammarMetaHTML( $post ) {
-		$grammarString = get_post_meta( $post->ID, 'WPAward_Grammar', true);
-		$eGrammarString = esc_attr( $grammarString );
-		wp_nonce_field( plugin_basename(__FILE__), 'WPAward_Save_Grammar_Meta');
-		echo <<<HTML
-		<label for="WPAward_Grammar">Write out a grammar string to act as a trigger for a user obtaining this award</label><br>
-		<input type="text" name="WPAward_Grammar" id="WPAward_Grammar" value="{$eGrammarString}"/>
-HTML;
-	}
-
-	/**
-	 * Adds in a meta box for our "Auto Give Award" functionality
-	 */
-	private function _addAutoGiveAwardMeta() {
-		add_meta_box(
-			$this->post_type_name . "_auto_give", // CSS ID Attribute
-			'Auto Give Award', // Title
-			[$this, '_autoGiveAwardHTML'], // Callback
-			$this->post_type_name, // Page
-			'side', // Context
-			'default', // priority
-			null // Callback Args
-		);
-	}
-
-	/**
-	 * HTML for auto give award checkbox for award
-	 * @param  WP_Post $post - The full post that is being edited currently
-	 * @return void
-	 */
-	function _autoGiveAwardHTML( $post ) {
-		$auto_give_award_value = get_post_meta( $post->ID, 'WPAward_Auto_Give', true );
-		$checked_box = checked( $auto_give_award_value, 'on', false );
-
-		// Outputting Nonce
-		wp_nonce_field( plugin_basename(__FILE__), 'WPAward_Save_Auto_Give_Meta');
-		echo <<<HTML
-		<input type="checkbox" name="WPAward_Auto_Give" id="WPAward_Auto_Give" value="on" {$checked_box}/>
-		<label for="WPAward_Auto_Give">Checking this box will automatically give award to user when they trigger the award</label>
-HTML;
-	}
-
-	/**
-	 * Used to save WPAward specific meta values
-	 * @param int $post_id - ID of the post we have saved.
-	 */
-	function WPAwardsSaveMetaBoxes( $post_id ) {
-
-		if (  isset( $_POST['WPAward_Grammar'] ) || isset( $_POST['WPAward_Auto_Give'] ) )
-		{
-			// Don't save anything on autosave
-			if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE )
-			{
-				return;
-			}
-		}
-
-		// Are we posting an WPAward_Grammar?
-		if ( isset( $_POST['WPAward_Grammar'] ) )
-		{
-			// Check our nonce fields to see if they're good.
-			check_admin_referer( plugin_basename(__FILE__), 'WPAward_Save_Grammar_Meta' );
-
-			// Save the meta box data as post meta
-			update_post_meta( $post_id, 'WPAward_Grammar', $_POST['WPAward_Grammar'] );
-		}
-
-		// Are we posting a WPAward Auto Give value?
-		if ( isset( $_POST['WPAward_Auto_Give'] ) )
-		{
-			// Check our nonce fields to see if they're good.
-			check_admin_referer( plugin_basename(__FILE__), 'WPAward_Save_Auto_Give_Meta' );
-
-			// Save the meta box data as post meta
-			update_post_meta( $post_id, 'WPAward_Auto_Give', $_POST['WPAward_Auto_Give'] );
-		}
-		/**
-		 * We are not posting a WPAward Auto Give Value, which means that the user has NOT selected
-		 * it in the admin view. This is an innate functionality of <input type="checkbox">'es
-		 */
-		else if ( get_post_type( $post_id ) === $this->post_type_name )
-		{
-			delete_post_meta( $post_id, 'WPAward_Auto_Give');
-		}
 	}
 }
 ?>
