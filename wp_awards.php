@@ -33,27 +33,70 @@ register_uninstall_hook( __FILE__, [ 'WPAward\PluginLogic\RegistrationHooks', 'U
 // Enqueuing our plugin assets such as styles and scripts (if needed)
 add_action( 'admin_enqueue_scripts', 'enqueue_plugin_assets' );
 
+// Wait until the plugins loaded action in order to have wp_get_current_user() function
+add_action( 'plugins_loaded', 'apply_wp_award_listeners' );
+
 // Plugin post type name
 $custom_post_type_name = 'wordpress_awards';
-
-function enqueue_plugin_assets( $hook ) {
-	global $post;
-	global $custom_post_type_name;
-
-	if ( $hook === "post.php" && get_post_type( $post ) === $custom_post_type_name )
-	{
-		wp_enqueue_style( 'general_award_styles', plugins_url( 'wp_awards_styles.css', __FILE__ ) );
-
-	}
-}
 
 // Holds our user awards business logic
 $WPAward = new WPAward\BusinessLogic\Core($wpdb);
 
 // Holds our plugin logic, which includes Post and Meta type additions
-$WPAwardPlugin = new WPAward\PluginLogic\Core( $custom_post_type_name );
+$WPAwardPlugin = new WPAward\PluginLogic\Core( $custom_post_type_name, $WPAward );
 
-// At this point we should be going through the entire amount of awards that are defined.
-// We should then apply listeners for them to be applied for the current user instance.
+/**
+ * Loop through all the defined awards.
+ * This requires us to have a current_user which, if available, will
+ * have an award listener applied to that user. This in turn allows us to automatically
+ * assign an award to a user based on the actions that they are taking.
+ */
 
+function apply_wp_award_listeners() {
+
+	global $custom_post_type_name;
+	global $WPAward;
+
+	$current_user = wp_get_current_user();
+
+	if ( $current_user->ID > 0 )
+	{
+		$awards = get_posts([ 'post_type' => $custom_post_type_name ]);
+		$grammar = new WPAward\Grammar\Core();
+
+		foreach( $awards as $award )
+		{
+			$award_grammar = get_post_meta( $award->ID, 'WPAward_Grammar', true );
+			$grammar->parse( $award_grammar );
+
+			// Apply our listener. Set it and forget it. Include a parsed grammar and inject the WPAward dependency
+			$listener = new WPAward\Listener\Core( $award->ID, $grammar, $WPAward );
+		}
+	}
+}
+
+/**
+ * Function used to enqueue any required JS or CSS assets
+ */
+function enqueue_plugin_assets( $hook ) {
+	global $post;
+	global $custom_post_type_name;
+
+	echo $hook;
+	// Post Specific page - New Post, Edit Post
+	if ( $hook === "post.php" )
+	{
+		if ( get_post_type( $post ) === $custom_post_type_name )
+		{
+			wp_enqueue_style( 'general_award_styles', plugins_url( 'wp_awards_styles.css', __FILE__ ), [], false, false );
+		}
+	}
+
+	// Post list page
+	if ( $hook === "edit.php" )
+	{
+		wp_enqueue_script('jquery-ui-dialog');
+		wp_enqueue_script('wp-jquery-ui-dialog');
+	}
+}
 ?>
