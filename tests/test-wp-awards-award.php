@@ -85,6 +85,25 @@ class Test_WP_Awards_Award extends WP_UnitTestCase {
 		$this->assertTrue($this->WPAward->AssignAward($this->user->ID, $this->post->ID));
 	}
 
+	public function testAsssignAwardNoDuplicates() {
+		// Link a user to an award
+		$assigned_action_1 = $this->WPAward->AssignAward($this->user->ID, $this->post->ID);
+		$assigned_action_2 = $this->WPAward->AssignAward($this->user->ID, $this->post->ID);
+
+		$this->assertFalse($assigned_action_2);
+
+		if ( ! $assigned_action_1 )
+		{
+			$this->fail("Award not assigned");
+		}
+
+		// Get the data of the given award
+		$award_data = $this->WPAward->GetUserAward( $this->user->ID, $this->post->ID );
+
+		// Check that there isn't a null date in the "date_given" field.
+		$this->assertTrue(count( $award_data ) === 1 );
+	}
+
 	// Basic award assignment test
 	public function testAssignAwardInitialStructure() {
 		// Link a user to an award
@@ -100,6 +119,25 @@ class Test_WP_Awards_Award extends WP_UnitTestCase {
 
 		// Check that there isn't a null date in the "date_given" field.
 		$this->assertNull($award_data[0]->date_given);
+	}
+
+	public function testAssignAutoGive()
+	{
+		add_post_meta( $this->post->ID, 'WPAward_Auto_Give', true, false );
+
+		// Link a user to an award. Since the posts 'WPAward_Auto_Give' is true, then we should automatically give the award out.
+		$assigned = $this->WPAward->AssignAward($this->user->ID, $this->post->ID);
+
+		if ( ! $assigned )
+		{
+			$this->fail("Award not assigned");
+		}
+
+		// Get the data of the given award
+		$award_data = $this->WPAward->GetUserAward( $this->user->ID, $this->post->ID );
+
+		// Check that there isn't a null date in the "date_given" field.
+		$this->assertNotNull($award_data[0]->date_given, "Award was not auto given to user");
 	}
 
 	// Testing the the return type of getUserAward is an array.
@@ -200,27 +238,24 @@ class Test_WP_Awards_Award extends WP_UnitTestCase {
 		$this->assertNotNull($award_data[0]->date_given);
 	}
 
+	public function testGiveAwardNoExtraUpdates() {
+		$award_given_action_1 =	$this->WPAward->GiveAward( $this->user->ID, $this->post->ID ); // "Give" the award to user.
+		$award_data_1 = $this->WPAward->GetUserAward( $this->user->ID, $this->post->ID );
+		$expected_time_given = $award_data_1[0]->date_given;
 
-	public function testAutoGiveAwardOnAssign()
-	{
-		add_post_meta( $this->post->ID, 'WPAward_Auto_Give', true, false );
+		sleep(2);
 
-		// Link a user to an award. Since the posts 'WPAward_Auto_Give' is true, then we should automatically give the award out.
-		$assigned = $this->WPAward->AssignAward($this->user->ID, $this->post->ID);
+		$award_given_action_2 =	$this->WPAward->GiveAward( $this->user->ID, $this->post->ID ); // "Give" the award to user.
+		$award_data_2 = $this->WPAward->GetUserAward( $this->user->ID, $this->post->ID );
+		$test_time_given = $award_data_2[0]->date_given;
 
-		if ( ! $assigned )
+
+		if ( $award_given_action_1 === false || $award_given_action_2 === false  )
 		{
-			$this->fail("Award not assigned");
+			$this->fail("Award not Given");
 		}
 
-		// "Give" the award to user.
-		$award_given = $this->WPAward->GiveAward( $this->user->ID, $this->post->ID);
-
-		// Get the data of the given award
-		$award_data = $this->WPAward->GetUserAward( $this->user->ID, $this->post->ID );
-
-		// Check that there isn't a null date in the "date_given" field.
-		$this->assertNotNull($award_data[0]->date_given);
+		$this->assertTrue( $test_time_given === $expected_time_given );
 	}
 
 	/**
