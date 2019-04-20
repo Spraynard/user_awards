@@ -86,7 +86,16 @@ function apply_wp_award_listeners() {
 		foreach( $awards as $award )
 		{
 			$award_grammar = get_post_meta( $award->ID, 'WPAward_Grammar', true );
-			$grammar->parse( $award_grammar );
+
+			// The parse function can throw errors, so wrap it in a try block
+			try
+			{
+				$grammar->parse( $award_grammar );
+			}
+			catch( Exception $e )
+			{
+				continue;
+			}
 
 			// Apply our listener. Set it and forget it. Include a parsed grammar and inject the WPAward dependency
 			$listener = new WPAward\Listener\Core( $award->ID, $grammar, $WPAward );
