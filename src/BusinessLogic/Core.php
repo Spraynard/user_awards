@@ -43,6 +43,44 @@ class Core {
 		return true;
 	}
 
+	/**
+	 * Function that marks an award as assigned to a user.
+	 * We insert a new record into our awards table that relates the award to the user.
+	 *
+	 * We do check to see if there is an auto-assignment of the award before we finish up our function though.
+	 *
+	 * @param int $user_id  - ID of the user that we are "awarding" the award to
+	 * @param int $award_id - ID of the award that we are "awarding"
+	 */
+	public function AssignAward( $user_id, $award_id ) {
+
+		$award_assigned = $this->db->insert(
+			$this->db_table,
+			[
+				'user_id' => $user_id,
+				'award_id' => $award_id,
+			],
+			[
+				'user_id' => '%d',
+				'award_id' => '%d'
+			]
+		);
+
+		if ( ! $award_assigned )
+		{
+			return false;
+		}
+
+		$auto_give_award = $this->__auto_give_award( $award_id );
+
+		if ( ! empty( $auto_give_award ) )
+		{
+			$award_given = $this->GiveAward( $award_id, $user_id );
+		}
+
+		return true;
+	}
+
 
 	/**
 	 * Give multiple awards to users
@@ -100,44 +138,6 @@ class Core {
 		);
 
 		return $award_given;
-	}
-
-	/**
-	 * Function that marks an award as assigned to a user.
-	 * We insert a new record into our awards table that relates the award to the user.
-	 *
-	 * We do check to see if there is an auto-assignment of the award before we finish up our function though.
-	 *
-	 * @param int $user_id  - ID of the user that we are "awarding" the award to
-	 * @param int $award_id - ID of the award that we are "awarding"
-	 */
-	public function AssignAward( $user_id, $award_id ) {
-
-		$award_assigned = $this->db->insert(
-			$this->db_table,
-			[
-				'user_id' => $user_id,
-				'award_id' => $award_id,
-			],
-			[
-				'user_id' => '%d',
-				'award_id' => '%d'
-			]
-		);
-
-		if ( ! $award_assigned )
-		{
-			return false;
-		}
-
-		$auto_give_award = $this->__auto_give_award( $award_id );
-
-		if ( ! empty( $auto_give_award ) )
-		{
-			$award_given = $this->GiveAward( $award_id, $user_id );
-		}
-
-		return true;
 	}
 
 	/**
