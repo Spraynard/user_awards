@@ -23,6 +23,11 @@ class Core {
 		return get_post_meta( $award_id, 'WPAward_Auto_Give', true );
 	}
 
+	private function _userHasAward( $user_id, $award_id )
+	{
+		return count( $this->GetUserAward( $user_id, $award_id ) ) > 0;
+	}
+
 	/**
 	 * Assign multiple awards to users
 	 */
@@ -54,6 +59,11 @@ class Core {
 	 */
 	public function AssignAward( $user_id, $award_id ) {
 
+		if ( $this->_userHasAward( $user_id, $award_id ) )
+		{
+			return false;
+		}
+
 		$award_assigned = $this->db->insert(
 			$this->db_table,
 			[
@@ -71,11 +81,9 @@ class Core {
 			return false;
 		}
 
-		$auto_give_award = $this->__auto_give_award( $award_id );
-
-		if ( ! empty( $auto_give_award ) )
+		if ( ! empty( $this->__auto_give_award( $award_id ) ) )
 		{
-			$award_given = $this->GiveAward( $award_id, $user_id );
+			$award_given = $this->GiveAward( $user_id, $award_id );
 		}
 
 		return true;
@@ -87,6 +95,8 @@ class Core {
 	 */
 	public function GiveAwards( $user_id, $award_ids )
 	{
+		// Validate User
+		// Validate Award
 		try
 		{
 			foreach( $award_ids as $award_id )
@@ -113,11 +123,21 @@ class Core {
 	 * @param int $award_id - ID of the award that we are "awarding"
 	 *
 	 */
-	public function GiveAward( $user_id, $award_id ) {
+	public function GiveAward( $user_id, $award_id )
+	{
+		$award = $this->GetUserAward( $user_id, $award_id );
 
-		if ( empty( $this->GetUserAward( $user_id, $award_id ) ) )
+		if ( empty( $award ) )
 		{
 			$this->AssignAward( $user_id, $award_id );
+		}
+		// else if ( ! empty( $award->date_given ) )
+		// {
+		// 	return false;
+		// }
+		if ( ! empty( $award[0]->date_given ) )
+		{
+			return 0;
 		}
 
 		// Marks the award as given to the user, instead of just assigned to the user
@@ -136,7 +156,7 @@ class Core {
 				'award_id' => '%d'
 			]
 		);
-
+		// echo "This is award given: {$award_given}\n";
 		return $award_given;
 	}
 
