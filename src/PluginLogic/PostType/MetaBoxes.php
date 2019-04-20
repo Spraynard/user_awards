@@ -112,7 +112,7 @@ HTML;
 			$user_id = esc_attr( $user->ID );
 			$user_nicename = ucfirst($user->data->user_nicename);
 			$user_email = $user->data->user_email;
-			$submit_button = get_submit_button( 'Apply', 'primary large', 'submit', true, '' );
+			$submit_button = get_submit_button( 'Apply', 'primary large', 'submit', false, '' );
 
 			echo <<<HTML
 			<option value="{$user_id}">{$user_nicename} - ({$user_email})</option>
@@ -121,11 +121,9 @@ HTML;
 
 		echo <<<HTML
 		</select>
-		<!--
 		<div class="WPAward_Actions">
 			{$submit_button}
 		</div>
-		-->
 HTML;
 	}
 
