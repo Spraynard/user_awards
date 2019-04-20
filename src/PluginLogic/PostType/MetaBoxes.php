@@ -3,9 +3,11 @@ namespace WPAward\PluginLogic\PostType;
 
 class MetaBoxes {
 	private $post_type;
+	private $WPAward;
 
-	function __construct( $post_type ) {
+	function __construct( $post_type, $WPAward ) {
 		$this->post_type = $post_type;
+		$this->WPAward = $WPAward;
 	}
 /**
  * Main function to output our post meta box fields
@@ -96,14 +98,12 @@ HTML;
 	function _applyAwardToUserHTML( $post ) {
 		$users = get_users(); // Array of WP_User objects
 
-		wp_nonce_field( plugin_basename(__FILE__), 'WPAward_Apply_Award_To_User');
-
 		// Haha, what the fuck even is PHP?
+		wp_nonce_field( plugin_basename(__FILE__), 'WPAward_Apply_Award_To_User');
 		echo <<<HTML
-		<form method="POST">
-		<label for="WPAward_Apply_Award_To_User">Select a user from this dropdown and submit in order to apply this award to the user.</label>
+		<label for="WPAward_User_Apply">Select a user from this dropdown and submit in order to apply this award to the user.</label>
 		<br/>
-		<select id="WPAward_Apply_Award_To_User" name="WPAward_Apply_Award_To_User">
+		<select id="WPAward_User_Apply" name="WPAward_User_Apply">
 		<option value="0">Select A User</option>
 HTML;
 
@@ -112,6 +112,7 @@ HTML;
 			$user_id = esc_attr( $user->ID );
 			$user_nicename = ucfirst($user->data->user_nicename);
 			$user_email = $user->data->user_email;
+			$submit_button = get_submit_button( 'Apply', 'primary large', 'submit', true, '' );
 
 			echo <<<HTML
 			<option value="{$user_id}">{$user_nicename} - ({$user_email})</option>
@@ -120,10 +121,11 @@ HTML;
 
 		echo <<<HTML
 		</select>
+		<!--
 		<div class="WPAward_Actions">
-			<button type="submit" class="button-primary button-large">Apply</button>
+			{$submit_button}
 		</div>
-		</form>
+		-->
 HTML;
 	}
 
@@ -133,7 +135,11 @@ HTML;
 	 */
 	function WPAwardsSaveMetaBoxes( $post_id ) {
 
-		if (  isset( $_POST['WPAward_Grammar'] ) || isset( $_POST['WPAward_Auto_Give'] ) )
+		if (
+			isset( $_POST['WPAward_Grammar'] ) ||
+			isset( $_POST['WPAward_Auto_Give'] ) ||
+			isset( $_POST['WPAward_User_Apply'])
+		)
 		{
 			// Don't save anything on autosave
 			if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE )
@@ -168,6 +174,15 @@ HTML;
 		else if ( get_post_type( $post_id ) === $this->post_type )
 		{
 			delete_post_meta( $post_id, 'WPAward_Auto_Give');
+		}
+
+		// Are we trying to apply awards to users?
+		if ( isset( $_POST['WPAward_User_Apply'] ) && $_POST['WPAward_User_Apply'] > 0 )
+		{
+			check_admin_referer( plugin_basename(__FILE__), 'WPAward_Apply_Award_To_User' );
+
+			// Assign the award to the given user
+			$this->WPAward->AssignAward( $_POST['WPAward_User_Apply'], $post_id );
 		}
 	}
 }
