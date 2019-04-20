@@ -29,8 +29,8 @@ class UserAwardsTable extends \WP_List_Table {
 	 */
 	function get_columns() {
 		return [
-			'user' => 'User',
 			'award' => 'Award',
+			'user' => 'User',
 			'date_assigned' => 'Date Award Assigned',
 			'date_given' => 'Date Award Given'
 		];
