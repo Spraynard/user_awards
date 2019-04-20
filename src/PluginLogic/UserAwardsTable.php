@@ -42,7 +42,8 @@ class UserAwardsTable extends \WP_List_Table {
 	 * @return string      - Column value in string form
 	 */
 	function column_award( $item ) {
-		print_r( $item );
+		$post = get_post( $item->award_id );
+		return apply_filters( 'the_title', $post->post_title );
 	}
 
 	/**
@@ -51,7 +52,8 @@ class UserAwardsTable extends \WP_List_Table {
 	 * @return [type]       [description]
 	 */
 	function column_user( $item ) {
-		print_r( $item );
+		$user = get_user_by('id', $item->user_id);
+		return $user->data->user_nicename;
 	}
 
 	/**
@@ -60,7 +62,7 @@ class UserAwardsTable extends \WP_List_Table {
 	 * @return string      - Column value in string form
 	 */
 	function column_date_assigned( $item ) {
-		print_r( $item );
+		return $item->date_assigned;
 	}
 
 	/**
@@ -69,7 +71,7 @@ class UserAwardsTable extends \WP_List_Table {
 	 * @return string      - Column value in string form
 	 */
 	function column_date_given( $item ) {
-		print_r( $item );
+		return $item->date_given;
 	}
 
 	/** End Column Specific Functions */
