@@ -6,6 +6,15 @@ Give them a lifetime supply of cherished memories that they can hold dear to the
 
 One of the main goals of this plugin is to gamify experiences on your website and reward users with awards that they would appreciate based on the specific actions that they take.
 
+### Todos
+This will be added to in interations
+
+#### Release
+
+* Mass Assign Award on the post edit page
+* Mass Give Award on the post edit page
+* Singular give award on the post edit page. Possibly just make a checkbox in the "Assign Award" meta box
+
 ## Installation
 
 Put the plugins files within your `wp-content/plugins/` folder and then activate it from the admin view as you would any regular plugin.
@@ -24,10 +33,9 @@ If this `trigger` string were applied to our award, then we would "assign" this 
 There is also a `global $WPAward` object that includes the core functionality that is used within this plugin. Developers should be able to enjoy applying awards to users using their own non-trivial ways. The documentation for this object is located below
 
 ## Documentation
-
-### Grammar
+<!-- ### Grammar
 #### Syntax
-
+ -->
 ### WPAward Global Object
 
 This object serves as the core functionality for this plugin. Supplied as a global object to allow for developers who know how to party to bypass the shortcomings that are inherent in our `Trigger Strings`.
@@ -113,4 +121,3 @@ $WPAward->GetUserAward( $user_id, $award_id = NULL);
 
 ### WordPress Award Grammar
 
-TBA
