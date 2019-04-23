@@ -53,7 +53,7 @@ class UserAwardsTable extends \WP_List_Table {
 	 */
 	function column_user( $item ) {
 		$user = get_user_by('id', $item->user_id);
-		return $user->data->user_nicename;
+		return ucfirst($user->data->user_nicename);
 	}
 
 	/**
