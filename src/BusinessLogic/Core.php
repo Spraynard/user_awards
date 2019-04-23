@@ -23,13 +23,22 @@ class Core {
 		return get_post_meta( $award_id, 'WPAward_Auto_Give', true );
 	}
 
-	private function _userHasAward( $user_id, $award_id )
+	/**
+	 * Check to see if a user already has a specific award
+	 * @param  int $user_id  - WPUser_ID
+	 * @param  int $award_id - WPAward_ID (Post ID)
+	 * @return bool           Whether or not this user has an award with the current award id
+	 */
+	public function UserHasAward( $user_id, $award_id )
 	{
 		return count( $this->GetUserAward( $user_id, $award_id ) ) > 0;
 	}
 
 	/**
-	 * Assign multiple awards to users
+	 * Assigns multiple awards to users using AssignAward
+	 * @param  int $user_id  - WPUser_ID
+	 * @param  array $award_ids - Array of WPAward_IDs (Post ID)
+	 * @return bool             - True if awards were assigned, false if there was an error with assigning awards
 	 */
 	public function AssignAwards( $user_id, $award_ids )
 	{
@@ -59,7 +68,7 @@ class Core {
 	 */
 	public function AssignAward( $user_id, $award_id ) {
 
-		if ( $this->_userHasAward( $user_id, $award_id ) )
+		if ( $this->UserHasAward( $user_id, $award_id ) )
 		{
 			return false;
 		}
