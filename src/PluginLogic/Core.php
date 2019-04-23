@@ -27,6 +27,10 @@ class Core {
 			return new \WP_Error("Missing MetaBoxes Dependency");
 		}
 
+		/**
+		 * Actions
+		 */
+
 		// Adds our custom post type
 		add_action('init', [$this, 'PostType']);
 
@@ -37,6 +41,12 @@ class Core {
 		// Adding in "User Awards" admin interface
 		add_action('admin_menu', [$this, 'UserAwardsPage']);
 
+		// Adding in Custom Modal through the "admin-notices" action
+		add_action('admin_notices', [$this, 'ModalGetUser']);
+
+		/**
+		 * Filters
+		 */
 		// Adding in custom columns to our post type.
 		add_filter('manage_' . $this->post_type . '_posts_columns', [$this, 'PostTypeAdminColumns']);
 
@@ -48,34 +58,12 @@ class Core {
 
 		// Handling submission of the bulk action
 		add_filter('handle_bulk_actions-wordpress_awards', [$this, 'handle_wordpress_awards_bulk_actions'], 10, 3 );
+
 	}
 
-	/**
-	 * Custom post type submenu page that displays all of the awards that are associated with users.
-	 */
-	public function UserAwardsPage() {
-		add_submenu_page( 'edit.php?post_type=' . $this->post_type, 'User Awards', 'User Awards', 'manage_options', 'user-awards-admin-view', [$this, 'UserAwardsPageHTML'] );
-	}
 
 	/**
-	 * HTML For the user awards page.
-	 * This is used to display our table that shows the awards that are assigned to users.
-	 */
-	public function UserAwardsPageHTML() {
-		$userAwardsTable = new UserAwardsTable();
-		$userAwardsTable->prepare_items(); ?>
-		<div class="wrap">
-			<h1>User Awards</h1>
-			<p>This window shows you which awards are assigned to specific users.</p>
-			<p>This is also the interface where you can <em>assign your awards</em> to users by clicking on the <strong>Give To User</strong> button on the specific row of data.</p>
-			<!-- Include this table inside a form if we want to enable bulk actions for the table -->
-			<?php $userAwardsTable->display(); ?>
-		</div>
-		<?php
-	}
-
-	/**
-	 * Register post type with wordpress
+	 * Creates Wordpress Post Type
 	 */
 	public function PostType() {
 		$args = [
@@ -97,33 +85,62 @@ class Core {
 		register_post_type($this->post_type, $args);
 	}
 
+	/**
+	 * Creates User Awards Submenu Page
+	 */
+	public function UserAwardsPage() {
+		add_submenu_page(
+			'edit.php?post_type=' . $this->post_type,
+			'User Awards',
+			'User Awards',
+			'manage_options',
+			'user-awards-admin-view',
+			[$this, 'UserAwardsPageHTML']
+		);
+	}
+
+	/**
+	 * HTML For the user awards page.
+	 * This is used to display our table that shows the awards that are assigned to users.
+	 */
+	public function UserAwardsPageHTML() {
+		$userAwardsTable = new UserAwardsTable();
+		$userAwardsTable->prepare_items(); ?>
+		<div class="wrap">
+			<h1>User Awards</h1>
+			<p>This window shows you which awards are assigned to specific users.</p>
+			<p>This is also the interface where you can <em>assign your awards</em> to users by clicking on the <strong>Give To User</strong> button on the specific row of data.</p>
+			<!-- Include this table inside a form if we want to enable bulk actions for the table -->
+			<?php $userAwardsTable->display(); ?>
+		</div>
+		<?php
+	}
 
 	function register_wordpress_awards_bulk_actions( $bulk_actions ) {
 		$bulk_actions['assign_to_user'] = __('Assign to User', 'assign_to_user');
 		return $bulk_actions;
 	}
 
-
-	function handle_wordpress_awards_bulk_actions( $redirect_to, $action, $post_ids )
+	/**
+	 * Handle any bulk actions on the EDIT page Wordpress Awards Custom Post Type View
+	 * @param  string $redirect_to - URL browser will change to after we complete the bulk action.
+	 * @param  [type] $action      [description]
+	 * @param  [type] $post_ids    [description]
+	 * @return [type]              [description]
+	 */
+	function handle_wordpress_awards_bulk_actions( $redirect_to, $action, $award_ids )
 	{
-		switch ( $action ) {
-			case 'assign_to_user':
-				// $this->WPAward->AssignAwards( $post_id);
-				break;
-			default:
-				return $redirect_to;
-		}
-
+		// Perform the other bulk actions if they are assigned.
 		if ( $action !== 'assign_to_user' )
 		{
 			return $redirect_to;
 		}
 
-		// Perform action on each user
-		foreach( $post_ids as $post_id )
-		{
-			// todo
-		}
+		// This should be available through a $POST variable or some such.
+		$user_to_assign = $_POST['WPAward_UserID'];
+
+		// Assign all the awards selected to that user
+		$this->WPAward->AssignAwards( $user_to_assign, $award_ids );
 	}
 
 	/**
@@ -155,6 +172,27 @@ class Core {
 		}
 
 		echo $value;
+	}
+
+	/**
+	 * Outputs a modal that we will use to select our user
+	 */
+	function ModalGetUser() {
+		$UserSelectHTML = call_user_func(["WPAward\Utility", "UserSelectHTML"], "WPAward_UserID");
+		add_thickbox();
+		echo <<<HTML
+		<a id="modal-get-user-link" href="#TB_inline?width=200&height=200&inlineId=modal-get-user" style="display:none;" class="thickbox"></a>
+		<div id="modal-get-user" style="display:none;">
+		    <h2>Bulk Award Assign User Selection</h2>
+		    <div class="admin-modal-content">
+		    	{$UserSelectHTML}
+		    </div>
+		    <div class="admin-modal-buttons">
+		    	<button class="button-primary">Choose</button>
+		    	<button class="button-secondary">Cancel</button>
+		    </div>
+		</div>
+HTML;
 	}
 }
 ?>
