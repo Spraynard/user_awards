@@ -97,30 +97,15 @@ HTML;
 	 */
 	function _applyAwardToUserHTML( $post ) {
 		$users = get_users(); // Array of WP_User objects
+		$submit_button = get_submit_button( 'Apply', 'primary large', 'submit', false, '' );
+		$UserSelectHTML = call_user_func(["WPAward\Utility", "UserSelectHTML"], "WPAward_User_Apply");
 
 		// Haha, what the fuck even is PHP?
 		wp_nonce_field( plugin_basename(__FILE__), 'WPAward_Apply_Award_To_User');
 		echo <<<HTML
 		<label for="WPAward_User_Apply">Select a user from this dropdown and submit in order to apply this award to the user.</label>
 		<br/>
-		<select id="WPAward_User_Apply" name="WPAward_User_Apply">
-		<option value="0">Select A User</option>
-HTML;
-
-		foreach ( $users as $user )
-		{
-			$user_id = esc_attr( $user->ID );
-			$user_nicename = ucfirst($user->data->user_nicename);
-			$user_email = $user->data->user_email;
-			$submit_button = get_submit_button( 'Apply', 'primary large', 'submit', false, '' );
-
-			echo <<<HTML
-			<option value="{$user_id}">{$user_nicename} - ({$user_email})</option>
-HTML;
-		}
-
-		echo <<<HTML
-		</select>
+		{$UserSelectHTML}
 		<div class="WPAward_Actions">
 			{$submit_button}
 		</div>
