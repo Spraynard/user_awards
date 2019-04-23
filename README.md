@@ -13,7 +13,9 @@ This will be added to in interations
 
 * Mass Assign Award on the post edit page
 * Mass Give Award on the post edit page
-* Singular give award on the post edit page. Possibly just make a checkbox in the "Assign Award" meta box
+* Singular Give on Post Edit page.Possibly just make a checkbox in the "Assign Award" meta box
+* Singular give on the User Awards list page
+* User Awards tab sould be above `New Award` (If this is possible...)
 
 ## Installation
 
