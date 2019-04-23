@@ -122,8 +122,7 @@ function enqueue_plugin_assets( $hook ) {
 	// Post list page
 	if ( $hook === "edit.php" )
 	{
-		wp_enqueue_script('jquery-ui-dialog');
-		wp_enqueue_script('wp-jquery-ui-dialog');
+		wp_enqueue_script( 'WPAwards_Edit_Bulk_Scripts', plugins_url( 'scripts/wp_award_page_edit_scripts.js', __FILE__ ), array('common') );
 	}
 }
 ?>
