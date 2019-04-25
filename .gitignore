@@ -8,3 +8,6 @@ bin/
 tests/bootstrap.php
 tests/test-sample.php
 .phpcs.xml.dist
+
+# backups/
+backups/
