@@ -10,9 +10,16 @@ DB_PASS=somewordpresspassword
 DB_HOST=db
 PLUGIN_NAME=wp_awards
 
+ABS_PATH="$(cd $(dirname $0) && pwd)"
+
 echo "Starting Docker Containers"
 # Spin up our docker servers
 docker-compose up -d
+
+# echo "Creating folders"
+docker-compose exec wordpress mkdir /var/www/html/wp-content/uploads
+docker-compose exec wordpress chmod 755 /var/www/html/wp-content/uploads
+docker-compose exec wordpress chown -R www-data:www-data /var/www
 
 # Host port obtained by pattern matching the port that comes from docker output
 HOST_PORT=$(docker-compose port wordpress 80 | awk -F : '{printf $2}')
@@ -29,13 +36,12 @@ echo "Server Running at http://localhost:$HOST_PORT"
 echo "---------------------------------------------"
 echo "Installing Core WordPress Files on our docker container"
 # Install wordpress files on our server through CLI
-ADMIN_PW=$(docker-compose run --rm cli wp core install --url=localhost:8080 \
---title=Example --admin_user=kellan --admin_email=kellan.martin@gmail.com)
 
-echo "ADMIN PASSWORD {$ADMIN_PW}"
+docker-compose run --user="33:33" --rm cli wp core install --url=localhost:8080 \
+--title=Example --admin_user=kellan --admin_email=kellan.martin@gmail.com
 
 # Update our current file system with the wp scaffold items if the information is not available
-if [ ! -f ./bin/install-wp-tests.sh ]; then
+if [ ! -f $(dirname "$ABS_PATH")/bin/install-wp-tests.sh ]; then
 	echo "Scaffolding our plugin tests since no files are apparent in your project folder"
 	docker-compose run --rm cli wp scaffold plugin-tests $PLUGIN_NAME >/dev/null
 fi
@@ -45,8 +51,18 @@ echo "Running \"install-wp-tests.sh\""
 # Install Wp Tests
 docker-compose run --rm wordpress_phpunit /app/bin/install-wp-tests.sh somewordpress wordpress somewordpresspassword db >/dev/null
 
+echo "Activating plugin"
+docker-compose run --user="33:33" --rm cli wp plugin activate wp_awards >/dev/null
+
+# Should only really be one file in there, but I don't know the name of item
+echo "Checking to see if there is any wordpress export data"
+for filename in $(dirname "$ABS_PATH")/backups/wp/*.xml; do
+	echo "Backup seen. We're about to import the backup data"
+	docker-compose run --user="33:33" --rm cli wp plugin install wordpress-importer --activate
+	docker-compose run --user="33:33" --rm cli wp import /backups/wp/"${filename##*/}" --authors="skip"
+	break
+done
+
 echo "All done, should be able to run commands like"
 echo "docker-compose run --rm wordpress_phpunit phpunit --configuration phpunit.xml.dist"
 echo "to test your files"
-
-
