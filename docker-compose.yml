@@ -24,6 +24,7 @@ services:
     volumes:
       - wordpress:/var/www/html
       - .:/var/www/html/wp-content/plugins/wp_awards
+      - ./backups/wp:/backups/wp
 
   # Wordpress PHPUnit
   wordpress_phpunit:
