@@ -44,9 +44,9 @@ jQuery(document).ready(function($) {
 	var modal_get_user_cancel = modal_get_user.find(".button-secondary");
 	var modal_user_select = $("#WPAward_UserID");
 	var posts_filter = $("#posts-filter"); // The form used to submit our bulk actions... I think...
-	var dumb_users = 1; // Are users dumb and not selecting any items?
 	var bulk_actions_submit = $(".bulkactions input[type=\"submit\"]");
 	var modal_get_user_link = $("#modal-get-user-link");
+	var modal_open_actions = ["assign_to_user", "give_to_user"];
 
 	// Thickbox modal will be opened when we click on our bulk actions "submit" button
 	// and have the "assign_to_user" action selected
@@ -54,9 +54,10 @@ jQuery(document).ready(function($) {
 
 		// Not the most "performance" centric design, but boy is it easy to obtain a contextual select
 		var bulk_actions_dropdown = $(this).prev("select");
+		var dumb_users = 1; // Are users dumb and not selecting any items?
 
-		// Carry on as usual
-		if ( bulk_actions_dropdown.val() !== "assign_to_user" )
+		// Checking if action selected is an action in which we open a modal
+		if ( ! $.inArray( bulk_actions_dropdown.val(), modal_open_actions ) )
 		{
 			return
 		}
