@@ -2,9 +2,8 @@
 namespace WPAward\Grammar;
 
 /**
- * Abstract class that's basically a nice placeholder for the basic idea of our grammar parsing functions.
+ * Class used to parse our input on instantiation.
  */
-
 class AutoParser {
 	public $input_string;
 
