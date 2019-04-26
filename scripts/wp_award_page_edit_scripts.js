@@ -3,9 +3,27 @@
  * Description: Holds all applicable JavaScripts needed for full functionality of the WP_Awards Post Edit page.
  */
 
-function injectUserIDHiddenInput( user_id, selector ) {
+function injectUserIDHiddenInput( user_id, elem ) {
+	// Parsing a Number out of our user_id string.
+	user_id = parseInt(user_id);
+
+	// HTML to insert
 	inputHTML = '<input type="hidden" value="' + user_id + '"/>';
-	$(selector).append(inputHTML)
+
+	if ( ! elem instanceof jQuery )
+	{
+		console.log("The element we're giving to injectUserIDHiddenInput is not a jQuery object");
+		return false;
+	}
+
+	// We'll get a User ID of 0 (falsy) if no selection occoured
+	if ( ! user_id )
+	{
+		alert("Please choose the user that you'd like to assign your selected awards to");
+		return false;
+	}
+
+	return true;
 }
 
 jQuery(document).ready(function($) {
@@ -22,23 +40,19 @@ jQuery(document).ready(function($) {
 	 */
 
 	var modal_get_user = $("#modal-get-user");
-	var modal_get_user_submit = modal_get_user.find("button-primary");
-	var modal_get_user_cancel = modal_get_user.find("button-secondary");
-
-	modal_get_user_submit.click(function() {
-		// injectUserIDHiddenInput(
-	});
-
-	modal_get_user_cancel.click(function() {
-
-	})
-
+	var modal_get_user_submit = modal_get_user.find(".button-primary");
+	var modal_get_user_cancel = modal_get_user.find(".button-secondary");
+	var modal_user_select = $("#WPAward_UserID");
+	var posts_filter = $("#posts-filter"); // The form used to submit our bulk actions... I think...
+	var dumb_users = 1; // Are users dumb and not selecting any items?
 	var bulk_actions_submit = $(".bulkactions input[type=\"submit\"]");
 	var modal_get_user_link = $("#modal-get-user-link");
 
-	// Init TB on these here modal windows
-
+	// Thickbox modal will be opened when we click on our bulk actions "submit" button
+	// and have the "assign_to_user" action selected
 	bulk_actions_submit.click(function(e) {
+
+		// Not the most "performance" centric design, but boy is it easy to obtain a contextual select
 		var bulk_actions_dropdown = $(this).prev("select");
 
 		// Carry on as usual
@@ -50,12 +64,65 @@ jQuery(document).ready(function($) {
 		// Prevent Submission
 		e.preventDefault();
 
-		// Ugh, so tired... Insert HTML into the body and then perform actions
+		// Alert the user they're dumb and need to select items
+		$(".type-wordpress_awards.entry").each(function( index ) {
+			if ( $(this).find(".check-column input").is(":checked") )
+			{
+				dumb_users = 0;
+			}
+
+			if ( ! dumb_users )
+			{
+				return;
+			}
+		});
+
+		// Dumb user check goes here I guess.
+		if ( dumb_users )
+		{
+			alert("You must select an award that you want to give to a user to perform this bulk action");
+			return;
+		}
+
+		// Open up our modal.
 		modal_get_user_link.click()
+	});
 
-		// Gain User info or a cancel process occured
+	// Thickbox Modal Submit Button Click.
+	modal_get_user_submit.click(function() {
 
-		// Set user info into form
+		// Parsing a Number out of our user_id string.
+		user_id = parseInt(modal_user_select.val());
 
+		// We'll get a User ID of 0 (falsy) if no selection occoured
+		if ( ! user_id )
+		{
+			alert("Please choose the user that you'd like to assign your selected awards to");
+			return;
+		}
+
+		// HTML to inject
+		inputHTML = '<input name="WPAward_UserID" type="hidden" value="' + user_id + '"/>';
+
+		// Inject or Update
+		if ( $('input[name="WPAward_UserID"]').length )
+		{
+			$('input[name="WPAward_UserID"]').val(user_id);
+		}
+		else
+		{
+			posts_filter.prepend(inputHTML);
+		}
+
+		// Act like we're clicking the cancel button (close the modal)
+		modal_get_user_cancel.click();
+
+		// Submit the form!!!
+		posts_filter.submit();
+	});
+
+	// Thickbox Modal Cancel Button Click
+	modal_get_user_cancel.click(function() {
+		tb_remove();
 	});
 });
