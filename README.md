@@ -11,8 +11,8 @@ This will be added to in interations
 
 #### Release
 
-* Mass Assign Award on the post edit page
-* Mass Give Award on the post edit page
+* ~~Mass Assign Award on the post edit page~~
+* ~~Mass Give Award on the post edit page~~
 * Singular Give on Post Edit page.Possibly just make a checkbox in the "Assign Award" meta box
 * Singular give on the User Awards list page
 * User Awards tab sould be above `New Award` (If this is possible...)
