@@ -57,8 +57,7 @@ class Core {
 		add_filter('bulk_actions-edit-wordpress_awards', [$this, 'register_wordpress_awards_bulk_actions']);
 
 		// Handling submission of the bulk action
-		add_filter('handle_bulk_actions-wordpress_awards', [$this, 'handle_wordpress_awards_bulk_actions'], 10, 3 );
-
+		add_filter('handle_bulk_actions-edit-wordpress_awards', [$this, 'handle_wordpress_awards_edit_bulk_actions'], 10, 3 );
 	}
 
 
@@ -109,7 +108,7 @@ class Core {
 		<div class="wrap">
 			<h1>User Awards</h1>
 			<p>This window shows you which awards are assigned to specific users.</p>
-			<p>This is also the interface where you can <em>assign your awards</em> to users by clicking on the <strong>Give To User</strong> button on the specific row of data.</p>
+			<p>You may also specifically <em>give</em> awards to users. To do this, click on the "Give to User" button </p>
 			<!-- Include this table inside a form if we want to enable bulk actions for the table -->
 			<?php $userAwardsTable->display(); ?>
 		</div>
@@ -118,29 +117,55 @@ class Core {
 
 	function register_wordpress_awards_bulk_actions( $bulk_actions ) {
 		$bulk_actions['assign_to_user'] = __('Assign to User', 'assign_to_user');
+		$bulk_actions['give_to_user'] = __('Give to User', 'give_to_user');
 		return $bulk_actions;
 	}
 
 	/**
 	 * Handle any bulk actions on the EDIT page Wordpress Awards Custom Post Type View
-	 * @param  string $redirect_to - URL browser will change to after we complete the bulk action.
-	 * @param  [type] $action      [description]
-	 * @param  [type] $post_ids    [description]
-	 * @return [type]              [description]
+	 * @param  string $redirect_url - URL browser will change to after we complete the bulk action.
+	 * @param  string $doaction      - The action being taken
+	 * @param  array $items    - Items to take the action on
+	 * @return string          - $redirect_url is returned here after some transformations
 	 */
-	function handle_wordpress_awards_bulk_actions( $redirect_to, $action, $award_ids )
+	function handle_wordpress_awards_edit_bulk_actions( $redirect_url, $doaction, $items )
 	{
-		// Perform the other bulk actions if they are assigned.
-		if ( $action !== 'assign_to_user' )
+		$WPAward_UserID = ( empty($_GET['WPAward_UserID']) ) ? NULL : (int) $_GET['WPAward_UserID']; // Ternary to get User ID and assign it.
+
+		/**
+		 * Remove bulk action params from the URL before we process and potentially add in parameters
+		 */
+		$redirect_url = remove_query_arg(
+			array(
+				'WPAward_Users_Assigned',
+				'WPAward_UserID'
+			),
+			$redirect_url
+		);
+
+		if ( $WPAward_UserID )
 		{
-			return $redirect_to;
+
+			// Assign all the awards selected to that user
+			if ( $doaction === 'assign_to_user' )
+			{
+				$paramValue = "WPAward_Users_Assigned";
+				$this->WPAward->AssignAwards( $WPAward_UserID, $items );
+			}
+			elseif( $doaction === 'give_to_user' )
+			{
+				$paramValue = "WPAward_Users_Given";
+				$this->WPAward->GiveAwards( $WPAward_UserID, $items );
+			}
+
+			$redirect_url = add_query_arg([
+				$paramValue => count( $items ),
+				'WPAward_UserID' => $WPAward_UserID
+			], $redirect_url);
+
 		}
 
-		// This should be available through a $POST variable or some such.
-		$user_to_assign = $_POST['WPAward_UserID'];
-
-		// Assign all the awards selected to that user
-		$this->WPAward->AssignAwards( $user_to_assign, $award_ids );
+		return $redirect_url;
 	}
 
 	/**
@@ -178,21 +203,54 @@ class Core {
 	 * Outputs a modal that we will use to select our user
 	 */
 	function ModalGetUser() {
-		$UserSelectHTML = call_user_func(["WPAward\Utility", "UserSelectHTML"], "WPAward_UserID");
+		$users_assigned = 0;
+		$user_id_assigned = 0;
+
+		// Params that should be available after we load up with bulk awar
+		if (
+			! empty($_REQUEST['WPAward_Users_Assigned']) &&
+			! empty($_REQUEST['WPAward_UserID'])
+		)
+		{
+			$user_id_assigned = (int) $_REQUEST['WPAward_UserID'];
+			$users_assigned = (int) $_REQUEST['WPAward_Users_Assigned'];
+		}
+
+		/**
+		 * Could probably make this modal block down here an AJAX function that's inserted only when we need it.
+		 * It looks out of place here.
+		 */
+		$UserSelectHTML = call_user_func(["WPAward\Utility", "UserSelectHTML"], "WPAward_UserID", "Choose Here");
 		add_thickbox();
 		echo <<<HTML
-		<a id="modal-get-user-link" href="#TB_inline?width=200&height=200&inlineId=modal-get-user" style="display:none;" class="thickbox"></a>
+		<a id="modal-get-user-link" href="#TB_inline?width=250&height=250&inlineId=modal-get-user" style="display:none;" class="thickbox"></a>
 		<div id="modal-get-user" style="display:none;">
-		    <h2>Bulk Award Assign User Selection</h2>
-		    <div class="admin-modal-content">
-		    	{$UserSelectHTML}
-		    </div>
-		    <div class="admin-modal-buttons">
-		    	<button class="button-primary">Choose</button>
+		    <h2>User Selection</h2>
+		    <p>Select a user below and then click on the submit button to assign or give an award to that user, depending on which bulk action you have taken</p>
+		    <table class="form-table">
+		    	<tbody>
+			    	<tr>
+				    	{$UserSelectHTML}
+			    	</tr>
+		    	</tbody>
+		    </table>
+		    <p class="submit">
+		    	<button class="button-primary">Submit</button>
 		    	<button class="button-secondary">Cancel</button>
-		    </div>
+	    	</p>
 		</div>
 HTML;
+
+		if ( $user_id_assigned && $users_assigned )
+		{
+			$user_assigned = get_user_by( 'ID', $user_id_assigned );
+
+			printf(
+				'<div id="message" class="updated notice is-dismissible"><p>Assigned %d awards to %s</p></div>',
+					$users_assigned,
+					ucfirst($user_assigned->user_nicename)
+				);
+		}
 	}
 }
 ?>
