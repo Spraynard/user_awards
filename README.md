@@ -17,6 +17,10 @@ This will be added to in interations
 * Singular give on the User Awards list page
 * User Awards tab sould be above `New Award` (If this is possible...)
 
+### Known Bugs
+
+* The admin notice for award bulk actions is not 100% Accurate. If you assign/give the same awards to the same user multiple times, the admin notice will say that we've assigned/given n-number of awards on both instances. There should be no duplicate awards so quite possibly you've assigned/given 0 awards.
+
 ## Installation
 
 Put the plugins files within your `wp-content/plugins/` folder and then activate it from the admin view as you would any regular plugin.
