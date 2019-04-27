@@ -44,6 +44,9 @@ class Core {
 		// Adding in Custom Modal through the "admin-notices" action
 		add_action('admin_notices', [$this, 'ModalGetUser']);
 
+		// Adding in actual admin notices handling
+		add_action('admin_notices', [$this, 'WPAward_Admin_Notices']);
+
 		/**
 		 * Filters
 		 */
@@ -137,30 +140,30 @@ class Core {
 		 */
 		$redirect_url = remove_query_arg(
 			array(
-				'WPAward_Users_Assigned',
-				'WPAward_UserID'
+				'WPAward_Users_Affected',
+				'WPAward_UserID',
+				'WPAward_Bulk_Action'
 			),
 			$redirect_url
 		);
 
 		if ( $WPAward_UserID )
 		{
-
-			// Assign all the awards selected to that user
 			if ( $doaction === 'assign_to_user' )
 			{
-				$paramValue = "WPAward_Users_Assigned";
-				$this->WPAward->AssignAwards( $WPAward_UserID, $items );
+				$bulkAction = "Assigned";
+				$action_completed = $this->WPAward->AssignAwards( $WPAward_UserID, $items );
 			}
 			elseif( $doaction === 'give_to_user' )
 			{
-				$paramValue = "WPAward_Users_Given";
-				$this->WPAward->GiveAwards( $WPAward_UserID, $items );
+				$bulkAction = "Gave";
+				$action_completed = $this->WPAward->GiveAwards( $WPAward_UserID, $items );
 			}
 
 			$redirect_url = add_query_arg([
-				$paramValue => count( $items ),
-				'WPAward_UserID' => $WPAward_UserID
+				'WPAward_Users_Affected' => count( $items ),
+				'WPAward_UserID' => $WPAward_UserID,
+				'WPAward_Bulk_Action' => $bulkAction
 			], $redirect_url);
 
 		}
@@ -203,23 +206,6 @@ class Core {
 	 * Outputs a modal that we will use to select our user
 	 */
 	function ModalGetUser() {
-		$users_assigned = 0;
-		$user_id_assigned = 0;
-
-		// Params that should be available after we load up with bulk awar
-		if (
-			! empty($_REQUEST['WPAward_Users_Assigned']) &&
-			! empty($_REQUEST['WPAward_UserID'])
-		)
-		{
-			$user_id_assigned = (int) $_REQUEST['WPAward_UserID'];
-			$users_assigned = (int) $_REQUEST['WPAward_Users_Assigned'];
-		}
-
-		/**
-		 * Could probably make this modal block down here an AJAX function that's inserted only when we need it.
-		 * It looks out of place here.
-		 */
 		$UserSelectHTML = call_user_func(["WPAward\Utility", "UserSelectHTML"], "WPAward_UserID", "Choose Here");
 		add_thickbox();
 		echo <<<HTML
@@ -240,16 +226,56 @@ class Core {
 	    	</p>
 		</div>
 HTML;
+	}
 
-		if ( $user_id_assigned && $users_assigned )
+	function WPAward_Admin_Notices()
+	{
+		$wp_award_users_affected = 0; // Users Given or Assigned
+		$wp_award_user_id = 0;
+		$wp_award_bulk_action = NULL;
+
+		if ( ! empty($_REQUEST['WPAward_Users_Affected']) )
 		{
-			$user_assigned = get_user_by( 'ID', $user_id_assigned );
+			$wp_award_users_affected = (int) $_REQUEST['WPAward_Users_Affected'];
+		}
 
-			printf(
-				'<div id="message" class="updated notice is-dismissible"><p>Assigned %d awards to %s</p></div>',
-					$users_assigned,
-					ucfirst($user_assigned->user_nicename)
-				);
+		if ( ! empty($_REQUEST['WPAward_UserID']) )
+		{
+			$wp_award_user_id = (int) $_REQUEST['WPAward_UserID'];
+		}
+
+		if ( ! empty($_REQUEST['WPAward_Bulk_Action']) )
+		{
+			$wp_award_bulk_action = (string) $_REQUEST['WPAward_Bulk_Action'];
+		}
+
+		if ( $wp_award_user_id )
+		{
+			$message_string = '<div id="message" class="updated notice is-dismissible"><p>%s</p></div>';
+			$output_format = "";
+
+			// Get our user
+			$user_assigned = get_user_by( 'ID', $wp_award_user_id );
+
+			if ( $wp_award_bulk_action )
+			{
+				$output_format .= "%s "; // Assigned, Gave
+				$output_params_array[] = $wp_award_bulk_action;
+			}
+
+			if ( $wp_award_users_affected )
+			{
+				$output_format .= "%d awards ";
+				$output_params_array[] = $wp_award_users_affected;
+			}
+
+			$output_format .= "to %s";
+			$output_params_array[] = ucfirst($user_assigned->user_nicename);
+
+			// Putting our output format string
+			array_unshift($output_params_array, sprintf($message_string, $output_format));
+
+			call_user_func_array('printf', $output_params_array);
 		}
 	}
 }
