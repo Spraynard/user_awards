@@ -85,6 +85,7 @@ class Test_WP_Awards_Award extends WP_UnitTestCase {
 		$this->assertTrue($this->WPAward->AssignAward($this->user->ID, $this->post->ID));
 	}
 
+	// Testing that there cannot be duplicate awards assigned to users
 	public function testAsssignAwardNoDuplicates() {
 		// Link a user to an award
 		$assigned_action_1 = $this->WPAward->AssignAward($this->user->ID, $this->post->ID);
@@ -121,6 +122,7 @@ class Test_WP_Awards_Award extends WP_UnitTestCase {
 		$this->assertNull($award_data[0]->date_given);
 	}
 
+	// Test whether or not we will auto give an award to a user if it is specified as such
 	public function testAssignAutoGive()
 	{
 		add_post_meta( $this->post->ID, 'WPAward_Auto_Give', true, false );
