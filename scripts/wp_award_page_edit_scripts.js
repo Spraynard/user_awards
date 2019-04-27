@@ -57,7 +57,7 @@ jQuery(document).ready(function($) {
 		var dumb_users = 1; // Are users dumb and not selecting any items?
 
 		// Checking if action selected is an action in which we open a modal
-		if ( ! $.inArray( bulk_actions_dropdown.val(), modal_open_actions ) )
+		if ( $.inArray( bulk_actions_dropdown.val(), modal_open_actions ) < 0 )
 		{
 			return
 		}
