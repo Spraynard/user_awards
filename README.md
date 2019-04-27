@@ -11,10 +11,16 @@ This will be added to in interations
 
 #### Release
 
+##### Awards List (edit.php)
 * ~~Mass Assign Award on the post edit page~~
 * ~~Mass Give Award on the post edit page~~
 * Singular Give on Post Edit page.Possibly just make a checkbox in the "Assign Award" meta box
+
+##### User Awards Page
+* ~~Mass Remove Award~~
 * Singular give on the User Awards list page
+
+##### General
 * User Awards tab sould be above `New Award` (If this is possible...)
 
 ### Known Bugs
