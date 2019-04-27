@@ -111,7 +111,7 @@ function enqueue_plugin_assets( $hook ) {
 	global $custom_post_type_name;
 
 	// Post Specific page - New Post, Edit Post
-	if ( $hook === "post.php" || $hook === "edit.php" )
+	if ( $hook === "post.php" || $hook === "edit.php" || $hook === "post-new.php" )
 	{
 		wp_enqueue_style( 'general_award_styles', plugins_url( 'wp_awards_styles.css', __FILE__ ), [], false, false );
 		wp_enqueue_script( 'WPAwards_Edit_Bulk_Scripts', plugins_url( 'scripts/wp_award_page_edit_scripts.js', __FILE__ ), array('common') );
