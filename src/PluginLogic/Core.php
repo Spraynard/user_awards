@@ -45,7 +45,10 @@ class Core {
 		add_action('admin_notices', [$this, 'ModalGetUser']);
 
 		// Adding in actual admin notices handling
-		add_action('admin_notices', [$this, 'WPAward_Admin_Notices']);
+		add_action('admin_notices', [$this, 'WPAward_Post_Admin_Notices']);
+
+		// Adding in UserAwardsTable admin notices
+		add_action('admin_notices', 'WPAward\PluginLogic\UserAwardsTable::awards_table_admin_notices');
 
 		/**
 		 * Filters
@@ -106,16 +109,21 @@ class Core {
 	 * This is used to display our table that shows the awards that are assigned to users.
 	 */
 	public function UserAwardsPageHTML() {
-		$userAwardsTable = new UserAwardsTable();
-		$userAwardsTable->prepare_items(); ?>
+		$userAwardsTable = new UserAwardsTable( $this->WPAward );
+		$userAwardsTable->prepare_items();
+		$page = $_REQUEST['page'];
+		$post_type = $this->post_type;
+	?>
 		<div class="wrap">
 			<h1>User Awards</h1>
 			<p>This window shows you which awards are assigned to specific users.</p>
 			<p>You may also specifically <em>give</em> awards to users. To do this, click on the "Give to User" button </p>
 			<!-- Include this table inside a form if we want to enable bulk actions for the table -->
-			<?php $userAwardsTable->display(); ?>
+			<form id="user-awards-filter" method="POST">
+				<?php $userAwardsTable->display(); ?>
+			</form>
 		</div>
-		<?php
+	<?php
 	}
 
 	function register_wordpress_awards_bulk_actions( $bulk_actions ) {
@@ -228,51 +236,35 @@ class Core {
 HTML;
 	}
 
-	function WPAward_Admin_Notices()
+	function WPAward_Post_Admin_Notices()
 	{
-		$wp_award_users_affected = 0; // Users Given or Assigned
-		$wp_award_user_id = 0;
-		$wp_award_bulk_action = NULL;
+		$output_format = "";
+		$output_params_array = [];
+
+		if ( ! empty($_REQUEST['WPAward_Bulk_Action']) )
+		{
+			$output_format .= "%s "; // Assigned, Gave, Removed
+			$output_params_array[] = (string) $_REQUEST['WPAward_Bulk_Action'];
+		}
 
 		if ( ! empty($_REQUEST['WPAward_Users_Affected']) )
 		{
-			$wp_award_users_affected = (int) $_REQUEST['WPAward_Users_Affected'];
+			$output_format .= "%d awards ";
+			$output_params_array[] = (int) $_REQUEST['WPAward_Users_Affected'];
 		}
 
 		if ( ! empty($_REQUEST['WPAward_UserID']) )
 		{
-			$wp_award_user_id = (int) $_REQUEST['WPAward_UserID'];
-		}
-
-		if ( ! empty($_REQUEST['WPAward_Bulk_Action']) )
-		{
-			$wp_award_bulk_action = (string) $_REQUEST['WPAward_Bulk_Action'];
-		}
-
-		if ( $wp_award_user_id )
-		{
-			$message_string = '<div id="message" class="updated notice is-dismissible"><p>%s</p></div>';
-			$output_format = "";
-
-			// Get our user
-			$user_assigned = get_user_by( 'ID', $wp_award_user_id );
-
-			if ( $wp_award_bulk_action )
-			{
-				$output_format .= "%s "; // Assigned, Gave
-				$output_params_array[] = $wp_award_bulk_action;
-			}
-
-			if ( $wp_award_users_affected )
-			{
-				$output_format .= "%d awards ";
-				$output_params_array[] = $wp_award_users_affected;
-			}
-
+			$user_assigned = get_user_by( 'ID', (int) $_REQUEST['WPAward_UserID'] );
 			$output_format .= "to %s";
 			$output_params_array[] = ucfirst($user_assigned->user_nicename);
 
-			// Putting our output format string
+		}
+
+		// Putting our output format string
+		if ( count($output_params_array ) )
+		{
+			$message_string = '<div id="message" class="updated notice is-dismissible"><p>%s</p></div>';
 			array_unshift($output_params_array, sprintf($message_string, $output_format));
 
 			call_user_func_array('printf', $output_params_array);
