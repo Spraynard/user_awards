@@ -6,27 +6,6 @@ Give them a lifetime supply of cherished memories that they can hold dear to the
 
 One of the main goals of this plugin is to gamify experiences on your website and reward users with awards that they would appreciate based on the specific actions that they take.
 
-### Todos
-This will be added to in interations
-
-#### Release
-
-##### Awards List (edit.php)
-* ~~Mass Assign Award on the post edit page~~
-* ~~Mass Give Award on the post edit page~~
-* Singular Give on Post Edit page.Possibly just make a checkbox in the "Assign Award" meta box
-
-##### User Awards Page
-* ~~Mass Remove Award~~
-* Singular give on the User Awards list page
-
-##### General
-* User Awards tab sould be above `New Award` (If this is possible...)
-
-### Known Bugs
-
-* The admin notice for award bulk actions is not 100% Accurate. If you assign/give the same awards to the same user multiple times, the admin notice will say that we've assigned/given n-number of awards on both instances. There should be no duplicate awards so quite possibly you've assigned/given 0 awards.
-
 ## Installation
 
 Put the plugins files within your `wp-content/plugins/` folder and then activate it from the admin view as you would any regular plugin.
@@ -133,3 +112,23 @@ $WPAward->GetUserAward( $user_id, $award_id = NULL);
 
 ### WordPress Award Grammar
 
+### Todos
+This will be added to in interations
+
+#### Release
+
+##### Awards List (edit.php)
+* ~~Mass Assign Award on the post edit page~~
+* ~~Mass Give Award on the post edit page~~
+* Singular Give on Post Edit page.Possibly just make a checkbox in the "Assign Award" meta box
+
+##### User Awards Page
+* ~~Mass Remove Award~~
+* ~~Singular give on the User Awards list page~~
+
+##### General
+* User Awards tab sould be above `New Award` (If this is possible...)
+
+### Known Bugs
+
+* The admin notice for award bulk actions is not 100% Accurate. If you assign/give the same awards to the same user multiple times, the admin notice will say that we've assigned/given n-number of awards on both instances. There should be no duplicate awards so quite possibly you've assigned/given 0 awards.
