@@ -12,6 +12,26 @@
 }
 
 .WPAward_Actions {
-	text-align: right;
+	display: flex;
+	/*text-align: right;*/
 }
+
+.WPAward_Actions input[type="submit"] {
+	flex: 0 1 auto;
+}
+
+.WPAward_Actions .give-award-checkbox {
+	display: flex;
+	padding-right: 15px;
+	align-items: center;
+}
+
+.WPAward_Actions .give-award-checkbox label {
+	flex: 0 1 80%;
+}
+
+.WPAward_Actions .give-award-checkbox input {
+	flex: 0 1 auto;
+}
+
 /* End Admin Specific Styles */
