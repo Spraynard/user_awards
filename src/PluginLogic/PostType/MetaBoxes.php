@@ -80,7 +80,7 @@ HTML;
 	function _applyAwardToUserMeta() {
 		add_meta_box(
 			$this->post_type . "_apply_award", // CSS ID Attribute
-			'Apply Award To User', // Title
+			'Apply/Give Award To User', // Title
 			[$this, '_applyAwardToUserHTML'], // Callback
 			$this->post_type, // Page
 			'side', // Context
@@ -107,6 +107,10 @@ HTML;
 		<br/>
 		{$UserSelectHTML}
 		<div class="WPAward_Actions">
+			<span class="give-award-checkbox">
+				<label for="WPAward_User_Give">Check box to give award to your user</label>
+				<input id="WPAward_User_Give" name="WPAward_User_Give" type="checkbox"/>
+			</span>
 			{$submit_button}
 		</div>
 HTML;
@@ -118,17 +122,23 @@ HTML;
 	 */
 	function WPAwardsSaveMetaBoxes( $post_id ) {
 
-		if (
-			isset( $_POST['WPAward_Grammar'] ) ||
-			isset( $_POST['WPAward_Auto_Give'] ) ||
-			isset( $_POST['WPAward_User_Apply'])
-		)
-		{
-			// Don't save anything on autosave
-			if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE )
+		$skip_autosave_actions = [
+			'WPAward_Grammar',
+			'WPAward_Auto_Give',
+			'WPAward_User_Apply'
+		];
+
+		// Reduce an array to a truthy/falsy boolean that will indicate whether any of our skip_autosave_actions are occuring.
+		$performing_skip_autosave_action = array_reduce( $skip_autosave_actions, function( $acc, $current ) {
+			if ( ! $acc )
 			{
-				return;
+				return in_array( $current, $_POST );
 			}
+		}, false);
+
+		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE && $performing_skip_autosave_action )
+		{
+			return;
 		}
 
 		// Are we posting an WPAward_Grammar?
@@ -164,8 +174,15 @@ HTML;
 		{
 			check_admin_referer( plugin_basename(__FILE__), 'WPAward_Apply_Award_To_User' );
 
-			// Assign the award to the given user
-			$this->WPAward->AssignAward( $_POST['WPAward_User_Apply'], $post_id );
+			if ( isset( $_POST['WPAward_User_Give']) )
+			{
+				$this->WPAward->GiveAward( $_POST['WPAward_User_Apply'], $post_id );
+			}
+			else
+			{
+				// Assign the award to the given user
+				$this->WPAward->AssignAward( $_POST['WPAward_User_Apply'], $post_id );
+			}
 		}
 	}
 }
