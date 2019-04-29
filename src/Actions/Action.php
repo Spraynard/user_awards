@@ -1,37 +1,53 @@
 <?php
-
-abstract class Action implements IAction {
+class Action implements IAction {
 	public $name;
 
 	function __construct( $name ) {
 		$this->name = $name;
 	}
 
-	function validate_for_execution() {
+	/**
+	 * Function used to ensure that our action should be running or not
+	 */
+	private function validate() {
 		throw new Exception("Not Implemented");
 	}
 
-	// I want to perform any validation checks before we get to the main execution context.
-	function pre_execute() {
-
+	/**
+	 * Logic performed before an action execution
+	 * @return [type] [description]
+	 */
+	private function pre_execute() {
 		// Always check our admin referrer
 		check_admin_referer( plugin_basename( __FILE__ ), $this->name . "_nonce" );
 
-		$this->validate_for_execution();
+		$this->validate();
 	}
 
-	function main_execute() {
+	private function main_execute() {
 		throw new Exception("Not Implemented");
 	}
 
-	function post_execute() {
+	/**
+	 * Logic performed after an action execution
+	 * @return [type] [description]
+	 */
+	private function post_execute() {
 		return;
 	}
 
-	function execute() {
-		$this->pre_execute();
-		$this->main_execute();
-		$this->post_execute();
+	/**
+	 * [execute description]
+	 * @return [type] [description]
+	 */
+	public function execute() {
+		try{
+			$this->pre_execute();
+			$this->main_execute();
+			$this->post_execute();
+		} catch( Exception $e ) {
+			error_log($e);
+		}
 	}
 }
 ?>
