@@ -8,11 +8,9 @@ class Utility {
 	 * output
 	 * @param WP_User $user - WP_User object
 	 */
-	static function FormatUserDisplay( $user ) {
-		$user_nicename = ucfirst($user->data->user_nicename);
-		$user_email = $user->data->user_email;
+	static function FormatUserDisplay( $username, $email ) {
 
-		return "{$user_nicename} - ({$user_email})";
+		return "{$username} - ({$email})";
 	}
 
 	/**
