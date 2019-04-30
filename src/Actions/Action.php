@@ -1,4 +1,7 @@
 <?php
+
+namespace WPAward\Actions;
+
 class Action implements IAction {
 	public $name;
 
