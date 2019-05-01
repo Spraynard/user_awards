@@ -4,7 +4,7 @@ namespace WPAward\Actions\Output;
 class DefaultInputOutput extends ActionOutput {
 	private $input_type;
 
-	function __construct($name, $value, $label_text, $input_type = "text" ) {
+	function __construct($name, $label_text, $value = "", $input_type = "text" ) {
 		parent::__construct( $name, $value, $label_text );
 		$this->input_type = $input_type;
 	}
