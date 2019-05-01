@@ -86,7 +86,9 @@ $UserSelectInput = new WPAward\Actions\AssignAwardAction(
 );
 
 $UserSelectOptions = new WPAward\Actions\Output\HTMLOptionOutput(
-	get_users(),
+	get_users([
+		'fields' => array( 'ID', 'user_nicename', 'user_email')
+	]),
 	"ID",
 	[
 		'format' => "%s - %s",
