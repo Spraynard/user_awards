@@ -19,16 +19,11 @@ class SelectOutput extends ActionOutput {
 		$escaped_name = esc_attr($this->name);
 		$escaped_label_text = esc_html($this->label_text);
 
-		$returnHTML = <<<HTML
-		<label for="{$escaped_name}">{$escaped_label_text}</label>
-		<br/>
-		<select id="{$escaped_name}" name="{$escaped_name}">
-HTML;
-		$returnHTML .= $this->option_output->output();
-		$returnHTML .= <<<HTML
-		</select>
-HTML;
-		return $returnHTML;
+		echo '<label for="' . $escaped_name . '">' . $escaped_label_text . '</label>';
+		echo '<br/>';
+		echo '<select id="' . $escaped_name . '" name="' . $escaped_name . '">';
+		echo $this->option_output->output();
+		echo '</select>';
 	}
 }
 
