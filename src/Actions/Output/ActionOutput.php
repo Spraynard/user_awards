@@ -1,9 +1,9 @@
 <?php
 namespace WPAward\Actions\Output;
 
-use \WPAward\Actions\Interfaces\IActionOutput;
+use \WPAward\Actions\Interfaces\IOutput;
 
-class ActionOutput implements IActionOutput {
+class ActionOutput implements IOutput {
 	protected $name;
 	protected $current_value;
 	protected $label_text;
@@ -20,8 +20,8 @@ class ActionOutput implements IActionOutput {
 	}
 
 	// Should be implemented by subclasses
-	private function output_main() {
-		throw new Exception("Not Implemented");
+	protected function output_main() {
+		throw new \Exception("Not Implemented");
 	}
 
 	// Main output function to use
