@@ -8,7 +8,7 @@
 use PHPUnit\Framework\TestCase;
 use WPAward\Actions\Output\HTMLOptionOutput;
 
-class Test__Action_Output extends TestCase {
+class Test_Action_Output extends TestCase {
 	public function testHtmlOptionNullFormats() {
 
 		$list = [
@@ -16,7 +16,7 @@ class Test__Action_Output extends TestCase {
 			'bar'
 		];
 
-		$accept = '<option value="0">Select...</option><option value="foo">foo</option><option value="bar">bar</option>';
+		$accept = '<option value="0" selected>Select...</option><option value="foo">foo</option><option value="bar">bar</option>';
 
 		$class = new HTMLOptionOutput($list);
 		$this->assertTrue($class->output() === $accept, $class->output());
@@ -35,7 +35,7 @@ class Test__Action_Output extends TestCase {
 			]
 		];
 
-		$accept = '<option value="0">Select...</option><option value="1">Foo</option><option value="2">Bar</option>';
+		$accept = '<option value="0" selected>Select...</option><option value="1">Foo</option><option value="2">Bar</option>';
 
 		$class = new HTMLOptionOutput($list, 'id', 'text');
 		$this->assertTrue($class->output() === $accept, $class->output());
@@ -55,9 +55,68 @@ class Test__Action_Output extends TestCase {
 			$std_2
 		];
 
-		$accept = '<option value="0">Select...</option><option value="1">Foo</option><option value="2">Bar</option>';
+		$accept = '<option value="0" selected>Select...</option><option value="1">Foo</option><option value="2">Bar</option>';
 
 		$class = new HTMLOptionOutput($list, 'id', 'text');
+		$this->assertTrue($class->output() === $accept, $class->output());
+	}
+
+	public function testHTMLOptionFormattedFormats() {
+		$std_1 = new stdClass();
+		$std_2 = new stdClass();
+
+		$std_1->id = 1;
+		$std_1->text = "Foo";
+		$std_1->name = "Funyons";
+
+		$std_2->id = 2;
+		$std_2->text = "Bar";
+		$std_2->name = "Bunyons";
+
+
+		$list = [
+			$std_1,
+			$std_2
+		];
+
+		$accept = '<option value="0" selected>Select...</option><option value="1">Foo - Funyons</option><option value="2">Bar - Bunyons</option>';
+
+		$class = new HTMLOptionOutput($list, 'id', [
+			'format' => "%s - %s",
+			'values' => [ "text", "name" ]
+		]);
+
+		$this->assertTrue($class->output() === $accept, $class->output());
+
+	}
+
+	public function testHTMLOptionSelected() {
+		$std_1 = new stdClass();
+		$std_2 = new stdClass();
+
+		$std_1->id = 1;
+		$std_1->text = "Foo";
+		$std_1->name = "Funyons";
+
+		$std_2->id = 2;
+		$std_2->text = "Bar";
+		$std_2->name = "Bunyons";
+
+
+		$list = [
+			$std_1,
+			$std_2
+		];
+
+		$accept = '<option value="0">Select...</option><option value="1">Foo - Funyons</option><option value="2" selected>Bar - Bunyons</option>';
+
+		$class = new HTMLOptionOutput($list, 'id', [
+			'format' => "%s - %s",
+			'values' => [ "text", "name" ]
+		]);
+
+		$class->setSelected(2);
+
 		$this->assertTrue($class->output() === $accept, $class->output());
 	}
 }

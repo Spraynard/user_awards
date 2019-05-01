@@ -228,6 +228,9 @@ class Core {
 		return $awards;
 	}
 
+	/**
+	 * I don't think this function is available for use yet....
+	 */
 	public function GetUserAwards( $values = NULL ) {
 		$selector = NULL;
 
