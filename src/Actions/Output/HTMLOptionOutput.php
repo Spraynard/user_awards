@@ -20,12 +20,38 @@ class HTMLOptionOutput implements IOutput {
 		$this->selected = $selected;
 	}
 
-	private function buildOption( $value, $text ) {
+	private function buildOption( $value, $text, $selected )
+	{
 		if ( function_exists('esc_attr') ) {
 			$value = esc_attr($value);
 			$text = esc_html($text);
 		}
-		return '<option value="' . $value . '">' . $text . '</option>';
+
+		$selectedParam = "";
+
+		if ( $selected )
+		{
+			$selectedParam = " selected";
+		}
+
+		return '<option value="' . $value . '"' . $selectedParam . '>' . $text . '</option>';
+	}
+
+	private function obtainTextValue( $item, $format_item )
+	{
+		$value = NULL;
+
+		if ( is_array($item) && isset( $item, $format_item ) )
+		{
+			$value = $item[$format_item];
+		}
+		// Class Properties
+		elseif ( is_object($item) && property_exists( $item, $format_item ) )
+		{
+			$value = $item->{$format_item};
+		}
+
+		return $value;
 	}
 
 	/**
@@ -39,14 +65,27 @@ class HTMLOptionOutput implements IOutput {
 
 		if ( ! empty( $format ) )
 		{
-			if ( is_array($item) && isset( $item, $format ) )
+			if ( is_array($format) )
 			{
-				$value = $item[$format];
+				if ( ! isset( $format['format'] ) || ! isset( $format['values'] ) )
+				{
+					throw new Exception("If you want to output a formatted string for each of your options, you must provide a \"format\" string (i.e. 'hello %s') and a \"value\" array (which property to grab from item)");
+				}
+
+				$formatArray = [];
+
+				foreach( $format['values'] as $format_item )
+				{
+					$formatArray[] = $this->obtainTextValue( $item, $format_item );
+				}
+
+				array_unshift( $formatArray, $format['format']);
+
+				$value = call_user_func_array('sprintf', $formatArray);
 			}
-			// Class Properties
-			elseif ( is_object($item) && property_exists( $item, $format ) )
+			else
 			{
-				$value = $item->{$format};
+				$value = $this->obtainTextValue( $item, $format );
 			}
 		}
 		else
@@ -58,15 +97,24 @@ class HTMLOptionOutput implements IOutput {
 		return $value;
 	}
 
+	public function setSelected( $selectedValue ) {
+		$this->selected = $selectedValue;
+	}
+
 	public function output() {
 		$returnHTML = $this->buildOption(
-			$this->initialValue, $this->initialText);
+			$this->initialValue,
+			$this->initialText,
+			( is_null( $this->selected ) ? true : false )
+		);
 
 		foreach( $this->list as $item )
 		{
+			$item_value = $this->obtainProperty( $item, $this->valueFormat );
 			$returnHTML .= $this->buildOption(
-				$this->obtainProperty( $item, $this->valueFormat ),
-				$this->obtainProperty( $item, $this->listFormat )
+				$item_value,
+				$this->obtainProperty( $item, $this->listFormat ),
+				( $this->selected === $item_value ) // Truthy or falsy whether or not this item is actually selected
 			);
 		}
 
