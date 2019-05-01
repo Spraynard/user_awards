@@ -4,13 +4,13 @@ namespace WPAward\Actions\Output;
 use \WPAward\Actions\Interfaces\IActionOutput;
 
 class ActionOutput implements IActionOutput {
-	private $name;
-	private $value;
-	private $label_text;
+	protected $name;
+	protected $current_value;
+	protected $label_text;
 
-	function __construct( $name, $value, $label_text ) {
+	function __construct( $name, $current_value, $label_text ) {
 		$this->name = $name;
-		$this->value = $value;
+		$this->current_value = $current_value;
 		$this->label_text = $label_text;
 	}
 
