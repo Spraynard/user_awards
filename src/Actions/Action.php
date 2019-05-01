@@ -2,7 +2,7 @@
 
 namespace WPAward\Actions;
 
-class Action implements IAction {
+class Action implements Interfaces\IAction {
 	public $name;
 
 	function __construct( $name ) {
@@ -24,7 +24,10 @@ class Action implements IAction {
 		// Always check our admin referrer
 		check_admin_referer( plugin_basename( __FILE__ ), $this->name . "_nonce" );
 
-		$this->validate();
+		if ( ! $this->validate() )
+		{
+			throw new Exception("Validation Failed");
+		}
 	}
 
 	private function main_execute() {
