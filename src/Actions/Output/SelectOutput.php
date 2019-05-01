@@ -3,45 +3,32 @@
 namespace WPAward\Actions\Output;
 
 class SelectOutput extends ActionOutput {
-	private $items;
+	private $option_output;
 
-	function __construct($name, $value, $label_text, ListOutput $items = [ "list" => NULL, "list_val" => NULL, "list_format" => NULL, "initial_text" => NULL, "initial_value" => NULL ] ) {
-		parent::__construct( $name, $value, $label_text );
-		$this->items = $items;
+	function __construct($name, $label_text, HTMLOptionOutput $option_output, $current_value = NULL) {
+		parent::__construct( $name, $current_value, $label_text );
+		$this->option_output = $option_output;
 
-		if ( ! $this->items["items_initial_text"] )
+		if ( ! is_null( $this->current_value ) )
 		{
-			$this->items["initial_text"] = "Select...";
-			$this->items["initial_value"] = 0;
+			$this->option_output->setSelected( $this->current_value );
 		}
 	}
 
 	private function output_main() {
 		$escaped_name = esc_attr($this->name);
-		$escaped_input_type = esc_attr($this->input_type);
 		$escaped_label_text = esc_html($this->label_text);
-		$initial_value = esc_attr($this->items["initial_value"]);
-		$initial_text = esc_html($this->items["initial_text"]);
 
-		echo <<<HTML
+		$returnHTML = <<<HTML
 		<label for="{$escaped_name}">{$escaped_label_text}</label>
 		<br/>
 		<select id="{$escaped_name}" name="{$escaped_name}">
-			<option value="{$initial_value}">{$initial_text}</option>
 HTML;
-		foreach( $this->items['list'] as $item )
-		{
-			$escaped_value = esc_attr($item[$this->items['list_val']]);
-			$escaped_format = esc_html($item[$this->items['list_format']]);
-
-			echo <<<HTML
-			<option
-HTML;
-		}
-
-		echo <<<HTML
+		$returnHTML .= $this->option_output->output();
+		$returnHTML .= <<<HTML
 		</select>
 HTML;
+		return $returnHTML;
 	}
 }
 
