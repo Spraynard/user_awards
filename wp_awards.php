@@ -35,6 +35,8 @@ if ( ! defined('WP_AWARDS_VERSION') )
 // Include our scripts
 require_once __DIR__ . "/vendor/autoload.php";
 
+use WPAward\PluginLogic\PostType\MetaBox;
+
 // Grab our database instance
 global $wpdb;
 
@@ -53,16 +55,125 @@ add_action( 'admin_enqueue_scripts', 'enqueue_plugin_assets' );
 add_action( 'plugins_loaded', 'apply_wp_award_listeners' );
 
 // Plugin post type name
-$custom_post_type_name = 'wordpress_awards';
+$post_type = 'wordpress_awards';
 
 // Holds our user awards business logic
 $WPAward = new WPAward\BusinessLogic\Core($wpdb);
 
-// Plugin meta box handling
-$WPAwardMetaBoxes = new WPAward\PluginLogic\PostType\MetaBoxes( $custom_post_type_name, $WPAward );
 
-// Holds our plugin logic, which includes Post and Meta type additions
-$WPAwardPlugin = new WPAward\PluginLogic\Core( $custom_post_type_name, $WPAward, $WPAwardMetaBoxes );
+///////////////////////
+// META BOX CREATION //
+///////////////////////
+$Post_Metaboxes = [];
+
+// User Select Metabox
+$UserSelectMetaName = "WPAward_User_Apply";
+
+$UserSelectMetaboxData = [
+	'id' => $post_type . '_apply_award',
+	'title' => 'Apply/Give Award To User',
+	'page' => $post_type,
+	'context' => 'side',
+	'priority' => 'default',
+	'callback_args' => null
+];
+
+$UserSelectInput = new WPAward\Actions\AssignAwardAction(
+	$UserSelectMetaName,
+	'WPAward_User_Give',
+	$WPAward
+);
+
+$UserSelectOptions = new WPAward\Actions\Output\HTMLOptionOutput(
+	get_users(),
+	"ID",
+	[
+		'format' => "%s - %s",
+		'value' => ['user_nicename', 'user_email']
+	]
+);
+
+$UserSelectOutput = new WPAward\Actions\Output\SelectOutput(
+	$UserSelectMetaName,
+	"Select a user from this dropdown and submit in order to apply this award to the user.",
+	$UserSelectOptions
+);
+
+$UserOptionsMetabox = new MetaBox(
+	$UserSelectMetaboxData,
+	$UserSelectInput,
+	$UserSelectOutput
+);
+
+$Post_Metaboxes[] = $UserOptionsMetabox;
+
+// Auto Give Award Meta Box
+
+$AutoGiveMetaName = 'WPAward_Auto_Give';
+
+$AutoGiveMetaboxData = [
+	'id' => $post_type . '_auto_give',
+	'title' => 'Auto Give Award',
+	'page' => $post_type,
+	'context' => 'side',
+	'priority' => 'default',
+	'callback_args' => null
+];
+
+$AutoGiveCheckboxInput = new WPAward\Actions\UpdatePostMetaAction($AutoGiveMetaName);
+
+$AutoGiveCheckboxOutput = new WPAward\Actions\Output\CheckboxInputOutput(
+	$AutoGiveMetaName,
+	"on",
+	"Checking this box will automatically give award to user when they trigger the award"
+);
+
+$AutoGiveCheckboxMetabox = new MetaBox(
+	$AutoGiveMetaboxData,
+	$AutoGiveCheckboxInput,
+	$AutoGiveCheckboxOutput
+);
+
+$Post_Metaboxes[] = $AutoGiveCheckboxMetabox;
+
+
+// Grammar Meta Box
+
+$GrammarMetaName = 'WPAward_Grammar';
+
+$GrammarMetaboxData = [
+	'id' => $post_type . '_grammar',
+	'title' => 'Award Trigger',
+	'page' => $post_type,
+	'context' => 'advanced',
+	'priority' => 'default',
+	'callback_args' => null
+];
+
+$GrammarMetaInput = new WPAward\Actions\UpdatePostMetaAction($GrammarMetaName);
+
+$GrammarMetaOutput = new WPAward\Actions\Output\DefaultInputOutput(
+	$GrammarMetaName,
+	"Write out a grammar string to act as a trigger for a user obtaining this award"
+);
+
+$GrammarMetaMetabox = new MetaBox(
+	$GrammarMetaboxData,
+	$GrammarMetaInput,
+	$GrammarMetaOutput
+);
+
+$Post_Metaboxes = $GrammarMetaMetabox;
+
+// Plugin meta box handling
+$WPAwardMetaBoxes = new WPAward\PluginLogic\PostType\MetaBoxes( $post_type, $WPAward );
+
+//////////////////////////
+// End Metabox Creation //
+//////////////////////////
+
+// Plugin Logic Core Instantiation
+$WPAwardPlugin = new WPAward\PluginLogic\Core( $post_type, $WPAward, $WPAwardMetaBoxes );
 
 /**
  * Loop through all the defined awards.
@@ -73,14 +184,14 @@ $WPAwardPlugin = new WPAward\PluginLogic\Core( $custom_post_type_name, $WPAward,
 
 function apply_wp_award_listeners() {
 
-	global $custom_post_type_name;
+	global $post_type;
 	global $WPAward;
 
 	$current_user = wp_get_current_user();
 
 	if ( $current_user->ID > 0 )
 	{
-		$awards = get_posts([ 'post_type' => $custom_post_type_name ]);
+		$awards = get_posts([ 'post_type' => $post_type ]);
 		$grammar = new WPAward\Grammar\Core();
 
 		foreach( $awards as $award )
@@ -108,7 +219,7 @@ function apply_wp_award_listeners() {
  */
 function enqueue_plugin_assets( $hook ) {
 	global $post;
-	global $custom_post_type_name;
+	global $post_type;
 
 	// Post Specific page - New Post, Edit Post
 	if ( $hook === "post.php" || $hook === "edit.php" || $hook === "post-new.php" )
