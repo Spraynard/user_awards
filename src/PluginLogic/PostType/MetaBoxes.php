@@ -14,7 +14,7 @@ class MetaBoxes {
  */
 	public function PostTypeMetaBoxes() {
 		$this->_addGrammarMeta(); // Trigger Meta Box
-		$this->_applyAwardToUserMeta();
+		// $this->_applyAwardToUserMeta();
 		$this->_addAutoGiveAwardMeta();
 	}
 
@@ -96,24 +96,24 @@ HTML;
 	 * @return void
 	 */
 	function _applyAwardToUserHTML( $post ) {
-		$users = get_users(); // Array of WP_User objects
-		$submit_button = get_submit_button( 'Apply', 'primary large', 'submit', false, '' );
-		$UserSelectHTML = call_user_func(["WPAward\Utility", "UserSelectHTML"], "WPAward_User_Apply");
+// 		$users = get_users(); // Array of WP_User objects
+// 		$submit_button = get_submit_button( 'Apply', 'primary large', 'submit', false, '' );
+// 		$UserSelectHTML = call_user_func(["WPAward\Utility", "UserSelectHTML"], "WPAward_User_Apply");
 
-		// Haha, what the fuck even is PHP?
-		wp_nonce_field( plugin_basename(__FILE__), 'WPAward_Apply_Award_To_User');
-		echo <<<HTML
-		<label for="WPAward_User_Apply">Select a user from this dropdown and submit in order to apply this award to the user.</label>
-		<br/>
-		{$UserSelectHTML}
-		<div class="WPAward_Actions">
-			<span class="give-award-checkbox">
-				<label for="WPAward_User_Give">Check box to give award to your user</label>
-				<input id="WPAward_User_Give" name="WPAward_User_Give" type="checkbox"/>
-			</span>
-			{$submit_button}
-		</div>
-HTML;
+// 		// Haha, what the fuck even is PHP?
+// 		wp_nonce_field( plugin_basename(__FILE__), 'WPAward_Apply_Award_To_User');
+// 		echo <<<HTML
+// 		<label for="WPAward_User_Apply">Select a user from this dropdown and submit in order to apply this award to the user.</label>
+// 		<br/>
+// 		{$UserSelectHTML}
+// 		<div class="WPAward_Actions">
+// 			<span class="give-award-checkbox">
+// 				<label for="WPAward_User_Give">Check box to give award to your user</label>
+// 				<input id="WPAward_User_Give" name="WPAward_User_Give" type="checkbox"/>
+// 			</span>
+// 			{$submit_button}
+// 		</div>
+// HTML;
 	}
 
 	/**
