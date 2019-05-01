@@ -2,11 +2,11 @@
 namespace WPAward\Actions\Output;
 
 class CheckboxInputOutput extends DefaultInputOutput {
-	private $checked;
+	private $checked_value;
 
-	function __construct($name, $value, $label_text, $checked) {
+	function __construct($name, $checked_value, $label_text, $value = NULL ) {
 		parent::__construct( $name, $value, $label_text, "checkbox" );
-		$this->checked = $checked;
+		$this->checked_value = $checked_value;
 	}
 
 	private function output_main() {
@@ -14,6 +14,7 @@ class CheckboxInputOutput extends DefaultInputOutput {
 		$escaped_value = esc_attr($this->value);
 		$escaped_input_type = esc_attr($this->input_type);
 		$escaped_label_text = esc_html($this->label_text);
+		$checked = checked( $this->value, $this->checked_val, false );
 
 		echo <<<HTML
 		<label for="{$escaped_name}">{$escaped_label_text}</label>
