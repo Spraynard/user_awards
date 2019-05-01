@@ -69,7 +69,7 @@ class HTMLOptionOutput implements IOutput {
 			{
 				if ( ! isset( $format['format'] ) || ! isset( $format['values'] ) )
 				{
-					throw new Exception("If you want to output a formatted string for each of your options, you must provide a \"format\" string (i.e. 'hello %s') and a \"value\" array (which property to grab from item)");
+					throw new \Exception("If you want to output a formatted string for each of your options, you must provide a \"format\" string (i.e. 'hello %s') and a \"value\" array (which property to grab from item)");
 				}
 
 				$formatArray = [];
