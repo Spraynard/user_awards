@@ -15,7 +15,7 @@ class SelectOutput extends ActionOutput {
 		}
 	}
 
-	private function output_main() {
+	protected function output_main() {
 		$escaped_name = esc_attr($this->name);
 		$escaped_label_text = esc_html($this->label_text);
 
