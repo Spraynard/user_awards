@@ -64,6 +64,7 @@ $WPAward = new WPAward\BusinessLogic\Core($wpdb);
 ///////////////////////
 // META BOX CREATION //
 ///////////////////////
+// Holds all of our individual metaboxes
 $Post_Metaboxes = [];
 
 // User Select Metabox
@@ -89,7 +90,7 @@ $UserSelectOptions = new WPAward\Actions\Output\HTMLOptionOutput(
 	"ID",
 	[
 		'format' => "%s - %s",
-		'value' => ['user_nicename', 'user_email']
+		'values' => ['user_nicename', 'user_email']
 	]
 );
 
@@ -163,10 +164,10 @@ $GrammarMetaMetabox = new MetaBox(
 	$GrammarMetaOutput
 );
 
-$Post_Metaboxes = $GrammarMetaMetabox;
+$Post_Metaboxes[] = $GrammarMetaMetabox;
 
 // Plugin meta box handling
-$WPAwardMetaBoxes = new WPAward\PluginLogic\PostType\MetaBoxes( $post_type, $WPAward );
+$WPAwardMetaBoxes = new WPAward\PluginLogic\PostType\MetaBoxes( $post_type, $Post_Metaboxes );
 
 //////////////////////////
 // End Metabox Creation //
