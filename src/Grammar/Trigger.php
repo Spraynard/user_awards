@@ -68,7 +68,7 @@ class Trigger extends AutoParser implements ParserInterface {
 	public function parse( $string ) {
 		$serialized = explode(" ", $string);
 
-		if ( empty( $serialized) ) {
+		if ( empty( $serialized ) ) {
 			throw new \InvalidArgumentException("AwardGrammarTrigger parse string must not be empty");
 		}
 
