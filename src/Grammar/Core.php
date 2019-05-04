@@ -54,7 +54,8 @@ class Core implements ParserInterface {
 	private $valid_trigger_types = [
 		'updated',
 		'created',
-		'excluded'
+		'excluded',
+		'assigned'
 	];
 
 	/** End validation items. */
@@ -139,6 +140,8 @@ class Core implements ParserInterface {
 		$serialized = implode(" ", $serialized);
 
 		$this->trigger = new Trigger( $serialized );
+
+		return true;
 	}
 }
 ?>

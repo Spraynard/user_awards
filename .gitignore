@@ -2,7 +2,7 @@ vendor/
 dockerDir/
 
 # wp scaffold plugin-tests data...
-phpunit.xml.dist
+# phpunit.xml.dist
 .travis.yml
 bin/
 tests/bootstrap.php
