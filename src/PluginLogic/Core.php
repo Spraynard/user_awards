@@ -8,12 +8,10 @@
 namespace WPAward\PluginLogic;
 
 class Core {
-	private $post_type;
 	private $WPAward; // Business Logic Layer
 	private $MetaBoxes; // Meta box
 
-	function __construct( $post_type, $WPAward = NULL, $MetaBoxes = NULL ) {
-		$this->post_type = $post_type;
+	function __construct( $WPAward = NULL, $MetaBoxes = NULL ) {
 		$this->WPAward = $WPAward;
 		$this->MetaBoxes = $MetaBoxes;
 
@@ -31,15 +29,27 @@ class Core {
 		 * Actions
 		 */
 
-		// Adds our custom post type
-		add_action('init', [$this, 'PostType']);
+		// Actions that need a post type reference to function
+		if ( defined('WP_AWARDS_POST_TYPE') )
+		{
+			// Adds our custom post type
+			add_action('init', [$this, 'PostType']);
 
-		// Add meta boxes to post type and provide option to edit those values
-		add_action('add_meta_boxes_' . $this->post_type, [$this->MetaBoxes, 'PostTypeMetaBoxes']);
+			// Add meta boxes to post type and provide option to edit those values
+			add_action('add_meta_boxes_' . WP_AWARDS_POST_TYPE, [$this->MetaBoxes, 'PostTypeMetaBoxes']);
+
+			// Adding in "User Awards" admin interface
+			add_action('admin_menu', [$this, 'UserAwardsPage']);
+
+			// Adding in data for each of our columns
+			add_action('manage_' . WP_AWARDS_POST_TYPE . '_posts_custom_column', [$this, 'PostTypeAdminColumnsData'] , 10, 2);
+
+			// Adding in custom columns to our post type.
+			add_filter('manage_' . WP_AWARDS_POST_TYPE . '_posts_columns', [$this, 'PostTypeAdminColumns']);
+		}
+
 		add_action('save_post', [$this->MetaBoxes, 'WPAwardsSaveMetaBoxes']); // Adds ability to save our meta values with our post
 
-		// Adding in "User Awards" admin interface
-		add_action('admin_menu', [$this, 'UserAwardsPage']);
 
 		// Adding in Custom Modal through the "admin-notices" action
 		add_action('admin_notices', [$this, 'ModalGetUser']);
@@ -53,11 +63,7 @@ class Core {
 		/**
 		 * Filters
 		 */
-		// Adding in custom columns to our post type.
-		add_filter('manage_' . $this->post_type . '_posts_columns', [$this, 'PostTypeAdminColumns']);
 
-		// Adding in data for each of our columns
-		add_action('manage_' . $this->post_type . '_posts_custom_column', [$this, 'PostTypeAdminColumnsData'] , 10, 2);
 
 		// Defining BULK ACTIONS fors our custom post type edit window.
 		add_filter('bulk_actions-edit-wordpress_awards', [$this, 'register_wordpress_awards_bulk_actions']);
@@ -87,7 +93,7 @@ class Core {
 			'show_ui' => true
 		];
 
-		register_post_type($this->post_type, $args);
+		register_post_type(WP_AWARDS_POST_TYPE, $args);
 	}
 
 	/**
@@ -95,7 +101,7 @@ class Core {
 	 */
 	public function UserAwardsPage() {
 		add_submenu_page(
-			'edit.php?post_type=' . $this->post_type,
+			'edit.php?post_type=' . WP_AWARDS_POST_TYPE,
 			'User Awards',
 			'User Awards',
 			'manage_options',
@@ -112,7 +118,6 @@ class Core {
 		$userAwardsTable = new UserAwardsTable( $this->WPAward );
 		$userAwardsTable->prepare_items();
 		$page = $_REQUEST['page'];
-		$post_type = $this->post_type;
 	?>
 		<div class="wrap">
 			<h1>User Awards</h1>
