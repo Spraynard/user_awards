@@ -187,7 +187,7 @@ class Core {
 		];
 
 		// Add in our award id to the where clase if it is available. There's a chance that it isn't.
-		if ( $award_id )
+		if ( $award_id && $award_id > 0 )
 		{
 			$where_clause['award_id'] = $award_id;
 			$where_format['award_id'] = '%d';
