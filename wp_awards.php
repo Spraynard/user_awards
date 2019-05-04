@@ -30,6 +30,11 @@ if ( ! defined('WP_AWARDS_VERSION') )
 	define('WP_AWARDS_VERSION', '0.1');
 }
 
+if ( ! defined('WP_AWARDS_POST_TYPE') )
+{
+	define('WP_AWARDS_POST_TYPE', 'wp_awards_cpt');
+}
+
 /* End Defines */
 
 // Include our scripts
@@ -52,17 +57,14 @@ add_action( 'admin_enqueue_scripts', 'enqueue_plugin_assets' );
 // Wait until the plugins loaded action in order to have wp_get_current_user() function
 add_action( 'plugins_loaded', 'apply_wp_award_listeners' );
 
-// Plugin post type name
-$custom_post_type_name = 'wordpress_awards';
-
 // Holds our user awards business logic
 $WPAward = new WPAward\BusinessLogic\Core($wpdb);
 
 // Plugin meta box handling
-$WPAwardMetaBoxes = new WPAward\PluginLogic\PostType\MetaBoxes( $custom_post_type_name, $WPAward );
+$WPAwardMetaBoxes = new WPAward\PluginLogic\PostType\MetaBoxes( WP_AWARDS_POST_TYPE, $WPAward );
 
 // Holds our plugin logic, which includes Post and Meta type additions
-$WPAwardPlugin = new WPAward\PluginLogic\Core( $custom_post_type_name, $WPAward, $WPAwardMetaBoxes );
+$WPAwardPlugin = new WPAward\PluginLogic\Core( $WPAward, $WPAwardMetaBoxes );
 
 /**
  * Loop through all the defined awards.
@@ -72,44 +74,37 @@ $WPAwardPlugin = new WPAward\PluginLogic\Core( $custom_post_type_name, $WPAward,
  */
 
 function apply_wp_award_listeners() {
+	// $current_user = wp_get_current_user();
 
-	global $custom_post_type_name;
-	global $WPAward;
+	// if ( $current_user->ID > 0 )
+	// {
+	// 	$awards = get_posts([ 'post_type' => WP_AWARDS_POST_TYPE ]);
+	// 	$grammar = new WPAward\Grammar\Core();
 
-	$current_user = wp_get_current_user();
+	// 	foreach( $awards as $award )
+	// 	{
+	// 		$award_grammar = get_post_meta( $award->ID, 'WPAward_Grammar', true );
 
-	if ( $current_user->ID > 0 )
-	{
-		$awards = get_posts([ 'post_type' => $custom_post_type_name ]);
-		$grammar = new WPAward\Grammar\Core();
+	// 		// The parse function can throw errors, so wrap it in a try block
+	// 		try
+	// 		{
+	// 			$grammar->parse( $award_grammar );
+	// 		}
+	// 		catch( Exception $e )
+	// 		{
+	// 			continue;
+	// 		}
 
-		foreach( $awards as $award )
-		{
-			$award_grammar = get_post_meta( $award->ID, 'WPAward_Grammar', true );
-
-			// The parse function can throw errors, so wrap it in a try block
-			try
-			{
-				$grammar->parse( $award_grammar );
-			}
-			catch( Exception $e )
-			{
-				continue;
-			}
-
-			// Apply our listener. Set it and forget it. Include a parsed grammar and inject the WPAward dependency
-			$listener = new WPAward\Listener\Core( $award->ID, $grammar, $WPAward );
-		}
-	}
+	// 		// Apply our listener. Set it and forget it. Include a parsed grammar and inject the WPAward dependency
+	// 		$listener = new WPAward\Listener\Core( $award->ID, $grammar, $WPAward );
+	// 	}
+	// }
 }
 
 /**
  * Function used to enqueue any required JS or CSS assets
  */
 function enqueue_plugin_assets( $hook ) {
-	global $post;
-	global $custom_post_type_name;
-
 	// Post Specific page - New Post, Edit Post
 	if ( $hook === "post.php" || $hook === "edit.php" || $hook === "post-new.php" )
 	{
