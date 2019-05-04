@@ -6,6 +6,7 @@ class RegistrationHooks {
 	static function Activate() {
 		global $wpdb;
 		$wpdb_table = $wpdb->prefix . "awards";
+		$wp_posts_table = $wpdb->prefix . "posts";
 		$wpdb_collation = $wpdb->get_charset_collate();
 
 		$sql = "CREATE TABLE IF NOT EXISTS {$wpdb_table} (
@@ -14,7 +15,9 @@ class RegistrationHooks {
 				award_id bigint(20) unsigned NOT NULL,
 				date_assigned datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
 				date_given datetime DEFAULT NULL,
-				PRIMARY KEY  (id)
+				PRIMARY KEY  (id),
+				FOREIGN KEY  fk_posts(award_id)
+				REFERENCES  {$wp_posts_table}(ID)
 			) {$wpdb_collation};";
 
 		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' ); // for dbDelta
