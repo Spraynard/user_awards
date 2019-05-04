@@ -148,7 +148,7 @@ HTML;
 			check_admin_referer( plugin_basename(__FILE__), 'WPAward_Save_Grammar_Meta' );
 
 			// Save the meta box data as post meta
-			update_post_meta( $post_id, 'WPAward_Grammar', $_POST['WPAward_Grammar'] );
+			update_post_meta( $post_id, 'WPAward_Grammar', sanitize_text_field($_POST['WPAward_Grammar'] ) );
 		}
 
 		// Are we posting a WPAward Auto Give value?
@@ -158,7 +158,7 @@ HTML;
 			check_admin_referer( plugin_basename(__FILE__), 'WPAward_Save_Auto_Give_Meta' );
 
 			// Save the meta box data as post meta
-			update_post_meta( $post_id, 'WPAward_Auto_Give', $_POST['WPAward_Auto_Give'] );
+			update_post_meta( $post_id, 'WPAward_Auto_Give', sanitize_text_field($_POST['WPAward_Auto_Give'] ) );
 		}
 		/**
 		 * We are not posting a WPAward Auto Give Value, which means that the user has NOT selected
@@ -176,12 +176,12 @@ HTML;
 
 			if ( isset( $_POST['WPAward_User_Give']) )
 			{
-				$this->WPAward->GiveAward( $_POST['WPAward_User_Apply'], $post_id );
+				$this->WPAward->GiveAward( sanitize_text_field($_POST['WPAward_User_Apply']), $post_id );
 			}
 			else
 			{
 				// Assign the award to the given user
-				$this->WPAward->AssignAward( $_POST['WPAward_User_Apply'], $post_id );
+				$this->WPAward->AssignAward( sanitize_text_field($_POST['WPAward_User_Apply']), $post_id );
 			}
 		}
 	}
