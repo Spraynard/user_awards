@@ -32,7 +32,7 @@ class Utility {
 HTML;
 		foreach( $users as $user ) {
 			$ID = esc_attr( $user->ID );
-			$FormattedUserHTML = call_user_func(["WPAward\Utility","FormatUserDisplay"], $user);
+			$FormattedUserHTML = esc_html(call_user_func(["WPAward\Utility","FormatUserDisplay"], $user));
 			$returnHTML .= <<<HTML
 			<option value="{$ID}">{$FormattedUserHTML}</option>
 HTML;
