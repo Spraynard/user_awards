@@ -66,10 +66,10 @@ class Core {
 
 
 		// Defining BULK ACTIONS fors our custom post type edit window.
-		add_filter('bulk_actions-edit-wordpress_awards', [$this, 'register_wordpress_awards_bulk_actions']);
+		add_filter('bulk_actions-edit-' . WP_AWARDS_POST_TYPE, [$this, 'register_wp_awards_cpt_bulk_actions']);
 
 		// Handling submission of the bulk action
-		add_filter('handle_bulk_actions-edit-wordpress_awards', [$this, 'handle_wordpress_awards_edit_bulk_actions'], 10, 3 );
+		add_filter('handle_bulk_actions-edit-' . WP_AWARDS_POST_TYPE, [$this, 'handle_wp_awards_cpt_bulk_actions'], 10, 3 );
 	}
 
 
@@ -131,9 +131,9 @@ class Core {
 	<?php
 	}
 
-	function register_wordpress_awards_bulk_actions( $bulk_actions ) {
-		$bulk_actions['assign_to_user'] = __('Assign to User', 'assign_to_user');
-		$bulk_actions['give_to_user'] = __('Give to User', 'give_to_user');
+	function register_wp_awards_cpt_bulk_actions( $bulk_actions ) {
+		$bulk_actions['assign_to_user'] = __('Assign to User', 'wp_award_cpt');
+		$bulk_actions['give_to_user'] = __('Give to User', 'wp_award_cpt');
 		return $bulk_actions;
 	}
 
@@ -144,7 +144,7 @@ class Core {
 	 * @param  array $items    - Items to take the action on
 	 * @return string          - $redirect_url is returned here after some transformations
 	 */
-	function handle_wordpress_awards_edit_bulk_actions( $redirect_url, $doaction, $items )
+	function handle_wp_awards_cpt_bulk_actions( $redirect_url, $doaction, $items )
 	{
 		$WPAward_UserID = ( empty($_GET['WPAward_UserID']) ) ? NULL : (int) $_GET['WPAward_UserID']; // Ternary to get User ID and assign it.
 
