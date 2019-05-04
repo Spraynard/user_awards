@@ -3,7 +3,7 @@ namespace WPAward\Actions\Output;
 
 use WPAward\Actions\Interfaces\IOutput;
 
-class HTMLOptionOutput implements IOutput {
+class HTMLOptionOutput {
 	private $list;
 	private $valueFormat;
 	private $listFormat;
@@ -74,8 +74,11 @@ class HTMLOptionOutput implements IOutput {
 
 				$formatArray = [];
 
+				// echo '<pre>' . print_r($item) . '</pre>';
+				// wp_die();
 				foreach( $format['values'] as $format_item )
 				{
+
 					$formatArray[] = $this->obtainTextValue( $item, $format_item );
 				}
 

@@ -14,13 +14,13 @@ class CheckboxInputOutput extends DefaultInputOutput {
 
 	protected function output_main() {
 		$escaped_name = esc_attr($this->name);
-		$escaped_value = esc_attr($this->current_value);
+		$escaped_value = esc_attr($this->checked_value);
 		$escaped_label_text = esc_html($this->label_text);
 		$checked = checked( $this->current_value, $this->checked_value, false );
 
 		echo <<<HTML
 		<label for="{$escaped_name}">{$escaped_label_text}</label>
-		<input type="checkbox" id="{$escaped_name}" value="{$escaped_value}" {$checked}/>
+		<input type="checkbox" id="{$escaped_name}" name="{$escaped_name}" value="{$escaped_value}" {$checked}/>
 HTML;
 	}
 }

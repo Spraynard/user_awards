@@ -13,6 +13,10 @@ class MetaBox {
 		$this->output = $output;
 	}
 
+	public function getName() {
+		return $this->input->name;
+	}
+
 	public function add_metabox() {
 		$metabox_params = [
 			$this->wp_metabox_data['id'],
@@ -26,11 +30,11 @@ class MetaBox {
 		call_user_func_array('add_meta_box', $metabox_params);
 	}
 
-	public function getInput() {
-		$this->input->output();
+	public function getInput( $post_id ) {
+		$this->input->execute( $post_id );
 	}
 
-	public function getOutput() {
-		$this->output->output();
+	public function getOutput( $post ) {
+		$this->output->output( $post );
 	}
 } ?>

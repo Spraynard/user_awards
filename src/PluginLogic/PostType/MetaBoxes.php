@@ -3,19 +3,23 @@ namespace WPAward\PluginLogic\PostType;
 
 class MetaBoxes {
 	private $post_type;
-	private $WPAward;
+	private $metabox_array;
 
-	function __construct( $post_type, $WPAward ) {
+	function __construct( $post_type, $metabox_array ) {
 		$this->post_type = $post_type;
-		$this->WPAward = $WPAward;
+		$this->metabox_array = $metabox_array;
 	}
 /**
  * Main function to output our post meta box fields
  */
 	public function PostTypeMetaBoxes() {
-		$this->_addGrammarMeta(); // Trigger Meta Box
-		// $this->_applyAwardToUserMeta();
-		$this->_addAutoGiveAwardMeta();
+		foreach( $this->metabox_array as $metabox )
+		{
+			$metabox->add_metabox();
+		}
+		// $this->_addGrammarMeta(); // Trigger Meta Box
+		// // $this->_applyAwardToUserMeta();
+		// $this->_addAutoGiveAwardMeta();
 	}
 
 	private function _addGrammarMeta() {
@@ -122,11 +126,10 @@ HTML;
 	 */
 	function WPAwardsSaveMetaBoxes( $post_id ) {
 
-		$skip_autosave_actions = [
-			'WPAward_Grammar',
-			'WPAward_Auto_Give',
-			'WPAward_User_Apply'
-		];
+		// Actions in which we should skip autosaving for.
+		$skip_autosave_actions = array_map(function( $metabox ) {
+			return $metabox->getName();
+		}, $this->metabox_array);
 
 		// Reduce an array to a truthy/falsy boolean that will indicate whether any of our skip_autosave_actions are occuring.
 		$performing_skip_autosave_action = array_reduce( $skip_autosave_actions, function( $acc, $current ) {
@@ -141,48 +144,9 @@ HTML;
 			return;
 		}
 
-		// Are we posting an WPAward_Grammar?
-		if ( isset( $_POST['WPAward_Grammar'] ) )
+		foreach( $this->metabox_array as $metabox )
 		{
-			// Check our nonce fields to see if they're good.
-			check_admin_referer( plugin_basename(__FILE__), 'WPAward_Save_Grammar_Meta' );
-
-			// Save the meta box data as post meta
-			update_post_meta( $post_id, 'WPAward_Grammar', $_POST['WPAward_Grammar'] );
-		}
-
-		// Are we posting a WPAward Auto Give value?
-		if ( isset( $_POST['WPAward_Auto_Give'] ) )
-		{
-			// Check our nonce fields to see if they're good.
-			check_admin_referer( plugin_basename(__FILE__), 'WPAward_Save_Auto_Give_Meta' );
-
-			// Save the meta box data as post meta
-			update_post_meta( $post_id, 'WPAward_Auto_Give', $_POST['WPAward_Auto_Give'] );
-		}
-		/**
-		 * We are not posting a WPAward Auto Give Value, which means that the user has NOT selected
-		 * it in the admin view. This is an innate functionality of <input type="checkbox">'es
-		 */
-		else if ( get_post_type( $post_id ) === $this->post_type )
-		{
-			delete_post_meta( $post_id, 'WPAward_Auto_Give');
-		}
-
-		// Are we trying to apply awards to users?
-		if ( isset( $_POST['WPAward_User_Apply'] ) && $_POST['WPAward_User_Apply'] > 0 )
-		{
-			check_admin_referer( plugin_basename(__FILE__), 'WPAward_Apply_Award_To_User' );
-
-			if ( isset( $_POST['WPAward_User_Give']) )
-			{
-				$this->WPAward->GiveAward( $_POST['WPAward_User_Apply'], $post_id );
-			}
-			else
-			{
-				// Assign the award to the given user
-				$this->WPAward->AssignAward( $_POST['WPAward_User_Apply'], $post_id );
-			}
+			$metabox->getInput( $post_id );
 		}
 	}
 }

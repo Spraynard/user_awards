@@ -2,21 +2,31 @@
 
 namespace WPAward\Actions;
 
-class UpdatePostMetaAction extends PostBasedAction {
-	private $source;
+class UpdatePostMetaAction extends Action {
 
-	function __construct( $name, $post_id = NULL, $source = NULL ) {
-		parent::__construct( $name, $post_id );
-		$this->source = ( empty( $source ) ) ? $_POST : $source;
+	function __construct( $name ) {
+		parent::__construct( $name );
 	}
 
-	function main_execute() {
-		if ( is_null( $this->post_id ) )
+	function validateValue( $value ) {
+		if ( is_null( $value ) )
 		{
-			throw new Exception("Post ID is NULL");
-		}
+			// delete the value from our life
+			$DeletePostMetaAction = new DeletePostMetaAction( $this->name );
+			$DeletePostMetaAction()
 
-		update_post_meta( $this->post_id, $this->name, $source[$this->name] );
+			return false;
+		}
+	}
+
+	function main_execute( $post_id ) {
+		// echo "<pre>";
+		// echo "Name: " . $this->name;
+		// echo "Value: " . $this->value;
+		// echo "Post Id: " . $post_id;
+		// echo "</pre>";
+		// wp_die();
+		update_post_meta( $post_id, $this->name, $this->value );
 	}
 }
 

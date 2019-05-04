@@ -2,7 +2,7 @@
 namespace WPAward\Actions\Interfaces;
 
 interface IAction {
-	public function execute();
+	public function execute( $post_id );
 }
 
 ?>

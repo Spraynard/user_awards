@@ -1,14 +1,13 @@
 <?php
 namespace WPAward\Actions;
 
-class DeletePostMetaAction extends PostBasedAction {
-	function __construct( $name, $post_id ) {
-		parent::__construct( $name, $post_id );
+class DeletePostMetaAction extends Action {
+	function __construct( $name ) {
+		parent::__construct( $name );
 	}
 
-	function validate_for_execution
-	function main_execute() {
-		delete_post_meta( $this->post_id, $this->name );
+	function main_execute( $post_id ) {
+		delete_post_meta( $post_id, $this->name );
 	}
 }
 
