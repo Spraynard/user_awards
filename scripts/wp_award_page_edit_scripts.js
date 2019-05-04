@@ -66,7 +66,7 @@ jQuery(document).ready(function($) {
 		e.preventDefault();
 
 		// Alert the user they're dumb and need to select items
-		$(".type-wordpress_awards.entry").each(function( index ) {
+		$("#the-list .entry").each(function( index ) {
 			if ( $(this).find(".check-column input").is(":checked") )
 			{
 				dumb_users = 0;
