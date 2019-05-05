@@ -45,7 +45,7 @@ class Test_WP_Awards_Award extends WP_UnitTestCase {
 			'post_content' => 'Awarded to users if they have more than 50 hours worked for us. They are really nice people',
 			'post_author' => 1,
 			'meta_input' => array(
-				'WPAward_Grammar' => "CURRENT_USER_META UPDATED WHERE key=total_hours GTEQ 50"
+				WP_AWARDS_GRAMMAR_META_TYPE => "CURRENT_USER_META UPDATED WHERE key=total_hours GTEQ 50"
 			)
 		));
 
@@ -55,7 +55,7 @@ class Test_WP_Awards_Award extends WP_UnitTestCase {
 			'post_content' => 'Awarded to users if they have more than 60 hours worked for us. They are really nice people',
 			'post_author' => 1,
 			'meta_input' => array(
-				'WPAward_Grammar' => "CURRENT_USER_META UPDATED WHERE key=total_hours GTEQ 60"
+				WP_AWARDS_GRAMMAR_META_TYPE => "CURRENT_USER_META UPDATED WHERE key=total_hours GTEQ 60"
 			)
 		));
 

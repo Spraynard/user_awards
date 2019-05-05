@@ -88,7 +88,7 @@ function apply_wp_award_listeners() {
 
 		foreach( $awards as $award )
 		{
-			$award_grammar = get_post_meta( $award->ID, 'WPAward_Grammar', true );
+			$award_grammar = get_post_meta( $award->ID, WP_AWARDS_GRAMMAR_META_TYPE, true );
 
 			// The parse function can throw errors, so wrap it in a try block
 			try

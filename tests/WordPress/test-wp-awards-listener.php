@@ -40,7 +40,7 @@ class Test_WP_Awards_Listener extends WP_UnitTestCase {
 			'post_content' => 'Awarded to users if they have more than 50 hours worked for us. They are really nice people',
 			'post_author' => 1,
 			'meta_input' => array(
-				'WPAward_Grammar' => "CURRENT_USER_META UPDATED WHERE key=total_hours GTEQ 50"
+				WP_AWARDS_GRAMMAR_META_TYPE => "CURRENT_USER_META UPDATED WHERE key=total_hours GTEQ 50"
 			)
 		));
 
@@ -51,7 +51,7 @@ class Test_WP_Awards_Listener extends WP_UnitTestCase {
 			'post_content' => 'Awarded to users if they have more than 80 hours worked for us. They are really nice people',
 			'post_author' => 1,
 			'meta_input' => array(
-				'WPAward_Grammar' => "CURRENT_USER_META CREATED WHERE key=total_hours GTEQ 80"
+				WP_AWARDS_GRAMMAR_META_TYPE => "CURRENT_USER_META CREATED WHERE key=total_hours GTEQ 80"
 			)
 		));
 
@@ -61,7 +61,7 @@ class Test_WP_Awards_Listener extends WP_UnitTestCase {
 			'post_content' => 'Awarded to users if they have more than 20 hours worked for us. They are really nice people',
 			'post_author' => 1,
 			'meta_input' => array(
-				'WPAward_Grammar' => "CURRENT_USER_META ASSIGNED WHERE key=total_hours GTEQ 20"
+				WP_AWARDS_GRAMMAR_META_TYPE => "CURRENT_USER_META ASSIGNED WHERE key=total_hours GTEQ 20"
 			)
 		));
 
@@ -81,7 +81,7 @@ class Test_WP_Awards_Listener extends WP_UnitTestCase {
 		$WPAward = new WPAward\BusinessLogic\Core( $this->wpdb );
 		$Grammar = new WPAward\Grammar\Core();
 
-		$WPAward_Grammar = get_post_meta( $post->ID, 'WPAward_Grammar', true);
+		$WPAward_Grammar = get_post_meta( $post->ID, WP_AWARDS_GRAMMAR_META_TYPE, true);
 		$Grammar->parse($WPAward_Grammar);
 
 		$user_meta_updated = update_user_meta( $user->ID, $Grammar->trigger->descriptor->value, 5 );
@@ -116,7 +116,7 @@ class Test_WP_Awards_Listener extends WP_UnitTestCase {
 		$WPAward = new WPAward\BusinessLogic\Core( $this->wpdb );
 		$Grammar = new WPAward\Grammar\Core();
 
-		$WPAward_Grammar = get_post_meta( $post->ID, 'WPAward_Grammar', true);
+		$WPAward_Grammar = get_post_meta( $post->ID, WP_AWARDS_GRAMMAR_META_TYPE, true);
 		$Grammar->parse($WPAward_Grammar);
 
 		// Fail test if we do not listen correctly
@@ -149,7 +149,7 @@ class Test_WP_Awards_Listener extends WP_UnitTestCase {
 		$WPAward = new WPAward\BusinessLogic\Core( $this->wpdb );
 		$Grammar = new WPAward\Grammar\Core();
 
-		$WPAward_Grammar = get_post_meta( $post->ID, 'WPAward_Grammar', true);
+		$WPAward_Grammar = get_post_meta( $post->ID, WP_AWARDS_GRAMMAR_META_TYPE, true);
 		$Grammar->parse($WPAward_Grammar);
 
 		// Fail test if we do not listen correctly
@@ -183,7 +183,7 @@ class Test_WP_Awards_Listener extends WP_UnitTestCase {
 		$WPAward = new WPAward\BusinessLogic\Core( $this->wpdb );
 		$Grammar = new WPAward\Grammar\Core();
 
-		$WPAward_Grammar = get_post_meta( $post->ID, 'WPAward_Grammar', true);
+		$WPAward_Grammar = get_post_meta( $post->ID, WP_AWARDS_GRAMMAR_META_TYPE, true);
 		$Grammar->parse($WPAward_Grammar);
 
 		// Update our user meta to a certain point
