@@ -56,5 +56,11 @@ class Test_Grammar extends TestCase {
 		$this->assertEquals($this->grammar->trigger->operator, "eq");
 		$this->assertEquals($this->grammar->trigger->control, "hello");
 	}
+
+	public function testAssignedTriggerTypeForGoodBehavior() {
+		$acceptGrammarString = "CURRENT_USER_META ASSIGNED" . " WHERE key=hours GT 10";
+
+		$this->assertTrue($this->grammar->parse($acceptGrammarString));
+	}
 }
 ?>

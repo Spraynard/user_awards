@@ -40,7 +40,7 @@ class Test_WP_Awards_Award extends WP_UnitTestCase {
 
 		// Assigning to our post variable.
 		$this->post = $this->factory->post->create_and_get(array(
-			'post_type' => 'wap_award',
+			'post_type' => WP_AWARDS_POST_TYPE,
 			'post_title' => 'Fifty Hours Worked',
 			'post_content' => 'Awarded to users if they have more than 50 hours worked for us. They are really nice people',
 			'post_author' => 1,
@@ -50,7 +50,7 @@ class Test_WP_Awards_Award extends WP_UnitTestCase {
 		));
 
 		$this->post_2 = $this->factory->post->create_and_get(array(
-			'post_type' => 'wap_award',
+			'post_type' => WP_AWARDS_POST_TYPE,
 			'post_title' => '60 Hours Worked',
 			'post_content' => 'Awarded to users if they have more than 60 hours worked for us. They are really nice people',
 			'post_author' => 1,
