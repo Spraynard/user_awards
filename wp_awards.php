@@ -35,6 +35,11 @@ if ( ! defined('WP_AWARDS_POST_TYPE') )
 	define('WP_AWARDS_POST_TYPE', 'wp_awards_cpt');
 }
 
+if ( ! defined('WP_AWARDS_GRAMMAR_META_TYPE') )
+{
+	define('WP_AWARDS_GRAMMAR_META_TYPE', 'WPAward_Grammar');
+}
+
 /* End Defines */
 
 // Include our scripts
@@ -74,31 +79,31 @@ $WPAwardPlugin = new WPAward\PluginLogic\Core( $WPAward, $WPAwardMetaBoxes );
  */
 
 function apply_wp_award_listeners() {
-	// $current_user = wp_get_current_user();
+	$current_user = wp_get_current_user();
 
-	// if ( $current_user->ID > 0 )
-	// {
-	// 	$awards = get_posts([ 'post_type' => WP_AWARDS_POST_TYPE ]);
-	// 	$grammar = new WPAward\Grammar\Core();
+	if ( $current_user->ID > 0 )
+	{
+		$awards = get_posts([ 'post_type' => WP_AWARDS_POST_TYPE ]);
+		$grammar = new WPAward\Grammar\Core();
 
-	// 	foreach( $awards as $award )
-	// 	{
-	// 		$award_grammar = get_post_meta( $award->ID, 'WPAward_Grammar', true );
+		foreach( $awards as $award )
+		{
+			$award_grammar = get_post_meta( $award->ID, 'WPAward_Grammar', true );
 
-	// 		// The parse function can throw errors, so wrap it in a try block
-	// 		try
-	// 		{
-	// 			$grammar->parse( $award_grammar );
-	// 		}
-	// 		catch( Exception $e )
-	// 		{
-	// 			continue;
-	// 		}
+			// The parse function can throw errors, so wrap it in a try block
+			try
+			{
+				$grammar->parse( $award_grammar );
+			}
+			catch( Exception $e )
+			{
+				continue;
+			}
 
-	// 		// Apply our listener. Set it and forget it. Include a parsed grammar and inject the WPAward dependency
-	// 		$listener = new WPAward\Listener\Core( $award->ID, $grammar, $WPAward );
-	// 	}
-	// }
+			// Apply our listener. Set it and forget it. Include a parsed grammar and inject the WPAward dependency
+			$listener = new WPAward\Listener\Core( $award->ID, $grammar, $WPAward );
+		}
+	}
 }
 
 /**
@@ -110,6 +115,11 @@ function enqueue_plugin_assets( $hook ) {
 	{
 		wp_enqueue_style( 'general_award_styles', plugins_url( 'wp_awards_styles.css', __FILE__ ), [], false, false );
 		wp_enqueue_script( 'WPAwards_Edit_Bulk_Scripts', plugins_url( 'scripts/wp_award_page_edit_scripts.js', __FILE__ ), array('common') );
+	}
+
+	if ( $hook === "wp_awards_cpt_page_user-awards-admin-view" )
+	{
+		wp_enqueue_script( 'WPAwards_Admin_View_Scripts', plugins_url( 'scripts/wp_award_admin_view_scripts.js', __FILE__ ), array('common') );
 	}
 }
 ?>
