@@ -79,6 +79,8 @@ $WPAwardPlugin = new WPAward\PluginLogic\Core( $WPAward, $WPAwardMetaBoxes );
  */
 
 function apply_wp_award_listeners() {
+	global $WPAward;
+
 	$current_user = wp_get_current_user();
 
 	if ( $current_user->ID > 0 )
