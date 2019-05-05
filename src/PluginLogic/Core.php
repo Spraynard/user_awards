@@ -204,7 +204,7 @@ class Core {
 	{
 		switch( $column ) {
 			case 'trigger':
-				$value = get_post_meta( $post_id, 'WPAward_Grammar', true);
+				$value = get_post_meta( $post_id, WP_AWARDS_GRAMMAR_META_TYPE, true);
 				$value = empty($value) ? "[No Trigger Currently]" : $value;
 				break;
 			case 'auto_give':
