@@ -33,17 +33,19 @@ class Core {
 			throw new \UnexpectedValueException("User does not exist...");
 		}
 
-		// Pre-set our trigger tye based on whether the user has a user meta field or not.
+		// Pre-set our trigger type based on whether the user has a user meta field or not.
 		if ( $this->grammar->trigger_type == "assigned" )
 		{
-			if ( empty( get_user_meta($user->ID, $this->grammar->trigger->descriptor->key) ) )
+			if ( empty( get_user_meta($user->ID, $this->grammar->trigger->descriptor->value, true) ) )
 			{
-				$this->grammar->change_trigger_type("added_user_meta");
+				$this->grammar->change_trigger_type("created");
 			}
 			else
 			{
-				$this->grammar->change_trigger_type("updated_user_meta");
+				$this->grammar->change_trigger_type("updated");
 			}
+
+			$this->grammarFunction = $this->grammar->entity . '_' . $this->grammar->trigger_type;
 		}
 
 		// Explicit update
@@ -60,11 +62,8 @@ class Core {
 		add_action($action, [ $this, $this->grammarFunction ], 10, 4); // example: current_user_meta_updated
 	}
 
-	/**
-	 * Function that responds to a user metadata update. Will assign an award to a user if and only if they pass the
-	 * award's trigger conditions.
-	 */
-	function current_user_meta_updated( $meta_id, $object_id, $meta_key, $_meta_value ) {
+	function assignAward( $meta_id, $object_id, $meta_key, $_meta_value )
+	{
 
 		// Award user if our current user's meta key passes the grammar control
 		$descriptor = $this->grammar->trigger->descriptor->value;
@@ -94,14 +93,27 @@ class Core {
 		}
 	}
 
-	function current_user_meta_excluded()
+	/**
+	 * Function that responds to a user metadata update. Will assign an award to a user if and only if they pass the
+	 * award's trigger conditions.
+	 */
+	function current_user_meta_updated( $meta_id, $object_id, $meta_key, $_meta_value ) {
+		$this->assignAward($meta_id, $object_id, $meta_key, $_meta_value);
+	}
+
+	function current_user_meta_excluded( $meta_id, $object_id, $meta_key, $_meta_value )
 	{
 		// Maybe v0.0.2
 	}
 
-	function current_user_meta_created()
+	function current_user_meta_created( $meta_id, $object_id, $meta_key, $_meta_value )
 	{
-		// Maybe v0.0.2
+		$this->assignAward($meta_id, $object_id, $meta_key, $_meta_value);
+	}
+
+	function current_user_meta_assigned( $meta_id, $object_id, $meta_key, $_meta_value )
+	{
+		$this->assignAward($meta_id, $object_id, $meta_key, $_meta_value);
 	}
 }
 ?>
