@@ -279,7 +279,7 @@ class UserAwardsTable extends \WP_List_Table {
 			[] // Sortable Columns
 		];
 
-		$query = "SELECT * FROM {$wpdb->prefix}awards";
+		$query = "SELECT * FROM {$wpdb->prefix}" . WP_AWARDS_TABLE_USER_AWARDS;
 
 		$this->items = $wpdb->get_results($query);
 	}

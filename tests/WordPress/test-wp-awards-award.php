@@ -25,7 +25,7 @@ class Test_WP_Awards_Award extends WP_UnitTestCase {
 		parent::tearDown();
 		global $wpdb;
 
-		$tablename = $wpdb->prefix . "awards";
+		$tablename = $wpdb->prefix . WP_AWARDS_TABLE_USER_AWARDS;
 
 		$wpdb->query( "TRUNCATE TABLE {$tablename}" );
 	}

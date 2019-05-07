@@ -13,7 +13,7 @@ class Core {
 
 	function __construct( $db ) {
 		$this->db = $db;
-		$this->db_table = $this->db->prefix . "awards";
+		$this->db_table = $this->db->prefix . WP_AWARDS_TABLE_USER_AWARDS;
 
 		// Signal to wordpress to delete all of our user associated links to "awards" if we delete that user from the db
 		add_action( 'delete_user', [$this, 'RemoveUserAward'], 10, 1 );
