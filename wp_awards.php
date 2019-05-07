@@ -16,34 +16,11 @@ Author URI: http://kellanmartin.com
 
 defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
 
-/**
- * DEFINES
- */
-
-if ( ! defined('WP_AWARDS_VERSION_KEY') )
-{
-	define('WP_AWARDS_VERSION_KEY', 'wp_awards_version');
-}
-
-if ( ! defined('WP_AWARDS_VERSION') )
-{
-	define('WP_AWARDS_VERSION', '0.1');
-}
-
-if ( ! defined('WP_AWARDS_POST_TYPE') )
-{
-	define('WP_AWARDS_POST_TYPE', 'wp_awards_cpt');
-}
-
-if ( ! defined('WP_AWARDS_GRAMMAR_META_TYPE') )
-{
-	define('WP_AWARDS_GRAMMAR_META_TYPE', 'WPAward_Grammar');
-}
-
-/* End Defines */
+// Plugin Constants
+require_once plugin_dir_path( __FILE__ ) . "/constants.php";
 
 // Include our scripts
-require_once __DIR__ . "/vendor/autoload.php";
+require_once plugin_dir_path( __FILE__ ) . "/vendor/autoload.php";
 
 // Grab our database instance
 global $wpdb;
