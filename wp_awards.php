@@ -1,20 +1,21 @@
 <?php
 /**
- * @package Awards
- * @version 0.0.2
- */
-/*
-Plugin Name: Awards
-Description: Adds the ability to award your registered users!
-Let them know you appreciate them by awarding based on site actions,
-such as:
-	* User Meta Applications
+Plugin Name: User Awards
+Description: Let your registered members know how much you appreciate them! Enhances your site with the abilty to assign and give awards to members based on the actions that they take. Your members will have a lifetime supply of cherished memories that they can hold dear to their hearts for years to come after using your site!
 Author: Kellan Martin
 Version: 0.0.1
 Author URI: http://kellanmartin.com
 */
 
 defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
+
+/**
+ * ###	Notes for the devs 	###
+ *
+ * While I was creating this plugin I had it in my mind that I would be naming this plugin something like WPAwards or something around there, so that's why that prefix is pretty much all over the place. Please forgive me and don't kill my family for some weird naming. It had to be done... And it can always be refactored!!!
+ */
+
+
 
 // Plugin Constants
 require_once plugin_dir_path( __FILE__ ) . "/constants.php";
