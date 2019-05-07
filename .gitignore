@@ -11,3 +11,6 @@ tests/test-sample.php
 
 # backups/
 backups/
+
+# Mac OS General
+.DS_Store
