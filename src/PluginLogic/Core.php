@@ -88,8 +88,9 @@ class Core {
 				'search_items' => 'Search Awards', // Text displayed for searching
 				'not_found' => 'No Awards Found', // Text displayed when no awards were found in a search
 				'not_found_in_trash' => 'No Awards Found in Trash', // Test shown when awards found in trash
-				'menu_name' => 'Awards'
+				'menu_name' => 'Awards',
 			],
+			'menu_icon' => plugins_url( '/assets/icons/icon-16x16.png', dirname(dirname(__FILE__)) ),
 			'show_ui' => true
 		];
 
