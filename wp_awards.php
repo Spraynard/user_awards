@@ -92,13 +92,27 @@ function enqueue_plugin_assets( $hook ) {
 	// Post Specific page - New Post, Edit Post
 	if ( $hook === "post.php" || $hook === "edit.php" || $hook === "post-new.php" )
 	{
-		wp_enqueue_style( 'general_award_styles', plugins_url( 'wp_awards_styles.css', __FILE__ ), [], false, false );
-		wp_enqueue_script( 'WPAwards_Edit_Bulk_Scripts', plugins_url( 'scripts/wp_award_page_edit_scripts.js', __FILE__ ), array('common') );
+		wp_enqueue_style(
+			'general_award_styles',
+			plugins_url( 'assets/styles/wp_awards_styles.css', __FILE__ ),
+			[],
+			false,
+			false
+		);
+		wp_enqueue_script(
+			'WPAwards_Edit_Bulk_Scripts',
+			plugins_url( 'assets/scripts/wp_award_page_edit_scripts.js', __FILE__ ),
+			array('common')
+		);
 	}
 
 	if ( $hook === "wp_awards_cpt_page_user-awards-admin-view" )
 	{
-		wp_enqueue_script( 'WPAwards_Admin_View_Scripts', plugins_url( 'scripts/wp_award_admin_view_scripts.js', __FILE__ ), array('common') );
+		wp_enqueue_script(
+			'WPAwards_Admin_View_Scripts',
+			plugins_url( 'assets/scripts/wp_award_admin_view_scripts.js', __FILE__ ),
+			array('common')
+		);
 	}
 }
 ?>
