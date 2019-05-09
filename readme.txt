@@ -12,116 +12,212 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Let your users know how much you appreciate them! Enhances your site with the abilty to assign and give awards to users based on the actions that they take.
 
 == Description ==
+Activating this plugin now means that you are able to award users for specific actions that they take.
 
-This plugin will add an `Awards` custom post type to your website. This interface allows you to perform any action that you could perform with your regular posts, but with a few additions that provide access to the core behavior of this plugin.
+**NOTE**: Currently this only works for actions that update or add to user meta values.
+
+At a basic level, the following happens when you activate this plugin:
+* **Awards** _custom post type_ is added to the administration window. Regular post type window but with a few additional meta boxes that provide access to the core behavior of this plugin.
+
+* A new table is created under the name of `{wpdb_prefix}user_awards`. This contains all award assignment references to users. The _User Awards_ sub-menu provides an interface to help perform administrative actions on the table.
 
 There is also a `User Awards` sub-menu which gives a tabular view of all the awards that are assigned to users. This is accessible from the `Awards` admin menu in your WordPress administration area.
 
 # __Usage__
-
+---
 Understanding the different actions you can take in each available window is key to having this plugin work for you.
 
+## Award List Window
+>This window displays all of the specific "Award" post types.
+
+There are two different bulk actions available to you:
+* __Bulk Assign__ - Assign multiple awards to a user
+* __Bulk Give__ - Give multiple awards to a user
+
 ## New Award / Edit Award Window
-These administration windows have three meta boxes associated with them. Below are descriptions of each metabox and why it is included.
+>These administration windows have three meta boxes associated with them. Below are descriptions of each metabox and why it is included.
 
 ### Awards Trigger
-Text Input. Accepts an **awards trigger string** that describes the behavior of how an award will be assigned to users.
+_Text Input_. Accepts an **awards trigger string**, which will describe the behavior of how an award will be assigned to users. Documentation for the awards trigger is shown below.
 
 #### Example
-You have a membership blog site, and you want to award your site's members for liking at least ten blog posts. Each member has a `post_likes` *user_meta* value that is incremented each time a member likes a blog post (e.g. If a member likes 3 blog posts, they will have a `post_likes` meta value of `3`).
 
-In order to set our award up to assign itself to a user after someone likes more than ten different posts, we would put something like this in the `Awards Trigger` input:
+You have a membership blog site, and because you're a nice person, you want to award your members for being engaged with your site and liking at least ten blog posts!
+
+A previous developer implemented a like button on each of your site's blog posts that increments a `post_likes` *user_meta* value on the user that clicks it (e.g. If a member likes 3 blog posts, they will have a `post_likes` meta value of `3`).
+
+We've decided to name our award the "User Engagement" award. In order to _assign_ it to a member based on the prerequisites, you would put something like this in the "Awards Trigger" input.
 
 `CURRENT_USER_META ASSIGNED WHERE key=post_likes EQ 10`
 
-This string tells the award to assign itself to the user if the `user_meta_post_likes` value of the current user's meta was updated or created to equal a value of `10`.
+This string tells the award to assign itself to the user if the `post_likes` value of the current user's meta was updated or created to equal a value of `10`.
 
 ### Auto-Give Award
-Checkbox input. Check this box to automatically have the award be *given* to a user when it would originally be assigned.
+_Checkbox input_. Check this box to automatically have the award be *given* to a user when it would originally be assigned.
 
 ### Apply/Give Award To User
-Select Input combined with a checkbox input. Provides the ability to select a user from your member list to either assign/give an award to a user.
+_Select Input combined with a checkbox input_. Select a user from your member list to either assign/give an award by clicking on the *Assign* submit button.
 
-The `Awards Trigger` meta box can be filled in with a string that, when valid, provides a method for assigning an award to a user.
+## User Awards Window
+> This window allows administrators to __physically see and update__ the status of all of the awards that are assigned to users.
 
-Wi
+This window will allow you to perform the following actions:
+* Singular/Bulk remove awards from members
+* Singular give awards to members
+* Edit Awards
 
+# Documentation
+---
 
+## Awards Trigger Syntax
+
+We use a string with this syntax to create an award trigger.
+`[ entity ] [ trigger_type ] WHERE [ trigger ]`
+
+Below is documentation and explanation, with acceptable values, of each portion of the trigger string syntax.
+
+[ entity ]
+	- CURRENT_USER_META -- Consider the meta value of the current user
+
+The `entity` is used to scope your Awards Trigger to a specific action.
+
+[ trigger_type ] -- Type of action that is performed to the current entity.
+	- UPDATED -- When entity value is updated (in terms of user meta, this will consider the `update_user_meta()` function)
+	- CREATED -- When entity value is created (in terms of user meta, this will consider the `add_user_meta()` function)
+	- ASSIGNED -- Will consider both updates and creations of set up entity.
+	- ~~EXCLUDED~~ -- Currently unused.
+
+[ trigger ] - [ descriptor ] [ operator ] [ control ]
+	- [ descriptor ]
+		- [ entity_type ] = [ value ]
+		ex: key = hours
+
+	- [ operator ]
+		- GT - greater than
+		- LT - less than
+		- EQ - equal to
+	 	- GTEQ - greater than equal to
+	 	- LTEQ - less than equal to
+
+ - [ control ]
+ 	- Value used to compare against. e.g. 2
+
+EXAMPLE:
+
+> CURRENT_USER_META UPDATED WHERE key=total_hours GT 600
+
+This example creates a wp action handler that only applies when a user's meta tags are updated.
+In the handler, we will compare the meta tag being updated to the given comparitors in the [ trigger ].
+i.e. we will look for a meta tag of the current user that is labeled "total_hours" and check to see if the value is
+greater than 600. If that's the case then the award will be assigned. If not then nothing happens.
+
+## `$UserAward` Global Object
+
+The awards trigger syntax, while nice, is too limited in its current form. Our plugin provides a global `$UserAward` variable that allows developers to interact with the core API of the plugin in order to award items through methods that simply are not possible / too complex.
+
+You will find documentation and usage for functions available to you below.
+
+```php
+global $UserAward;
+
+/**
+ * Check to see if a user already has a specific award
+ * @param  int $user_id  - WPUser_ID
+ * @param  int $award_id - UserAward_ID (Post ID)
+ * @return bool           Whether or not this user has an award with the current award id
+ */
+$UserAward->UserHasAward( $user_id, $award_id );
+
+/**
+ * Assigns multiple awards to users using AssignAward
+ * @param  int $user_id  - WPUser_ID
+ * @param  array $award_ids - Array of UserAward_IDs (Post ID)
+ * @return bool             - True if awards were assigned, false if there was an error with assigning awards
+ */
+$UserAward->AssignAwards( $user_id, $award_ids );
+
+/**
+ * Function that marks an award as assigned to a user.
+ * We insert a new record into our awards table that relates the award to the user.
+ *
+ * We do check to see if there is an auto-assignment of the award before we finish up our function though.
+ *
+ * @param int $user_id  - ID of the user that we are "awarding" the award to
+ * @param int $award_id - ID of the award that we are "awarding"
+ * @return bool 		- True if award was assigned,
+ *                  	  False if:
+ *                  	  	- User already has that award
+ *                  	  	- Error with assigning our award
+ */
+$UserAward->AssignAward( $user_id, $award_id );
+
+/**
+ * Give multiple awards to users using GiveAward().
+ * @param  int $user_id  - WPUser_ID
+ * @param  array $award_ids - Array of UserAward_IDs (Post ID)
+ * @return bool             - True if awards were given, false if there was an error with giving awards
+ */
+$UserAward->GiveAwards( $user_id, $award_ids );
+
+/**
+ * Function that will mark an award as given to a user,
+ * which essentially means that we mark the "date_given" time with
+ * an actual date.
+ *
+ * Returns the return value of a `db->update` call
+ *
+ * @param int $user_id  - ID of the user that we are "awarding" the award to
+ * @param int $award_id - ID of the award that we are "awarding"
+ * @return mixed        - Return value of a $wpdb->update() call
+ */
+$UserAward->GiveAward( $user_id, $award_id );
+
+/**
+ * Removes awards from our database.
+ * If "$award_id" is null, then we are going to delete everything in the database with the specific "$user_id"
+ *
+ * @param int $user_id  - ID of the user that we are "awarding" the award to
+ * @param int $award_id - ID of the award that we are "awarding"
+ * @return mixed 		- Return the value of a $wpdb->delete() call
+ */
+$UserAward->RemoveUserAward( $user_id, $award_id = NULL );
+
+/**
+ * Function that grabs as many awards assigned to the user as we can based on the parameters given.
+ * For example, if just a user_id is supplied, then we will return all of the awards with that user_id.
+ * If an award_id is supplied along with our user_id then we will probably get only one award. Hopefully
+ *
+ * @param int $user_id  - ID of the user that we are "awarding" the award to
+ * @param int $award_id - ID of the award that we are "awarding"
+ * @return mixed 		- Returnes the value of a $wpdb->get_results() call
+ */
+$UserAward->GetUserAward( $user_id, $award_id = NULL);
+```
 
 == Installation ==
 
+1. Upload the plugin files to the `/wp-content/plugins/user-awards` directory install the plugin through the WordPress plugins screen directly
+2. Activate the plugin through the
 This section describes how to install the plugin and get it working.
-
-e.g.
-
-1. Upload the plugin files to the `/wp-content/plugins/plugin-name` directory, or install the plugin through the WordPress plugins screen directly.
-1. Activate the plugin through the 'Plugins' screen in WordPress
-1. Use the Settings->Plugin Name screen to configure the plugin
-1. (Make your instructions match the desired user flow for activating and installing your plugin. Include any steps that might be needed for explanatory purposes)
-
+3. Activate the plugin through the ‘Plugins’ screen in WordPress. You should be notified if the plugin activation was successful.
+4. Click on the `Awards` menu item on the administrator sidebar in order to interact with the User Awards plugin administration actions.
 
 == Frequently Asked Questions ==
-
-= A question that someone might have =
-
-An answer to that question.
-
-= What about foo bar? =
-
-Answer to foo bar dilemma.
-
-== Screenshots ==
-
-1. This screen shot description corresponds to screenshot-1.(png|jpg|jpeg|gif). Note that the screenshot is taken from
-the /assets directory or the directory that contains the stable readme.txt (tags or trunk). Screenshots in the /assets
-directory take precedence. For example, `/assets/screenshot-1.png` would win over `/tags/4.3/screenshot-1.png`
-(or jpg, jpeg, gif).
-2. This is the second screen shot
+No frequently asked questions are known at this time.
 
 == Changelog ==
 
-= 1.0 =
-* A change since the previous version.
-* Another change.
-
-= 0.5 =
-* List versions from most recent at top to oldest at bottom.
+= Version 0.0.1 =
+Initial version of the plugin.
 
 == Upgrade Notice ==
+No Upgrade notices at this time
 
-= 1.0 =
-Upgrade notices describe the reason a user should upgrade.  No more than 300 characters.
+== Screenshots ==
+1. Award List Window. Shows the awards that are available to give to users.
+2. New/Edit Award Window #1
+3. New/Edit Award Window #2
+4. User Awards window. Shows any awards that are assigned to users.
 
-= 0.5 =
-This version fixes a security related bug.  Upgrade immediately.
-
-== Arbitrary section ==
-
-You may provide arbitrary sections, in the same format as the ones above.  This may be of use for extremely complicated
-plugins where more information needs to be conveyed that doesn't fit into the categories of "description" or
-"installation."  Arbitrary sections will be shown below the built-in sections outlined above.
-
-== A brief Markdown Example ==
-
-Ordered list:
-
-1. Some feature
-1. Another feature
-1. Something else about the plugin
-
-Unordered list:
-
-* something
-* something else
-* third thing
-
-Here's a link to [WordPress](https://wordpress.org/ "Your favorite software") and one to [Markdown's Syntax Documentation][markdown syntax].
-Titles are optional, naturally.
-
-[markdown syntax]: https://daringfireball.net/projects/markdown/syntax
-            "Markdown is what the parser uses to process much of the readme file"
-
-Markdown uses email style notation for blockquotes and I've been told:
-> Asterisks for *emphasis*. Double it up  for **strong**.
-
-`<?php code(); // goes in backticks ?>`
+== Attribution ==
+This plugin's icon is not an original piece of work. It was made by [**Freepik** from Flaticon.com](www.flaticon.com)

@@ -4,7 +4,7 @@
  * Class that contains the rules for our grammar that will parse out our query and see if there is a need to trigger an award to be given to a user.
  *
  * The base structure for our grammar will be:
- * [ entity ] [ trigger_type ] WHERE [ triggers ]
+ * [ entity ] [ trigger_type ] WHERE [ trigger ]
  *
  * [ entity ]
  * 	- CURRENT_USER_META
@@ -15,7 +15,7 @@
  * - ASSIGNED
  * - EXCLUDED
  *
- * [ triggers ] - [ descriptor ] [ operator ] [ control ]
+ * [ trigger ] - [ descriptor ] [ operator ] [ control ]
  * 	- [ descriptor ]
  * 		- [ entity_type ] = [ value ]
  * 		ex: key = hours
