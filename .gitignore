@@ -1,6 +1,9 @@
 vendor/
 dockerDir/
 
+# Distribution folder
+dist/
+
 # wp scaffold plugin-tests data...
 # phpunit.xml.dist
 .travis.yml
