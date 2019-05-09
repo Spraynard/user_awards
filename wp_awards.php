@@ -27,7 +27,7 @@ require_once plugin_dir_path( __FILE__ ) . "/vendor/autoload.php";
 global $wpdb;
 
 // Global variable acessible throughout WP in order to apply awards to users.
-global $WPAward;
+global $UserAwards;
 
 // Activation, Deactivation, Uninstall
 register_activation_hook( __FILE__, [ 'WPAward\PluginLogic\RegistrationHooks', 'Activate' ] );
@@ -41,13 +41,13 @@ add_action( 'admin_enqueue_scripts', 'enqueue_plugin_assets' );
 add_action( 'plugins_loaded', 'apply_wp_award_listeners' );
 
 // Holds our user awards business logic
-$WPAward = new WPAward\BusinessLogic\Core($wpdb);
+$UserAwards = new WPAward\BusinessLogic\Core($wpdb);
 
 // Plugin meta box handling
-$WPAwardMetaBoxes = new WPAward\PluginLogic\PostType\MetaBoxes( WP_AWARDS_POST_TYPE, $WPAward );
+$WPAwardMetaBoxes = new WPAward\PluginLogic\PostType\MetaBoxes( WP_AWARDS_POST_TYPE, $UserAwards );
 
 // Holds our plugin logic, which includes Post and Meta type additions
-$WPAwardPlugin = new WPAward\PluginLogic\Core( $WPAward, $WPAwardMetaBoxes );
+$WPAwardPlugin = new WPAward\PluginLogic\Core( $UserAwards, $WPAwardMetaBoxes );
 
 /**
  * Loop through all the defined awards.
@@ -57,7 +57,7 @@ $WPAwardPlugin = new WPAward\PluginLogic\Core( $WPAward, $WPAwardMetaBoxes );
  */
 
 function apply_wp_award_listeners() {
-	global $WPAward;
+	global $UserAwards;
 
 	$current_user = wp_get_current_user();
 
@@ -81,7 +81,7 @@ function apply_wp_award_listeners() {
 			}
 
 			// Apply our listener. Set it and forget it. Include a parsed grammar and inject the WPAward dependency
-			$listener = new WPAward\Listener\Core( $award->ID, $grammar, $WPAward );
+			$listener = new WPAward\Listener\Core( $award->ID, $grammar, $UserAwards );
 		}
 	}
 }
