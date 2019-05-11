@@ -42,7 +42,7 @@ jQuery(document).ready(function($) {
 	var modal_get_user = $("#modal-get-user");
 	var modal_get_user_submit = modal_get_user.find(".button-primary");
 	var modal_get_user_cancel = modal_get_user.find(".button-secondary");
-	var modal_user_select = $("#WPAward_UserID");
+	var modal_user_select = $("#UserAwards_UserID");
 	var posts_filter = $("#posts-filter"); // The form used to submit our bulk actions... I think...
 	var bulk_actions_submit = $(".bulkactions input[type=\"submit\"]");
 	var modal_get_user_link = $("#modal-get-user-link");
@@ -103,12 +103,12 @@ jQuery(document).ready(function($) {
 		}
 
 		// HTML to inject
-		inputHTML = '<input name="WPAward_UserID" type="hidden" value="' + user_id + '"/>';
+		inputHTML = '<input name="UserAwards_UserID" type="hidden" value="' + user_id + '"/>';
 
 		// Inject or Update
-		if ( $('input[name="WPAward_UserID"]').length )
+		if ( $('input[name="UserAwards_UserID"]').length )
 		{
-			$('input[name="WPAward_UserID"]').val(user_id);
+			$('input[name="UserAwards_UserID"]').val(user_id);
 		}
 		else
 		{

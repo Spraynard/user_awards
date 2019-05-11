@@ -118,7 +118,6 @@ class Core {
 	public function UserAwardsPageHTML() {
 		$userAwardsTable = new UserAwardsTable( $this->WPAward );
 		$userAwardsTable->prepare_items();
-		$page = $_REQUEST['page'];
 	?>
 		<div class="wrap">
 			<h1>User Awards</h1>
@@ -133,8 +132,8 @@ class Core {
 	}
 
 	function register_wp_awards_cpt_bulk_actions( $bulk_actions ) {
-		$bulk_actions['assign_to_user'] = __('Assign to User', 'wp_award_cpt');
-		$bulk_actions['give_to_user'] = __('Give to User', 'wp_award_cpt');
+		$bulk_actions['assign_to_user'] = __('Assign to User', 'user_awards');
+		$bulk_actions['give_to_user'] = __('Give to User', 'user_awards');
 		return $bulk_actions;
 	}
 
@@ -147,37 +146,37 @@ class Core {
 	 */
 	function handle_wp_awards_cpt_bulk_actions( $redirect_url, $doaction, $items )
 	{
-		$WPAward_UserID = ( empty($_GET['WPAward_UserID']) ) ? NULL : (int) $_GET['WPAward_UserID']; // Ternary to get User ID and assign it.
+		$UserAwards_UserID = ( empty($_GET['UserAwards_UserID']) ) ? NULL : (int) $_GET['UserAwards_UserID']; // Ternary to get User ID and assign it.
 
 		/**
 		 * Remove bulk action params from the URL before we process and potentially add in parameters
 		 */
 		$redirect_url = remove_query_arg(
 			array(
-				'WPAward_Users_Affected',
-				'WPAward_UserID',
-				'WPAward_Bulk_Action'
+				'UserAwards_Users_Affected',
+				'UserAwards_UserID',
+				'UserAwards_Bulk_Action'
 			),
 			$redirect_url
 		);
 
-		if ( $WPAward_UserID )
+		if ( $UserAwards_UserID )
 		{
 			if ( $doaction === 'assign_to_user' )
 			{
 				$bulkAction = "Assigned";
-				$action_completed = $this->WPAward->AssignAwards( $WPAward_UserID, $items );
+				$action_completed = $this->WPAward->AssignAwards( $UserAwards_UserID, $items );
 			}
 			elseif( $doaction === 'give_to_user' )
 			{
 				$bulkAction = "Gave";
-				$action_completed = $this->WPAward->GiveAwards( $WPAward_UserID, $items );
+				$action_completed = $this->WPAward->GiveAwards( $UserAwards_UserID, $items );
 			}
 
 			$redirect_url = add_query_arg([
-				'WPAward_Users_Affected' => count( $items ),
-				'WPAward_UserID' => $WPAward_UserID,
-				'WPAward_Bulk_Action' => $bulkAction
+				'UserAwards_Users_Affected' => count( $items ),
+				'UserAwards_UserID' => $UserAwards_UserID,
+				'UserAwards_Bulk_Action' => $bulkAction
 			], $redirect_url);
 
 		}
@@ -220,7 +219,7 @@ class Core {
 	 * Outputs a modal that we will use to select our user
 	 */
 	function ModalGetUser() {
-		$UserSelectHTML = call_user_func(["WPAward\Utility", "UserSelectHTML"], "WPAward_UserID", "Choose Here");
+		$UserSelectHTML = call_user_func(["WPAward\Utility", "UserSelectHTML"], "UserAwards_UserID", "Choose Here");
 		add_thickbox();
 		echo <<<HTML
 		<a id="modal-get-user-link" href="#TB_inline?width=250&height=250&inlineId=modal-get-user" style="display:none;" class="thickbox"></a>
@@ -247,21 +246,22 @@ HTML;
 		$output_format = "";
 		$output_params_array = [];
 
-		if ( ! empty($_REQUEST['WPAward_Bulk_Action']) )
+		if ( ! empty($_REQUEST['UserAwards_Bulk_Action']) )
 		{
+			$bulk_action =
 			$output_format .= "%s "; // Assigned, Gave, Removed
-			$output_params_array[] = (string) $_REQUEST['WPAward_Bulk_Action'];
+			$output_params_array[] = (string) $_REQUEST['UserAwards_Bulk_Action'];
 		}
 
-		if ( ! empty($_REQUEST['WPAward_Users_Affected']) )
+		if ( ! empty($_REQUEST['UserAwards_Users_Affected']) )
 		{
 			$output_format .= "%d awards ";
-			$output_params_array[] = (int) $_REQUEST['WPAward_Users_Affected'];
+			$output_params_array[] = (int) $_REQUEST['UserAwards_Users_Affected'];
 		}
 
-		if ( ! empty($_REQUEST['WPAward_UserID']) )
+		if ( ! empty($_REQUEST['UserAwards_UserID']) )
 		{
-			$user_assigned = get_user_by( 'ID', (int) $_REQUEST['WPAward_UserID'] );
+			$user_assigned = get_user_by( 'ID', (int) $_REQUEST['UserAwards_UserID'] );
 			$output_format .= "to %s";
 			$output_params_array[] = ucfirst($user_assigned->user_nicename);
 
