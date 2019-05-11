@@ -122,6 +122,11 @@ HTML;
 	 */
 	function WPAwardsSaveMetaBoxes( $post_id ) {
 
+		if ( ! current_user_can( 'manage_options' )	)
+		{
+			return;
+		}
+
 		$skip_autosave_actions = [
 			WP_AWARDS_GRAMMAR_META_TYPE,
 			'WPAward_Auto_Give',
