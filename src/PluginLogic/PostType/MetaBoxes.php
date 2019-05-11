@@ -174,14 +174,22 @@ HTML;
 		{
 			check_admin_referer( plugin_basename(__FILE__), 'WPAward_Apply_Award_To_User' );
 
+			$user_id = (int) $_POST['WPAward_User_Apply'];
+
+			// Validate that we're going to perform these actions to an actual user.
+			if ( ! get_userdata( $user_id ) )
+			{
+				return;
+			}
+
 			if ( isset( $_POST['WPAward_User_Give']) )
 			{
-				$this->WPAward->GiveAward( sanitize_text_field($_POST['WPAward_User_Apply']), $post_id );
+				$this->WPAward->GiveAward( $user_id, $post_id );
 			}
 			else
 			{
 				// Assign the award to the given user
-				$this->WPAward->AssignAward( sanitize_text_field($_POST['WPAward_User_Apply']), $post_id );
+				$this->WPAward->AssignAward( $user_id, $post_id );
 			}
 		}
 	}
