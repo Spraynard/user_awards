@@ -29,11 +29,11 @@ class UserAwardsTable extends \WP_List_Table {
 	 */
 	function get_columns() {
 		return [
-			'cb' => '<input type="checkbox" />',
-			'award' => 'Award',
-			'user' => 'User',
-			'date_assigned' => 'Date Award Assigned',
-			'date_given' => 'Date Award Given',
+			'cb' => __('<input type="checkbox" />', 'user-awards'),
+			'award' => __('Award', 'user-awards'),
+			'user' => __('User', 'user-awards'),
+			'date_assigned' => __('Date Award Assigned', 'user-awards'),
+			'date_given' => __('Date Award Given', 'user-awards'),
 		];
 	}
 
@@ -87,7 +87,7 @@ class UserAwardsTable extends \WP_List_Table {
 	 * @return string      - Column value in string form
 	 */
 	function column_date_assigned( $item ) {
-		return $item->date_assigned;
+		return esc_html($item->date_assigned);
 	}
 
 	/**
@@ -112,7 +112,9 @@ class UserAwardsTable extends \WP_List_Table {
 	}
 
 	/**
-	 * Provide a checkbox here that is filled with the item's ID I'm guessing
+	 * Provide a checkbox here that is filled with award ids.
+	 * When a user selects one (or multiple) awards, then we are going to be
+	 * adding an array to our URL as part of the query to specify which awards we are doing an action with.
 	 */
 	function column_cb( $item ) {
 		return sprintf(
@@ -141,7 +143,6 @@ class UserAwardsTable extends \WP_List_Table {
 				if ( ! empty($_POST[$this->_args['plural']]) )
 				{
 					$user_award_array = $_POST[$this->_args['plural']];
-					$award_count = 0;
 
 					if ( ! is_array($user_award_array) )
 					{
@@ -163,7 +164,6 @@ class UserAwardsTable extends \WP_List_Table {
 							}
 
 							$this->WPAward->RemoveUserAward( $user_id, $award_id );
-							$award_count++;
 						}
 					}
 				}
@@ -179,6 +179,12 @@ class UserAwardsTable extends \WP_List_Table {
 		$award_id = NULL;
 		$user_id = NULL;
 		$nonce = NULL;
+
+		// Checking at first to see if the user that's performing this action can actually perform it
+		if ( ! current_user_can('manage_options') )
+		{
+			return;
+		}
 
 		if ( ! empty($_GET[$this->_args['singular']]) )
 		{
