@@ -47,17 +47,17 @@ class UserAwardsTable extends \WP_List_Table {
 			'edit' => sprintf(
 				'<a href="%s/post.php?post=%s&action=%s">%s</a>',
 				admin_url(),
-				$item->award_id,
+				esc_attr($item->award_id),
 				"edit",
 				"Edit"
 			),
 			'remove' => sprintf(
 				'<a href="?post_type=%s&page=%s&action=%s&wp_award=%s&wp_award_user_id=%s&_wpnonce=%s">%s</a>',
-				$_REQUEST['post_type'],
-				$_REQUEST['page'],
+				esc_attr($_REQUEST['post_type']),
+				esc_attr($_REQUEST['page']),
 				"wp_award_remove",
-				$item->award_id,
-				$item->user_id,
+				esc_attr($item->award_id),
+				esc_attr($item->user_id),
 				wp_create_nonce("wp_award_remove_" . $item->award_id . "_" . $item->user_id),
 				"Remove From User"
 			)
@@ -78,7 +78,7 @@ class UserAwardsTable extends \WP_List_Table {
 	 */
 	function column_user( $item ) {
 		$user = get_user_by('id', $item->user_id);
-		return ucfirst($user->data->user_nicename);
+		return esc_html(ucfirst($user->data->user_nicename));
 	}
 
 	/**
@@ -99,11 +99,11 @@ class UserAwardsTable extends \WP_List_Table {
 		return ( empty( $item->date_given ) ) ?
 			sprintf(
 				'<a class="button button-primary" href="?post_type=%s&page=%s&action=%s&wp_award=%s&wp_award_user_id=%s&_wpnonce=%s"/>%s</a>',
-				$_REQUEST['post_type'],
-				$_REQUEST['page'],
+				esc_attr($_REQUEST['post_type']),
+				esc_attr($_REQUEST['page']),
 				"wp_award_give",
-				$item->award_id,
-				$item->user_id,
+				esc_attr($item->award_id),
+				esc_attr($item->user_id),
 				wp_create_nonce("wp_award_give_" . $item->award_id . "_" . $item->user_id),
 				"Give Award"
 			)
@@ -117,9 +117,9 @@ class UserAwardsTable extends \WP_List_Table {
 	function column_cb( $item ) {
 		return sprintf(
 			'<input type="checkbox" name="%s[%d][]" value="%d"/>',
-			$this->_args['plural'], // Singular name is getting used as the name here (award)
-			$item->user_id,
-			$item->award_id
+			esc_attr($this->_args['plural']),
+			esc_attr($item->user_id),
+			esc_attr($item->award_id)
 		);
 	}
 
@@ -138,16 +138,30 @@ class UserAwardsTable extends \WP_List_Table {
 		 */
 		switch ($this->current_action()) {
 			case "wp_awards_remove":
-				# This value should have award_id and user_id separated by a "|" character.
 				if ( ! empty($_POST[$this->_args['plural']]) )
 				{
 					$user_award_array = $_POST[$this->_args['plural']];
 					$award_count = 0;
 
+					if ( ! is_array($user_award_array) )
+					{
+						return;
+					}
+
 					foreach( $user_award_array as $user_id => $award_ids )
 					{
+						if ( ! is_numeric( $user_id ) || ! get_userdata( $user_id ) )
+						{
+							continue;
+						}
+
 						foreach( $award_ids as $award_id )
 						{
+							if ( ! is_numeric( $award_id ) )
+							{
+								continue;
+							}
+
 							$this->WPAward->RemoveUserAward( $user_id, $award_id );
 							$award_count++;
 						}
@@ -162,43 +176,45 @@ class UserAwardsTable extends \WP_List_Table {
 	}
 
 	function process_singular_actions() {
+		$award_id = NULL;
+		$user_id = NULL;
+		$nonce = NULL;
+
 		if ( ! empty($_GET[$this->_args['singular']]) )
 		{
-			$award_id = $_GET[$this->_args['singular']];
+			$award_id = (int) $_GET[$this->_args['singular']];
 		}
 
 		if ( ! empty($_GET['wp_award_user_id']) )
 		{
-			$user_id = $_GET['wp_award_user_id'];
+			$user_id = (int) $_GET['wp_award_user_id'];
 		}
 
 		if ( ! empty($_GET['_wpnonce']) )
 		{
-			$nonce = $_GET['_wpnonce'];
+			$nonce = sanitize_text_field($_GET['_wpnonce']);
+		}
+
+		if ( ! $award_id || ! $user_id )
+		{
+			return;
+		}
+
+		if ( in_array($this->current_action(), ['wp_award_remove', 'wp_award_give']) &&
+			! wp_verify_nonce( $nonce, $this->current_action() . "_" . $award_id . "_" . $user_id )
+		)
+		{
+			wp_die("You are not able to perform this action");
 		}
 
 		switch ($this->current_action()) {
 			case "wp_award_remove":
-				if ( ! wp_verify_nonce( $nonce, "wp_award_remove_" . $award_id . "_" . $user_id) )
-				{
-					wp_die("You are not able to perform this action");
-				}
-
-				if ( $award_id && $user_id )
-				{
-					$this->WPAward->RemoveUserAward( $user_id, $award_id );
-				}
+				$this->WPAward->RemoveUserAward( $user_id, $award_id );
 				break;
-			case "wp_award_give":
-				if ( ! wp_verify_nonce( $nonce, "wp_award_give_" . $award_id . "_" . $user_id) )
-				{
-					wp_die("You are not able to perform this action");
-				}
 
-				if ( $award_id && $user_id )
-				{
-					$this->WPAward->GiveAward( $user_id, $award_id );
-				}
+			case "wp_award_give":
+				$this->WPAward->GiveAward( $user_id, $award_id );
+				break;
 
 			default:
 				# code...
@@ -214,6 +230,11 @@ class UserAwardsTable extends \WP_List_Table {
 		 * WE SHOULD BE PROCESSING OUR NONCE HERE MY DUDES
 		 */
 
+		if ( ! current_user_can('manage_options') )
+		{
+			return;
+		}
+
 		$this->process_bulk_actions();
 		$this->process_singular_actions();
 	}
@@ -227,10 +248,13 @@ class UserAwardsTable extends \WP_List_Table {
 		/**
 		 * Based on the awards removed, indicate how many awards were removed from which person.
 		 */
-		if ( ! empty($_REQUEST['action'] ) &&  $_REQUEST['action'] === "wp_awards_remove" )
+		if ( isset($_REQUEST['action']) && $_REQUEST['action'] === "wp_awards_remove" )
 		{
-			if ( ! empty($_REQUEST['wp_awards']) )
+			if ( isset($_REQUEST['wp_awards']) && is_array($_REQUEST['wp_awards']) )
 			{
+				$user_ids = array_keys($_REQUEST['wp_awards']);
+				$post_ids = $_REQUEST['wp_awards'];
+
 				$awards_removed_string_array = array_map(function( $user_id, $post_ids ) {
 					$user = get_user_by("ID", $user_id);
 					return sprintf(
@@ -239,7 +263,7 @@ class UserAwardsTable extends \WP_List_Table {
 						(count($post_ids) > 1) ? 's' : '', // Plural / Singular
 						ucfirst($user->user_nicename)
 					);
-				}, array_keys($_REQUEST['wp_awards']), $_REQUEST['wp_awards']);
+				}, $user_ids, $post_ids);
 			}
 		}
 
