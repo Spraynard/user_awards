@@ -12,7 +12,7 @@ defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
 /**
  * ###	Notes for the devs 	###
  *
- * While I was creating this plugin I had it in my mind that I would be naming this plugin something like WPAwards or something around there, so that's why that prefix is pretty much all over the place. Please forgive me and don't kill my family for some weird naming. It had to be done... And it can always be refactored!!!
+ * While I was creating this plugin I had it in my mind that I would be naming this plugin something like UserAwardss or something around there, so that's why that prefix is pretty much all over the place. Please forgive me and don't kill my family for some weird naming. It had to be done... And it can always be refactored!!!
  */
 
 
@@ -30,24 +30,24 @@ global $wpdb;
 global $UserAwards;
 
 // Activation, Deactivation, Uninstall
-register_activation_hook( __FILE__, [ 'WPAward\PluginLogic\RegistrationHooks', 'Activate' ] );
-register_deactivation_hook( __FILE__, [ 'WPAward\PluginLogic\RegistrationHooks', 'Deactivate' ] );
-register_uninstall_hook( __FILE__, [ 'WPAward\PluginLogic\RegistrationHooks', 'Uninstall' ] );
+register_activation_hook( __FILE__, [ 'UserAwards\PluginLogic\RegistrationHooks', 'Activate' ] );
+register_deactivation_hook( __FILE__, [ 'UserAwards\PluginLogic\RegistrationHooks', 'Deactivate' ] );
+register_uninstall_hook( __FILE__, [ 'UserAwards\PluginLogic\RegistrationHooks', 'Uninstall' ] );
 
 // Enqueuing our plugin assets such as styles and scripts (if needed)
-add_action( 'admin_enqueue_scripts', 'enqueue_plugin_assets' );
+add_action( 'admin_enqueue_scripts', 'enqueue_user_award_plugin_assets' );
 
 // Wait until the plugins loaded action in order to have wp_get_current_user() function
-add_action( 'plugins_loaded', 'apply_wp_award_listeners' );
+add_action( 'plugins_loaded', 'apply_user_award_listeners' );
 
 // Holds our user awards business logic
-$UserAwards = new WPAward\BusinessLogic\Core($wpdb);
+$UserAwards = new UserAwards\BusinessLogic\Core($wpdb);
 
 // Plugin meta box handling
-$WPAwardMetaBoxes = new WPAward\PluginLogic\PostType\MetaBoxes( WP_AWARDS_POST_TYPE, $UserAwards );
+$UserAwardsMetaBoxes = new UserAwards\PluginLogic\PostType\MetaBoxes( USER_AWARDS_POST_TYPE, $UserAwards );
 
 // Holds our plugin logic, which includes Post and Meta type additions
-$WPAwardPlugin = new WPAward\PluginLogic\Core( $UserAwards, $WPAwardMetaBoxes );
+$UserAwardsPlugin = new UserAwards\PluginLogic\Core( $UserAwards, $UserAwardsMetaBoxes );
 
 /**
  * Loop through all the defined awards.
@@ -56,15 +56,15 @@ $WPAwardPlugin = new WPAward\PluginLogic\Core( $UserAwards, $WPAwardMetaBoxes );
  * assign an award to a user based on the actions that they are taking.
  */
 
-function apply_wp_award_listeners() {
+function apply_user_award_listeners() {
 	global $UserAwards;
 
 	$current_user = wp_get_current_user();
 
 	if ( $current_user->ID > 0 )
 	{
-		$awards = get_posts([ 'post_type' => WP_AWARDS_POST_TYPE ]);
-		$grammar = new WPAward\Grammar\Core();
+		$awards = get_posts([ 'post_type' => USER_AWARDS_POST_TYPE ]);
+		$grammar = new UserAwards\Grammar\Core();
 
 		foreach( $awards as $award )
 		{
@@ -80,8 +80,8 @@ function apply_wp_award_listeners() {
 				continue;
 			}
 
-			// Apply our listener. Set it and forget it. Include a parsed grammar and inject the WPAward dependency
-			$listener = new WPAward\Listener\Core( $award->ID, $grammar, $UserAwards );
+			// Apply our listener. Set it and forget it. Include a parsed grammar and inject the UserAwards dependency
+			$listener = new UserAwards\Listener\Core( $award->ID, $grammar, $UserAwards );
 		}
 	}
 }
@@ -89,7 +89,7 @@ function apply_wp_award_listeners() {
 /**
  * Function used to enqueue any required JS or CSS assets
  */
-function enqueue_plugin_assets( $hook ) {
+function enqueue_user_award_plugin_assets( $hook ) {
 	// Post Specific page - New Post, Edit Post
 	if ( $hook === "post.php" || $hook === "edit.php" || $hook === "post-new.php" )
 	{
@@ -101,7 +101,7 @@ function enqueue_plugin_assets( $hook ) {
 			false
 		);
 		wp_enqueue_script(
-			'WPAwards_Edit_Bulk_Scripts',
+			'UserAwards_Edit_Bulk_Scripts',
 			plugins_url( 'assets/scripts/wp_award_page_edit_scripts.js', __FILE__ ),
 			array('common')
 		);
@@ -110,7 +110,7 @@ function enqueue_plugin_assets( $hook ) {
 	if ( $hook === "wp_awards_cpt_page_user-awards-admin-view" )
 	{
 		wp_enqueue_script(
-			'WPAwards_Admin_View_Scripts',
+			'UserAwards_Admin_View_Scripts',
 			plugins_url( 'assets/scripts/wp_award_admin_view_scripts.js', __FILE__ ),
 			array('common')
 		);
