@@ -36,7 +36,7 @@ class MetaBoxes {
 	 * @return void
 	 */
 	function _grammarMetaHTML( $post ) {
-		$grammarString = get_post_meta( $post->ID, WP_AWARDS_GRAMMAR_META_TYPE, true);
+		$grammarString = get_post_meta( $post->ID, USER_AWARDS_GRAMMAR_META_TYPE, true);
 		$eGrammarString = esc_attr( $grammarString );
 		wp_nonce_field( plugin_basename(__FILE__), 'WPAward_Save_Grammar_Meta');
 		echo <<<HTML
@@ -123,7 +123,7 @@ HTML;
 	function WPAwardsSaveMetaBoxes( $post_id ) {
 
 		$skip_autosave_actions = [
-			WP_AWARDS_GRAMMAR_META_TYPE,
+			USER_AWARDS_GRAMMAR_META_TYPE,
 			'WPAward_Auto_Give',
 			'WPAward_User_Apply'
 		];
@@ -142,13 +142,13 @@ HTML;
 		}
 
 		// Are we posting an WPAward_Grammar?
-		if ( isset( $_POST[WP_AWARDS_GRAMMAR_META_TYPE] ) )
+		if ( isset( $_POST[USER_AWARDS_GRAMMAR_META_TYPE] ) )
 		{
 			// Check our nonce fields to see if they're good.
 			check_admin_referer( plugin_basename(__FILE__), 'WPAward_Save_Grammar_Meta' );
 
 			// Save the meta box data as post meta
-			update_post_meta( $post_id, WP_AWARDS_GRAMMAR_META_TYPE, sanitize_text_field($_POST[WP_AWARDS_GRAMMAR_META_TYPE] ) );
+			update_post_meta( $post_id, USER_AWARDS_GRAMMAR_META_TYPE, sanitize_text_field($_POST[USER_AWARDS_GRAMMAR_META_TYPE] ) );
 		}
 
 		// Are we posting a WPAward Auto Give value?

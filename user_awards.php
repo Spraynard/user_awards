@@ -68,7 +68,7 @@ function apply_user_award_listeners() {
 
 		foreach( $awards as $award )
 		{
-			$award_grammar = get_post_meta( $award->ID, WP_AWARDS_GRAMMAR_META_TYPE, true );
+			$award_grammar = get_post_meta( $award->ID, USER_AWARDS_GRAMMAR_META_TYPE, true );
 
 			// The parse function can throw errors, so wrap it in a try block
 			try
@@ -95,23 +95,23 @@ function enqueue_user_award_plugin_assets( $hook ) {
 	{
 		wp_enqueue_style(
 			'general_award_styles',
-			plugins_url( 'assets/styles/wp_awards_styles.css', __FILE__ ),
+			plugins_url( 'assets/styles/user_awards_styles.css', __FILE__ ),
 			[],
 			false,
 			false
 		);
 		wp_enqueue_script(
 			'UserAwards_Edit_Bulk_Scripts',
-			plugins_url( 'assets/scripts/wp_award_page_edit_scripts.js', __FILE__ ),
+			plugins_url( 'assets/scripts/user_awards_page_edit_scripts.js', __FILE__ ),
 			array('common')
 		);
 	}
 
-	if ( $hook === "wp_awards_cpt_page_user-awards-admin-view" )
+	if ( $hook === "user_awards_cpt_page_user-awards-admin-view" )
 	{
 		wp_enqueue_script(
 			'UserAwards_Admin_View_Scripts',
-			plugins_url( 'assets/scripts/wp_award_admin_view_scripts.js', __FILE__ ),
+			plugins_url( 'assets/scripts/user_awards_admin_view_scripts.js', __FILE__ ),
 			array('common')
 		);
 	}

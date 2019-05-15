@@ -11,7 +11,7 @@
  * functionality needed for this plugin
  * is supported.
  */
-class Test_WP_Awards_Listener extends WP_UnitTestCase {
+class Test_User_Awards_Listener extends WP_UnitTestCase {
 	// Post type to test against.
 	private $post;
 	private $user;
@@ -40,7 +40,7 @@ class Test_WP_Awards_Listener extends WP_UnitTestCase {
 			'post_content' => 'Awarded to users if they have more than 50 hours worked for us. They are really nice people',
 			'post_author' => 1,
 			'meta_input' => array(
-				WP_AWARDS_GRAMMAR_META_TYPE => "CURRENT_USER_META UPDATED WHERE key=total_hours GTEQ 50"
+				USER_AWARDS_GRAMMAR_META_TYPE => "CURRENT_USER_META UPDATED WHERE key=total_hours GTEQ 50"
 			)
 		));
 
@@ -51,7 +51,7 @@ class Test_WP_Awards_Listener extends WP_UnitTestCase {
 			'post_content' => 'Awarded to users if they have more than 80 hours worked for us. They are really nice people',
 			'post_author' => 1,
 			'meta_input' => array(
-				WP_AWARDS_GRAMMAR_META_TYPE => "CURRENT_USER_META CREATED WHERE key=total_hours GTEQ 80"
+				USER_AWARDS_GRAMMAR_META_TYPE => "CURRENT_USER_META CREATED WHERE key=total_hours GTEQ 80"
 			)
 		));
 
@@ -61,7 +61,7 @@ class Test_WP_Awards_Listener extends WP_UnitTestCase {
 			'post_content' => 'Awarded to users if they have more than 20 hours worked for us. They are really nice people',
 			'post_author' => 1,
 			'meta_input' => array(
-				WP_AWARDS_GRAMMAR_META_TYPE => "CURRENT_USER_META ASSIGNED WHERE key=total_hours GTEQ 20"
+				USER_AWARDS_GRAMMAR_META_TYPE => "CURRENT_USER_META ASSIGNED WHERE key=total_hours GTEQ 20"
 			)
 		));
 
@@ -78,17 +78,17 @@ class Test_WP_Awards_Listener extends WP_UnitTestCase {
 		$user = wp_get_current_user();
 
 		// Update/Create before we trip the successful award update.
-		$WPAward = new WPAward\BusinessLogic\Core( $this->wpdb );
-		$Grammar = new WPAward\Grammar\Core();
+		$UserAwards = new UserAwards\BusinessLogic\Core( $this->wpdb );
+		$Grammar = new UserAwards\Grammar\Core();
 
-		$WPAward_Grammar = get_post_meta( $post->ID, WP_AWARDS_GRAMMAR_META_TYPE, true);
-		$Grammar->parse($WPAward_Grammar);
+		$UserAwards_Grammar = get_post_meta( $post->ID, USER_AWARDS_GRAMMAR_META_TYPE, true);
+		$Grammar->parse($UserAwards_Grammar);
 
 		$user_meta_updated = update_user_meta( $user->ID, $Grammar->trigger->descriptor->value, 5 );
 
 		// Fail test if we do not listen correctly
 		try {
-			$listener = new WPAward\Listener\Core( $post->ID, $Grammar, $WPAward );
+			$listener = new UserAwards\Listener\Core( $post->ID, $Grammar, $UserAwards );
 			$listener->add_listeners( $user );
 		} catch ( Exception $e ) {
 			$this->fail("Test Failure Occured: " . $e->getMessage() . "\nFile: " . $e->getFile() . "\nLine: " . $e->getLine() );
@@ -102,7 +102,7 @@ class Test_WP_Awards_Listener extends WP_UnitTestCase {
 		}
 
 		// Check to see if our listener assigned an award to this user
-		$award_data = $WPAward->GetUserAward( $user->ID );
+		$award_data = $UserAwards->GetUserAward( $user->ID );
 
 		$this->assertNotEmpty($award_data, "Should have an award assigned to our user, but our data does not show as such.");
 	}
@@ -113,15 +113,15 @@ class Test_WP_Awards_Listener extends WP_UnitTestCase {
 		$user = wp_get_current_user();
 
 		// Update/Create before we trip the successful award update.
-		$WPAward = new WPAward\BusinessLogic\Core( $this->wpdb );
-		$Grammar = new WPAward\Grammar\Core();
+		$UserAwards = new UserAwards\BusinessLogic\Core( $this->wpdb );
+		$Grammar = new UserAwards\Grammar\Core();
 
-		$WPAward_Grammar = get_post_meta( $post->ID, WP_AWARDS_GRAMMAR_META_TYPE, true);
-		$Grammar->parse($WPAward_Grammar);
+		$UserAwards_Grammar = get_post_meta( $post->ID, USER_AWARDS_GRAMMAR_META_TYPE, true);
+		$Grammar->parse($UserAwards_Grammar);
 
 		// Fail test if we do not listen correctly
 		try {
-			$listener = new WPAward\Listener\Core( $post->ID, $Grammar, $WPAward );
+			$listener = new UserAwards\Listener\Core( $post->ID, $Grammar, $UserAwards );
 			$listener->add_listeners( $user );
 		} catch ( Exception $e ) {
 			$this->fail("Test Failure Occured: " . $e->getMessage() . "\nFile: " . $e->getFile() . "\nLine: " . $e->getLine() );
@@ -135,7 +135,7 @@ class Test_WP_Awards_Listener extends WP_UnitTestCase {
 		}
 
 		// Check to see if our listener assigned an award to this user
-		$award_data = $WPAward->GetUserAward( $user->ID );
+		$award_data = $UserAwards->GetUserAward( $user->ID );
 
 		$this->assertNotEmpty($award_data, "Should have an award assigned to our user, but our data does not show as such.");
 	}
@@ -146,15 +146,15 @@ class Test_WP_Awards_Listener extends WP_UnitTestCase {
 		$post = $this->post_2;
 		$user = wp_get_current_user();
 
-		$WPAward = new WPAward\BusinessLogic\Core( $this->wpdb );
-		$Grammar = new WPAward\Grammar\Core();
+		$UserAwards = new UserAwards\BusinessLogic\Core( $this->wpdb );
+		$Grammar = new UserAwards\Grammar\Core();
 
-		$WPAward_Grammar = get_post_meta( $post->ID, WP_AWARDS_GRAMMAR_META_TYPE, true);
-		$Grammar->parse($WPAward_Grammar);
+		$UserAwards_Grammar = get_post_meta( $post->ID, USER_AWARDS_GRAMMAR_META_TYPE, true);
+		$Grammar->parse($UserAwards_Grammar);
 
 		// Fail test if we do not listen correctly
 		try {
-			$listener = new WPAward\Listener\Core( $post->ID, $Grammar, $WPAward );
+			$listener = new UserAwards\Listener\Core( $post->ID, $Grammar, $UserAwards );
 			$listener->add_listeners( $user );
 		} catch ( Exception $e ) {
 			$this->fail("Test Failure Occured: " . $e->getMessage() . "\nFile: " . $e->getFile() . "\nLine: " . $e->getLine() );
@@ -168,7 +168,7 @@ class Test_WP_Awards_Listener extends WP_UnitTestCase {
 		}
 
 		// Check to see if our listener assigned an award to this user
-		$award_data = $WPAward->GetUserAward( $user->ID );
+		$award_data = $UserAwards->GetUserAward( $user->ID );
 
 		$this->assertNotEmpty($award_data, "Should have an award assigned to our user, but our data does not show as such.");
 
@@ -180,11 +180,11 @@ class Test_WP_Awards_Listener extends WP_UnitTestCase {
 		$user = wp_get_current_user();
 
 
-		$WPAward = new WPAward\BusinessLogic\Core( $this->wpdb );
-		$Grammar = new WPAward\Grammar\Core();
+		$UserAwards = new UserAwards\BusinessLogic\Core( $this->wpdb );
+		$Grammar = new UserAwards\Grammar\Core();
 
-		$WPAward_Grammar = get_post_meta( $post->ID, WP_AWARDS_GRAMMAR_META_TYPE, true);
-		$Grammar->parse($WPAward_Grammar);
+		$UserAwards_Grammar = get_post_meta( $post->ID, USER_AWARDS_GRAMMAR_META_TYPE, true);
+		$Grammar->parse($UserAwards_Grammar);
 
 		// Update our user meta to a certain point
 		$user_meta_added = add_user_meta( $user->ID, $Grammar->trigger->descriptor->value, 5, false );
@@ -196,7 +196,7 @@ class Test_WP_Awards_Listener extends WP_UnitTestCase {
 
 		// Fail test if we do not listen correctly
 		try {
-			$listener = new WPAward\Listener\Core( $post->ID, $Grammar, $WPAward );
+			$listener = new UserAwards\Listener\Core( $post->ID, $Grammar, $UserAwards );
 			$listener->add_listeners( $user );
 		} catch ( Exception $e ) {
 			$this->fail("Test Failure Occured: " . $e->getMessage() . "\nFile: " . $e->getFile() . "\nLine: " . $e->getLine() );
@@ -210,7 +210,7 @@ class Test_WP_Awards_Listener extends WP_UnitTestCase {
 		}
 
 		// Check to see if our listener assigned an award to this user
-		$award_data = $WPAward->GetUserAward( $user->ID );
+		$award_data = $UserAwards->GetUserAward( $user->ID );
 
 		$this->assertNotEmpty($award_data, "Should have an award assigned to our user, but our data does not show as such.");
 	}

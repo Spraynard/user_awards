@@ -20,9 +20,9 @@ if ( ! defined('USER_AWARDS_POST_TYPE') )
 	define('USER_AWARDS_POST_TYPE', 'wp_awards_cpt');
 }
 
-if ( ! defined('WP_AWARDS_GRAMMAR_META_TYPE') )
+if ( ! defined('USER_AWARDS_GRAMMAR_META_TYPE') )
 {
-	define('WP_AWARDS_GRAMMAR_META_TYPE', 'WPAward_Grammar');
+	define('USER_AWARDS_GRAMMAR_META_TYPE', 'WPAward_Grammar');
 }
 
 // Table defined in our database that contains the awards that users have.

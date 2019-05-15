@@ -9,7 +9,7 @@ class Test_Grammar extends TestCase {
 
 	public function setUp() {
 		parent::setUp();
-		$this->grammar = new WPAward\Grammar\Core();
+		$this->grammar = new UserAwards\Grammar\Core();
 	}
 
 	// Perfectly formed string

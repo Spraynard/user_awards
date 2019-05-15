@@ -2,7 +2,7 @@
 /**
  * Class WPAwardsTest
  *
- * @package  Wp_awards
+ * @package  User Awards
  */
 
 /**
@@ -11,7 +11,7 @@
  * functionality needed for this plugin
  * is supported.
  */
-class Test_WP_Awards_Award extends WP_UnitTestCase {
+class Test_User_Awards_Award extends WP_UnitTestCase {
 	// Post type to test against.
 	private $post;
 	private $post_2;
@@ -45,7 +45,7 @@ class Test_WP_Awards_Award extends WP_UnitTestCase {
 			'post_content' => 'Awarded to users if they have more than 50 hours worked for us. They are really nice people',
 			'post_author' => 1,
 			'meta_input' => array(
-				WP_AWARDS_GRAMMAR_META_TYPE => "CURRENT_USER_META UPDATED WHERE key=total_hours GTEQ 50"
+				USER_AWARDS_GRAMMAR_META_TYPE => "CURRENT_USER_META UPDATED WHERE key=total_hours GTEQ 50"
 			)
 		));
 
@@ -55,7 +55,7 @@ class Test_WP_Awards_Award extends WP_UnitTestCase {
 			'post_content' => 'Awarded to users if they have more than 60 hours worked for us. They are really nice people',
 			'post_author' => 1,
 			'meta_input' => array(
-				WP_AWARDS_GRAMMAR_META_TYPE => "CURRENT_USER_META UPDATED WHERE key=total_hours GTEQ 60"
+				USER_AWARDS_GRAMMAR_META_TYPE => "CURRENT_USER_META UPDATED WHERE key=total_hours GTEQ 60"
 			)
 		));
 
@@ -65,31 +65,31 @@ class Test_WP_Awards_Award extends WP_UnitTestCase {
 		// Set the named user as the current user
 		wp_set_current_user( $this->user->get('ID') );
 
-		$this->WPAward = new WPAward\BusinessLogic\Core( $this->wpdb );
+		$this->UserAwards = new UserAwards\BusinessLogic\Core( $this->wpdb );
 	}
 
 	// Should return empty with $user_id supplied
 	public function testGetUserAwardNoAssignmentsOne()
 	{
-		$this->assertTrue(empty($this->WPAward->GetUserAward( $this->user->Get('ID') )));
+		$this->assertTrue(empty($this->UserAwards->GetUserAward( $this->user->Get('ID') )));
 	}
 
 	// Should Return Empty with $user_id and $award_id supplied
 	public function testGetUserAwardNoAssignmentsBoth()
 	{
-		$this->assertTrue( empty($this->WPAward->GetUserAward( $this->user->ID, $this->post->ID )));
+		$this->assertTrue( empty($this->UserAwards->GetUserAward( $this->user->ID, $this->post->ID )));
 	}
 
 	// Basic award assignment test
 	public function testAssignAward() {
-		$this->assertTrue($this->WPAward->AssignAward($this->user->ID, $this->post->ID));
+		$this->assertTrue($this->UserAwards->AssignAward($this->user->ID, $this->post->ID));
 	}
 
 	// Testing that there cannot be duplicate awards assigned to users
 	public function testAsssignAwardNoDuplicates() {
 		// Link a user to an award
-		$assigned_action_1 = $this->WPAward->AssignAward($this->user->ID, $this->post->ID);
-		$assigned_action_2 = $this->WPAward->AssignAward($this->user->ID, $this->post->ID);
+		$assigned_action_1 = $this->UserAwards->AssignAward($this->user->ID, $this->post->ID);
+		$assigned_action_2 = $this->UserAwards->AssignAward($this->user->ID, $this->post->ID);
 
 		$this->assertFalse($assigned_action_2);
 
@@ -99,7 +99,7 @@ class Test_WP_Awards_Award extends WP_UnitTestCase {
 		}
 
 		// Get the data of the given award
-		$award_data = $this->WPAward->GetUserAward( $this->user->ID, $this->post->ID );
+		$award_data = $this->UserAwards->GetUserAward( $this->user->ID, $this->post->ID );
 
 		// Check that there isn't a null date in the "date_given" field.
 		$this->assertTrue(count( $award_data ) === 1 );
@@ -108,7 +108,7 @@ class Test_WP_Awards_Award extends WP_UnitTestCase {
 	// Basic award assignment test
 	public function testAssignAwardInitialStructure() {
 		// Link a user to an award
-		$assigned = $this->WPAward->AssignAward($this->user->ID, $this->post->ID);
+		$assigned = $this->UserAwards->AssignAward($this->user->ID, $this->post->ID);
 
 		if ( ! $assigned )
 		{
@@ -116,7 +116,7 @@ class Test_WP_Awards_Award extends WP_UnitTestCase {
 		}
 
 		// Get the data of the given award
-		$award_data = $this->WPAward->GetUserAward( $this->user->ID, $this->post->ID );
+		$award_data = $this->UserAwards->GetUserAward( $this->user->ID, $this->post->ID );
 
 		// Check that there isn't a null date in the "date_given" field.
 		$this->assertNull($award_data[0]->date_given);
@@ -128,7 +128,7 @@ class Test_WP_Awards_Award extends WP_UnitTestCase {
 		add_post_meta( $this->post->ID, 'WPAward_Auto_Give', true, false );
 
 		// Link a user to an award. Since the posts 'WPAward_Auto_Give' is true, then we should automatically give the award out.
-		$assigned = $this->WPAward->AssignAward($this->user->ID, $this->post->ID);
+		$assigned = $this->UserAwards->AssignAward($this->user->ID, $this->post->ID);
 
 		if ( ! $assigned )
 		{
@@ -136,7 +136,7 @@ class Test_WP_Awards_Award extends WP_UnitTestCase {
 		}
 
 		// Get the data of the given award
-		$award_data = $this->WPAward->GetUserAward( $this->user->ID, $this->post->ID );
+		$award_data = $this->UserAwards->GetUserAward( $this->user->ID, $this->post->ID );
 
 		// Check that there isn't a null date in the "date_given" field.
 		$this->assertNotNull($award_data[0]->date_given, "Award was not auto given to user");
@@ -145,14 +145,14 @@ class Test_WP_Awards_Award extends WP_UnitTestCase {
 	// Testing the the return type of getUserAward is an array.
 	public function testGetAwardReturnType() {
 		// Link a user to an award
-		$assigned = $this->WPAward->AssignAward($this->user->ID, $this->post->ID);
+		$assigned = $this->UserAwards->AssignAward($this->user->ID, $this->post->ID);
 
 		if ( ! $assigned )
 		{
 			$this->fail("Award not assigned");
 		}
 
-		$wp_award = $this->WPAward->GetUserAward($this->user->ID, $this->post->id);
+		$wp_award = $this->UserAwards->GetUserAward($this->user->ID, $this->post->id);
 
 		// Get that award from the DB
 		$this->assertTrue( gettype( $wp_award ) === "array" );
@@ -164,16 +164,16 @@ class Test_WP_Awards_Award extends WP_UnitTestCase {
 	 */
 	public function testGetAwardReturnSingular() {
 		// Link a user to an award
-		$assigned = $this->WPAward->AssignAward($this->user->ID, $this->post->ID);
+		$assigned = $this->UserAwards->AssignAward($this->user->ID, $this->post->ID);
 
-		$assigned_2 = $this->WPAward->AssignAward($this->user->ID, $this->post_2->ID);
+		$assigned_2 = $this->UserAwards->AssignAward($this->user->ID, $this->post_2->ID);
 
 		if ( ! $assigned || ! $assigned_2 )
 		{
 			$this->fail("Award not assigned");
 		}
 
-		$user_award = $this->WPAward->GetUserAward( $this->user->ID, $this->post->ID);
+		$user_award = $this->UserAwards->GetUserAward( $this->user->ID, $this->post->ID);
 
 		// Get that award from the DB
 		$this->assertGreaterThan(0, count( $user_award) );
@@ -185,16 +185,16 @@ class Test_WP_Awards_Award extends WP_UnitTestCase {
 	public function testGetAwardReturnMultiple()
 	{
 		// Link a user to an award
-		$assigned = $this->WPAward->AssignAward($this->user->ID, $this->post->ID);
+		$assigned = $this->UserAwards->AssignAward($this->user->ID, $this->post->ID);
 
-		$assigned_2 = $this->WPAward->AssignAward($this->user->ID, $this->post_2->ID);
+		$assigned_2 = $this->UserAwards->AssignAward($this->user->ID, $this->post_2->ID);
 
 		if ( ! $assigned )
 		{
 			$this->fail("Award not assigned");
 		}
 
-		$user_award = $this->WPAward->GetUserAward( $this->user->ID);
+		$user_award = $this->UserAwards->GetUserAward( $this->user->ID);
 
 		// Get that award from the DB
 		$this->assertTrue( count( $user_award ) === 2 );
@@ -207,7 +207,7 @@ class Test_WP_Awards_Award extends WP_UnitTestCase {
 	public function testGiveAward()
 	{
 		// Link a user to an award
-		$assigned = $this->WPAward->AssignAward($this->user->ID, $this->post->ID);
+		$assigned = $this->UserAwards->AssignAward($this->user->ID, $this->post->ID);
 
 		if ( ! $assigned )
 		{
@@ -215,10 +215,10 @@ class Test_WP_Awards_Award extends WP_UnitTestCase {
 		}
 
 		// "Give" the award to user.
-		$award_given = $this->WPAward->GiveAward( $this->user->ID, $this->post->ID);
+		$award_given = $this->UserAwards->GiveAward( $this->user->ID, $this->post->ID);
 
 		// Get the data of the given award
-		$award_data = $this->WPAward->GetUserAward( $this->user->ID, $this->post->ID );
+		$award_data = $this->UserAwards->GetUserAward( $this->user->ID, $this->post->ID );
 
 		// Check that there isn't a null date in the "date_given" field.
 		$this->assertNotNull($award_data[0]->date_given);
@@ -231,24 +231,24 @@ class Test_WP_Awards_Award extends WP_UnitTestCase {
 	public function testGiveAwardNoAssign()
 	{
 		// "Give" the award to user.
-		$award_given = $this->WPAward->GiveAward( $this->user->ID, $this->post->ID);
+		$award_given = $this->UserAwards->GiveAward( $this->user->ID, $this->post->ID);
 
 		// Get the data of the given award
-		$award_data = $this->WPAward->GetUserAward( $this->user->ID, $this->post->ID );
+		$award_data = $this->UserAwards->GetUserAward( $this->user->ID, $this->post->ID );
 
 		// Check that there isn't a null date in the "date_given" field.
 		$this->assertNotNull($award_data[0]->date_given);
 	}
 
 	public function testGiveAwardNoExtraUpdates() {
-		$award_given_action_1 =	$this->WPAward->GiveAward( $this->user->ID, $this->post->ID ); // "Give" the award to user.
-		$award_data_1 = $this->WPAward->GetUserAward( $this->user->ID, $this->post->ID );
+		$award_given_action_1 =	$this->UserAwards->GiveAward( $this->user->ID, $this->post->ID ); // "Give" the award to user.
+		$award_data_1 = $this->UserAwards->GetUserAward( $this->user->ID, $this->post->ID );
 		$expected_time_given = $award_data_1[0]->date_given;
 
 		sleep(2);
 
-		$award_given_action_2 =	$this->WPAward->GiveAward( $this->user->ID, $this->post->ID ); // "Give" the award to user.
-		$award_data_2 = $this->WPAward->GetUserAward( $this->user->ID, $this->post->ID );
+		$award_given_action_2 =	$this->UserAwards->GiveAward( $this->user->ID, $this->post->ID ); // "Give" the award to user.
+		$award_data_2 = $this->UserAwards->GetUserAward( $this->user->ID, $this->post->ID );
 		$test_time_given = $award_data_2[0]->date_given;
 
 
@@ -267,17 +267,17 @@ class Test_WP_Awards_Award extends WP_UnitTestCase {
 	public function testRemoveUserAward()
 	{
 		// Link a user to an award. Since the posts 'WPAward_Auto_Give' is true, then we should automatically give the award out.
-		$assigned = $this->WPAward->AssignAward($this->user->ID, $this->post->ID);
+		$assigned = $this->UserAwards->AssignAward($this->user->ID, $this->post->ID);
 
 		if ( ! $assigned )
 		{
 			$this->fail("Award not assigned");
 		}
 
-		$this->WPAward->RemoveUserAward( $this->user->ID, $this->post->ID );
+		$this->UserAwards->RemoveUserAward( $this->user->ID, $this->post->ID );
 
 		// Get the data of the given award
-		$award_data = $this->WPAward->GetUserAward( $this->user->ID, $this->post->ID );
+		$award_data = $this->UserAwards->GetUserAward( $this->user->ID, $this->post->ID );
 
 		// Check that there isn't a null date in the "date_given" field.
 		$this->assertEmpty( $award_data );
@@ -289,14 +289,14 @@ class Test_WP_Awards_Award extends WP_UnitTestCase {
 	public function testRemoveUserAwardReturn()
 	{
 		// Link a user to an award. Since the posts 'WPAward_Auto_Give' is true, then we should automatically give the award out.
-		$assigned = $this->WPAward->AssignAward($this->user->ID, $this->post->ID);
+		$assigned = $this->UserAwards->AssignAward($this->user->ID, $this->post->ID);
 
 		if ( ! $assigned )
 		{
 			$this->fail("Award not assigned");
 		}
 
-		$award_deleted = $this->WPAward->RemoveUserAward( $this->user->ID, $this->post->ID );
+		$award_deleted = $this->UserAwards->RemoveUserAward( $this->user->ID, $this->post->ID );
 
 		$this->assertGreaterThan( 0, $award_deleted );
 	}
@@ -307,16 +307,16 @@ class Test_WP_Awards_Award extends WP_UnitTestCase {
 	public function testRemoveUserAwardMultiple()
 	{
 		// Link a user to an award
-		$assigned = $this->WPAward->AssignAward($this->user->ID, $this->post->ID);
+		$assigned = $this->UserAwards->AssignAward($this->user->ID, $this->post->ID);
 
-		$assigned_2 = $this->WPAward->AssignAward($this->user->ID, $this->post_2->ID);
+		$assigned_2 = $this->UserAwards->AssignAward($this->user->ID, $this->post_2->ID);
 
 		if ( ! $assigned || ! $assigned_2 )
 		{
 			$this->fail("Award not assigned");
 		}
 
-		$award_deleted = $this->WPAward->RemoveUserAward( $this->user->ID );
+		$award_deleted = $this->UserAwards->RemoveUserAward( $this->user->ID );
 
 		$this->assertGreaterThan( 1, $award_deleted );
 	}
@@ -325,7 +325,7 @@ class Test_WP_Awards_Award extends WP_UnitTestCase {
 	public function testShouldApplyAwardGTSuccess()
 	{
 		$this->assertTrue(
-			$this->WPAward->ShouldApplyAward(2, 1, 'gt')
+			$this->UserAwards->ShouldApplyAward(2, 1, 'gt')
 		);
 	}
 
@@ -333,98 +333,98 @@ class Test_WP_Awards_Award extends WP_UnitTestCase {
 	public function testShouldApplyAwardGTFailure()
 	{
 		$this->assertFalse(
-			$this->WPAward->ShouldApplyAward(1, 2, 'gt')
+			$this->UserAwards->ShouldApplyAward(1, 2, 'gt')
 		);
 	}
 
 	public function testShouldApplyAwardGTFailureEqual()
 	{
 		$this->assertFalse(
-			$this->WPAward->ShouldApplyAward(1, 1, 'gt')
+			$this->UserAwards->ShouldApplyAward(1, 1, 'gt')
 		);
 	}
 
 	public function testShouldApplyAwardLTSuccess()
 	{
 		$this->assertTrue(
-			$this->WPAward->ShouldApplyAward(1, 2, 'lt')
+			$this->UserAwards->ShouldApplyAward(1, 2, 'lt')
 		);
 	}
 
 	public function testShouldApplyAwardLTFailure()
 	{
 		$this->assertFalse(
-			$this->WPAward->ShouldApplyAward(2, 1, 'lt')
+			$this->UserAwards->ShouldApplyAward(2, 1, 'lt')
 		);
 	}
 
 	public function testShouldApplyAwardLTFailureEqual()
 	{
 		$this->assertFalse(
-			$this->WPAward->ShouldApplyAward(2, 2, 'lt')
+			$this->UserAwards->ShouldApplyAward(2, 2, 'lt')
 		);
 	}
 
 	public function testShouldApplyAwardEQSuccess()
 	{
 		$this->assertTrue(
-			$this->WPAward->ShouldApplyAward(50, 50, 'eq')
+			$this->UserAwards->ShouldApplyAward(50, 50, 'eq')
 		);
 	}
 
 	public function testShouldApplyAwardEQSuccessStr()
 	{
 		$this->assertTrue(
-			$this->WPAward->ShouldApplyAward("Hello", "Hello", 'eq')
+			$this->UserAwards->ShouldApplyAward("Hello", "Hello", 'eq')
 		);
 	}
 
 	public function testShouldApplyAwardEQFailure()
 	{
 		$this->assertFalse(
-			$this->WPAward->ShouldApplyAward(1, 50, 'eq')
+			$this->UserAwards->ShouldApplyAward(1, 50, 'eq')
 		);
 	}
 
 	public function testShouldApplyAwardGTEQSuccess()
 	{
 		$this->assertTrue(
-			$this->WPAward->ShouldApplyAward(20, 2, 'gteq')
+			$this->UserAwards->ShouldApplyAward(20, 2, 'gteq')
 		);
 	}
 
 	public function testShouldApplyAwardGTEQSuccessEqual()
 	{
 		$this->assertTrue(
-			$this->WPAward->ShouldApplyAward(20, 20, 'gteq')
+			$this->UserAwards->ShouldApplyAward(20, 20, 'gteq')
 		);
 	}
 
 	public function testShouldApplyAwardGTEQFailure()
 	{
 		$this->assertFalse(
-			$this->WPAward->ShouldApplyAward(1, 50, 'gteq')
+			$this->UserAwards->ShouldApplyAward(1, 50, 'gteq')
 		);
 	}
 
 	public function testShouldApplyAwardLTEQSuccess()
 	{
 		$this->assertTrue(
-			$this->WPAward->ShouldApplyAward(10, 20, 'lteq')
+			$this->UserAwards->ShouldApplyAward(10, 20, 'lteq')
 		);
 	}
 
 	public function testShouldApplyAwardLTEQSuccessEqual()
 	{
 		$this->assertTrue(
-			$this->WPAward->ShouldApplyAward(20, 20, 'lteq')
+			$this->UserAwards->ShouldApplyAward(20, 20, 'lteq')
 		);
 	}
 
 	public function testShouldApplyAwardLTEQFailure()
 	{
 		$this->assertFalse(
-			$this->WPAward->ShouldApplyAward(50, 1, 'lteq')
+			$this->UserAwards->ShouldApplyAward(50, 1, 'lteq')
 		);
 	}
 }
