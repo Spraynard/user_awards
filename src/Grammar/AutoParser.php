@@ -1,5 +1,5 @@
 <?php
-namespace WPAward\Grammar;
+namespace UserAwards\Grammar;
 
 /**
  * Class used to parse our input on instantiation.

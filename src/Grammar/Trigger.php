@@ -1,5 +1,5 @@
 <?php
-namespace WPAward\Grammar;
+namespace UserAwards\Grammar;
 
 /**
  * Class used to contain all trigger related functionality. This is a help because of the fact that

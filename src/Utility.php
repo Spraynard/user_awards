@@ -1,6 +1,6 @@
 <?php
 
-namespace WPAward;
+namespace UserAwards;
 
 class Utility {
 	/**
@@ -32,7 +32,7 @@ class Utility {
 HTML;
 		foreach( $users as $user ) {
 			$ID = esc_attr( $user->ID );
-			$FormattedUserHTML = esc_html(call_user_func(["WPAward\Utility","FormatUserDisplay"], $user));
+			$FormattedUserHTML = esc_html(call_user_func(["UserAwards\Utility","FormatUserDisplay"], $user));
 			$returnHTML .= <<<HTML
 			<option value="{$ID}">{$FormattedUserHTML}</option>
 HTML;

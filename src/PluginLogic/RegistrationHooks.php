@@ -1,11 +1,11 @@
 <?php
-namespace WPAward\PluginLogic;
+namespace UserAwards\PluginLogic;
 
 class RegistrationHooks {
 	/** Function to handle plugin activation */
 	static function Activate() {
 		global $wpdb;
-		$wpdb_table = $wpdb->prefix . WP_AWARDS_TABLE_USER_AWARDS;
+		$wpdb_table = $wpdb->prefix . USER_AWARDS_TABLE_USER_AWARDS;
 		$wp_posts_table = $wpdb->prefix . "posts";
 		$wpdb_collation = $wpdb->get_charset_collate();
 
@@ -23,7 +23,7 @@ class RegistrationHooks {
 		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' ); // for dbDelta
 		dbDelta( $sql );
 
-		add_option( WP_AWARDS_DB_VERSION_KEY, WP_AWARDS_DB_VERSION_VALUE );
+		add_option( USER_AWARDS_DB_VERSION_KEY, USER_AWARDS_DB_VERSION_VALUE );
 	}
 
 	static function Deactivate() {
@@ -33,11 +33,11 @@ class RegistrationHooks {
 	/** Function to handle plugin uninstallation */
 	static function Uninstall() {
 		global $wpdb;
-		$wpdb_table = $wpdb->prefix . WP_AWARDS_TABLE_USER_AWARDS;
+		$wpdb_table = $wpdb->prefix . USER_AWARDS_TABLE_USER_AWARDS;
 
 		$sql = "DROP TABLE IF EXISTS {$wpdb_table}";
 		$wpdb->query( $sql );
-		delete_option( WP_AWARDS_DB_VERSION_KEY );
+		delete_option( USER_AWARDS_DB_VERSION_KEY );
 	}
 }
 ?>

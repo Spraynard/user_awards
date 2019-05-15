@@ -126,7 +126,7 @@ global $UserAward;
  * @param  int $award_id - UserAward_ID (Post ID)
  * @return bool           Whether or not this user has an award with the current award id
  */
-$UserAward->UserHasAward( $user_id, $award_id );
+$UserAwards->UserHasAward( $user_id, $award_id );
 
 /**
  * Assigns multiple awards to users using AssignAward
@@ -134,7 +134,7 @@ $UserAward->UserHasAward( $user_id, $award_id );
  * @param  array $award_ids - Array of UserAward_IDs (Post ID)
  * @return bool             - True if awards were assigned, false if there was an error with assigning awards
  */
-$UserAward->AssignAwards( $user_id, $award_ids );
+$UserAwards->AssignAwards( $user_id, $award_ids );
 
 /**
  * Function that marks an award as assigned to a user.
@@ -149,7 +149,7 @@ $UserAward->AssignAwards( $user_id, $award_ids );
  *                  	  	- User already has that award
  *                  	  	- Error with assigning our award
  */
-$UserAward->AssignAward( $user_id, $award_id );
+$UserAwards->AssignAward( $user_id, $award_id );
 
 /**
  * Give multiple awards to users using GiveAward().
@@ -157,7 +157,7 @@ $UserAward->AssignAward( $user_id, $award_id );
  * @param  array $award_ids - Array of UserAward_IDs (Post ID)
  * @return bool             - True if awards were given, false if there was an error with giving awards
  */
-$UserAward->GiveAwards( $user_id, $award_ids );
+$UserAwards->GiveAwards( $user_id, $award_ids );
 
 /**
  * Function that will mark an award as given to a user,
@@ -170,7 +170,7 @@ $UserAward->GiveAwards( $user_id, $award_ids );
  * @param int $award_id - ID of the award that we are "awarding"
  * @return mixed        - Return value of a $wpdb->update() call
  */
-$UserAward->GiveAward( $user_id, $award_id );
+$UserAwards->GiveAward( $user_id, $award_id );
 
 /**
  * Removes awards from our database.
@@ -180,7 +180,7 @@ $UserAward->GiveAward( $user_id, $award_id );
  * @param int $award_id - ID of the award that we are "awarding"
  * @return mixed 		- Return the value of a $wpdb->delete() call
  */
-$UserAward->RemoveUserAward( $user_id, $award_id = NULL );
+$UserAwards->RemoveUserAward( $user_id, $award_id = NULL );
 
 /**
  * Function that grabs as many awards assigned to the user as we can based on the parameters given.
@@ -191,7 +191,7 @@ $UserAward->RemoveUserAward( $user_id, $award_id = NULL );
  * @param int $award_id - ID of the award that we are "awarding"
  * @return mixed 		- Returnes the value of a $wpdb->get_results() call
  */
-$UserAward->GetUserAward( $user_id, $award_id = NULL);
+$UserAwards->GetUserAward( $user_id, $award_id = NULL);
 ```
 
 == Installation ==

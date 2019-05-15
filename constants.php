@@ -5,29 +5,34 @@
  * Should be self explanatory to what they are, but some will have comments.
  */
 
-if ( ! defined('WP_AWARDS_DB_VERSION_KEY') )
+if ( ! defined('USER_AWARDS_DB_VERSION_KEY') )
 {
-	define('WP_AWARDS_DB_VERSION_KEY', 'wp_awards_version');
+	define('USER_AWARDS_DB_VERSION_KEY', 'user_awards_version');
 }
 
-if ( ! defined('WP_AWARDS_DB_VERSION_VALUE') )
+if ( ! defined('USER_AWARDS_DB_VERSION_VALUE') )
 {
-	define('WP_AWARDS_DB_VERSION_VALUE', '0.1');
+	define('USER_AWARDS_DB_VERSION_VALUE', '0.1');
 }
 
 if ( ! defined('USER_AWARDS_POST_TYPE') )
 {
-	define('USER_AWARDS_POST_TYPE', 'wp_awards_cpt');
+	define('USER_AWARDS_POST_TYPE', 'user_awards_cpt');
 }
 
 if ( ! defined('USER_AWARDS_GRAMMAR_META_TYPE') )
 {
-	define('USER_AWARDS_GRAMMAR_META_TYPE', 'WPAward_Grammar');
+	define('USER_AWARDS_GRAMMAR_META_TYPE', 'UserAwards_Grammar');
+}
+
+if ( ! defined('USER_AWARDS_AUTO_GIVE_TYPE') )
+{
+	define('USER_AWARDS_AUTO_GIVE_TYPE', 'UserAwards_Auto_Give');
 }
 
 // Table defined in our database that contains the awards that users have.
-if ( ! defined('WP_AWARDS_TABLE_USER_AWARDS') )
+if ( ! defined('USER_AWARDS_TABLE_USER_AWARDS') )
 {
-	define('WP_AWARDS_TABLE_USER_AWARDS', 'user_awards');
+	define('USER_AWARDS_TABLE_USER_AWARDS', 'user_awards');
 }
 ?>

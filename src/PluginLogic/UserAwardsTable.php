@@ -1,14 +1,14 @@
 <?php
-namespace WPAward\PluginLogic;
+namespace UserAwards\PluginLogic;
 
 // Including our WP_List_Table class if it is not currently available.
 
 if( ! class_exists('WP_List_Table') ) require_once( ABSPATH . 'wp-admin/includes/class-wp-list-table.php' );
 
 class UserAwardsTable extends \WP_List_Table {
-	private $WPAward;
+	private $UserAwards;
 
-	function __construct( $WPAward )
+	function __construct( $UserAwards )
 	{
 		parent::__construct([
 			'singular' => 'wp_award',
@@ -16,7 +16,7 @@ class UserAwardsTable extends \WP_List_Table {
 			'ajax' => false
 		]);
 
-		$this->WPAward = $WPAward;
+		$this->UserAwards = $UserAwards;
 	}
 
 	/**
@@ -148,7 +148,7 @@ class UserAwardsTable extends \WP_List_Table {
 					{
 						foreach( $award_ids as $award_id )
 						{
-							$this->WPAward->RemoveUserAward( $user_id, $award_id );
+							$this->UserAwards->RemoveUserAward( $user_id, $award_id );
 							$award_count++;
 						}
 					}
@@ -186,7 +186,7 @@ class UserAwardsTable extends \WP_List_Table {
 
 				if ( $award_id && $user_id )
 				{
-					$this->WPAward->RemoveUserAward( $user_id, $award_id );
+					$this->UserAwards->RemoveUserAward( $user_id, $award_id );
 				}
 				break;
 			case "wp_award_give":
@@ -197,7 +197,7 @@ class UserAwardsTable extends \WP_List_Table {
 
 				if ( $award_id && $user_id )
 				{
-					$this->WPAward->GiveAward( $user_id, $award_id );
+					$this->UserAwards->GiveAward( $user_id, $award_id );
 				}
 
 			default:
@@ -221,7 +221,7 @@ class UserAwardsTable extends \WP_List_Table {
 	/**
 	 * Handles admin notices for our table currently.
 	 */
-	static function awards_table_admin_notices() {
+	static function UserAwardsTableAdminNotices() {
 		$awards_removed_string_array = NULL;
 
 		/**
@@ -279,7 +279,7 @@ class UserAwardsTable extends \WP_List_Table {
 			[] // Sortable Columns
 		];
 
-		$query = "SELECT * FROM {$wpdb->prefix}" . WP_AWARDS_TABLE_USER_AWARDS;
+		$query = "SELECT * FROM {$wpdb->prefix}" . USER_AWARDS_TABLE_USER_AWARDS;
 
 		$this->items = $wpdb->get_results($query);
 	}

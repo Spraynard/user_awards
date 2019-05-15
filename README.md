@@ -19,7 +19,7 @@ These awards are given to users in two ways. The first and easiest way is to set
 If this `trigger` string were applied to our award, then we would "assign" this award to our user if the WordPress specific `user_meta` value with a key of `total_hours` was updated to have a value **greater than or equal to** 50. Documentation for this grammar is located in the documentation section below.
 
 ### Global Object
-There is also a `global $WPAward` object that includes the core functionality that is used within this plugin. Developers should be able to enjoy applying awards to users using their own non-trivial ways. The documentation for this object is located below
+There is also a `global $UserAwards` object that includes the core functionality that is used within this plugin. Developers should be able to enjoy applying awards to users using their own non-trivial ways. The documentation for this object is located below
 
 ## Documentation
 <!-- ### Grammar
@@ -29,10 +29,10 @@ There is also a `global $WPAward` object that includes the core functionality th
 
 This object serves as the core functionality for this plugin. Supplied as a global object to allow for developers who know how to party to bypass the shortcomings that are inherent in our `Trigger Strings`.
 
-To use, make sure to signify `global $WPAward` at the top of your file and use it as you would any other object in PHP.
+To use, make sure to signify `global $UserAwards` at the top of your file and use it as you would any other object in PHP.
 
 ```php
-global $WPAward;
+global $UserAwards;
 
 /**
  * Check to see if a user already has a specific award
@@ -40,7 +40,7 @@ global $WPAward;
  * @param  int $award_id - WPAward_ID (Post ID)
  * @return bool           Whether or not this user has an award with the current award id
  */
-$WPAward->UserHasAward( $user_id, $award_id );
+$UserAwards->UserHasAward( $user_id, $award_id );
 
 /**
  * Assigns multiple awards to users using AssignAward
@@ -48,7 +48,7 @@ $WPAward->UserHasAward( $user_id, $award_id );
  * @param  array $award_ids - Array of WPAward_IDs (Post ID)
  * @return bool             - True if awards were assigned, false if there was an error with assigning awards
  */
-$WPAward->AssignAwards( $user_id, $award_ids );
+$UserAwards->AssignAwards( $user_id, $award_ids );
 
 /**
  * Function that marks an award as assigned to a user.
@@ -63,7 +63,7 @@ $WPAward->AssignAwards( $user_id, $award_ids );
  *                  	  	- User already has that award
  *                  	  	- Error with assigning our award
  */
-$WPAward->AssignAward( $user_id, $award_id );
+$UserAwards->AssignAward( $user_id, $award_id );
 
 /**
  * Give multiple awards to users using GiveAward().
@@ -71,7 +71,7 @@ $WPAward->AssignAward( $user_id, $award_id );
  * @param  array $award_ids - Array of WPAward_IDs (Post ID)
  * @return bool             - True if awards were given, false if there was an error with giving awards
  */
-$WPAward->GiveAwards( $user_id, $award_ids );
+$UserAwards->GiveAwards( $user_id, $award_ids );
 
 /**
  * Function that will mark an award as given to a user,
@@ -84,7 +84,7 @@ $WPAward->GiveAwards( $user_id, $award_ids );
  * @param int $award_id - ID of the award that we are "awarding"
  * @return mixed        - Return value of a $wpdb->update() call
  */
-$WPAward->GiveAward( $user_id, $award_id );
+$UserAwards->GiveAward( $user_id, $award_id );
 
 /**
  * Removes awards from our database.
@@ -94,7 +94,7 @@ $WPAward->GiveAward( $user_id, $award_id );
  * @param int $award_id - ID of the award that we are "awarding"
  * @return mixed 		- Return the value of a $wpdb->delete() call
  */
-$WPAward->RemoveUserAward( $user_id, $award_id = NULL );
+$UserAwards->RemoveUserAward( $user_id, $award_id = NULL );
 
 /**
  * Function that grabs as many awards assigned to the user as we can based on the parameters given.
@@ -105,7 +105,7 @@ $WPAward->RemoveUserAward( $user_id, $award_id = NULL );
  * @param int $award_id - ID of the award that we are "awarding"
  * @return mixed 		- Returnes the value of a $wpdb->get_results() call
  */
-$WPAward->GetUserAward( $user_id, $award_id = NULL);
+$UserAwards->GetUserAward( $user_id, $award_id = NULL);
 ```
 
 ### WordPress Award Grammar

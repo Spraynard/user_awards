@@ -1,5 +1,5 @@
 <?php
-namespace WPAward\Grammar;
+namespace UserAwards\Grammar;
 
 /**
  * Maybe a little too much abstraction....

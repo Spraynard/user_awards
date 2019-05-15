@@ -5,19 +5,19 @@
  * Description: Contains our logic for providing WordPress specific logic for our plugin.
  * This includes entities such as Post Types, Meta Boxes, and the required functionality for each of these entities.
  */
-namespace WPAward\PluginLogic;
+namespace UserAwards\PluginLogic;
 
 class Core {
-	private $WPAward; // Business Logic Layer
+	private $UserAwards; // Business Logic Layer
 	private $MetaBoxes; // Meta box
 
-	function __construct( $WPAward = NULL, $MetaBoxes = NULL ) {
-		$this->WPAward = $WPAward;
+	function __construct( $UserAwards = NULL, $MetaBoxes = NULL ) {
+		$this->UserAwards = $UserAwards;
 		$this->MetaBoxes = $MetaBoxes;
 
-		if ( empty( $this->WPAward ) )
+		if ( empty( $this->UserAwards ) )
 		{
-			return new \WP_Error("Missing WPAward Dependency");
+			return new \WP_Error("Missing UserAwards Dependency");
 		}
 
 		if ( empty( $this->MetaBoxes ) )
@@ -48,17 +48,17 @@ class Core {
 			add_filter('manage_' . USER_AWARDS_POST_TYPE . '_posts_columns', [$this, 'PostTypeAdminColumns']);
 		}
 
-		add_action('save_post', [$this->MetaBoxes, 'WPAwardsSaveMetaBoxes']); // Adds ability to save our meta values with our post
+		add_action('save_post', [$this->MetaBoxes, 'UserAwardsSaveMetaBoxes']); // Adds ability to save our meta values with our post
 
 
 		// Adding in Custom Modal through the "admin-notices" action
 		add_action('admin_notices', [$this, 'ModalGetUser']);
 
 		// Adding in actual admin notices handling
-		add_action('admin_notices', [$this, 'WPAward_Post_Admin_Notices']);
+		add_action('admin_notices', [$this, 'UserAwardsPostAdminNotices']);
 
 		// Adding in UserAwardsTable admin notices
-		add_action('admin_notices', 'WPAward\PluginLogic\UserAwardsTable::awards_table_admin_notices');
+		add_action('admin_notices', 'UserAwards\PluginLogic\UserAwardsTable::UserAwardsTableAdminNotices');
 
 		/**
 		 * Filters
@@ -66,10 +66,10 @@ class Core {
 
 
 		// Defining BULK ACTIONS fors our custom post type edit window.
-		add_filter('bulk_actions-edit-' . USER_AWARDS_POST_TYPE, [$this, 'register_wp_awards_cpt_bulk_actions']);
+		add_filter('bulk_actions-edit-' . USER_AWARDS_POST_TYPE, [$this, 'RegisterUserAwardsCptBulkActions']);
 
 		// Handling submission of the bulk action
-		add_filter('handle_bulk_actions-edit-' . USER_AWARDS_POST_TYPE, [$this, 'handle_wp_awards_cpt_bulk_actions'], 10, 3 );
+		add_filter('handle_bulk_actions-edit-' . USER_AWARDS_POST_TYPE, [$this, 'HandleUserAwardsCptBulkActions'], 10, 3 );
 	}
 
 
@@ -116,7 +116,7 @@ class Core {
 	 * This is used to display our table that shows the awards that are assigned to users.
 	 */
 	public function UserAwardsPageHTML() {
-		$userAwardsTable = new UserAwardsTable( $this->WPAward );
+		$userAwardsTable = new UserAwardsTable( $this->UserAwards );
 		$userAwardsTable->prepare_items();
 	?>
 		<div class="wrap">
@@ -131,7 +131,7 @@ class Core {
 	<?php
 	}
 
-	function register_wp_awards_cpt_bulk_actions( $bulk_actions ) {
+	function RegisterUserAwardsCptBulkActions( $bulk_actions ) {
 		$bulk_actions['assign_to_user'] = __('Assign to User', 'user_awards');
 		$bulk_actions['give_to_user'] = __('Give to User', 'user_awards');
 		return $bulk_actions;
@@ -144,7 +144,7 @@ class Core {
 	 * @param  array $items    - Items to take the action on
 	 * @return string          - $redirect_url is returned here after some transformations
 	 */
-	function handle_wp_awards_cpt_bulk_actions( $redirect_url, $doaction, $items )
+	function HandleUserAwardsCptBulkActions( $redirect_url, $doaction, $items )
 	{
 		$UserAwards_UserID = ( empty($_GET['UserAwards_UserID']) ) ? NULL : (int) $_GET['UserAwards_UserID']; // Ternary to get User ID and assign it.
 
@@ -165,12 +165,12 @@ class Core {
 			if ( $doaction === 'assign_to_user' )
 			{
 				$bulkAction = "Assigned";
-				$action_completed = $this->WPAward->AssignAwards( $UserAwards_UserID, $items );
+				$action_completed = $this->UserAwards->AssignAwards( $UserAwards_UserID, $items );
 			}
 			elseif( $doaction === 'give_to_user' )
 			{
 				$bulkAction = "Gave";
-				$action_completed = $this->WPAward->GiveAwards( $UserAwards_UserID, $items );
+				$action_completed = $this->UserAwards->GiveAwards( $UserAwards_UserID, $items );
 			}
 
 			$redirect_url = add_query_arg([
@@ -208,7 +208,7 @@ class Core {
 				$value = empty($value) ? "[No Trigger Currently]" : $value;
 				break;
 			case 'auto_give':
-				$value = empty( get_post_meta( $post_id, 'WPAward_Auto_Give', true) ) ? "No" : "Yes";
+				$value = empty( get_post_meta( $post_id, USER_AWARDS_AUTO_GIVE_TYPE, true) ) ? "No" : "Yes";
 				break;
 		}
 
@@ -219,7 +219,7 @@ class Core {
 	 * Outputs a modal that we will use to select our user
 	 */
 	function ModalGetUser() {
-		$UserSelectHTML = call_user_func(["WPAward\Utility", "UserSelectHTML"], "UserAwards_UserID", "Choose Here");
+		$UserSelectHTML = call_user_func(["UserAwards\Utility", "UserSelectHTML"], "UserAwards_UserID", "Choose Here");
 		add_thickbox();
 		echo <<<HTML
 		<a id="modal-get-user-link" href="#TB_inline?width=250&height=250&inlineId=modal-get-user" style="display:none;" class="thickbox"></a>
@@ -241,7 +241,7 @@ class Core {
 HTML;
 	}
 
-	function WPAward_Post_Admin_Notices()
+	function UserAwardsPostAdminNotices()
 	{
 		$output_format = "";
 		$output_params_array = [];

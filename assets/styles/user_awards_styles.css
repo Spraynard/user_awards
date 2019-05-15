@@ -2,35 +2,35 @@
  * Admin Specific Styles
  */
 
-#WPAward_Grammar {
+#UserAwards_Grammar {
 	width: 100%;
 	margin: 15px 0px;
 }
 
-#WPAward_User_Apply {
+#UserAwards_User_Apply {
 	margin: 15px 0px;
 }
 
-.WPAward_Actions {
+.UserAwards_Actions {
 	display: flex;
 	/*text-align: right;*/
 }
 
-.WPAward_Actions input[type="submit"] {
+.UserAwards_Actions input[type="submit"] {
 	flex: 0 1 auto;
 }
 
-.WPAward_Actions .give-award-checkbox {
+.UserAwards_Actions .give-award-checkbox {
 	display: flex;
 	padding-right: 15px;
 	align-items: center;
 }
 
-.WPAward_Actions .give-award-checkbox label {
+.UserAwards_Actions .give-award-checkbox label {
 	flex: 0 1 80%;
 }
 
-.WPAward_Actions .give-award-checkbox input {
+.UserAwards_Actions .give-award-checkbox input {
 	flex: 0 1 auto;
 }
 

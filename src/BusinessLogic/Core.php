@@ -1,5 +1,5 @@
 <?php
-namespace WPAward\BusinessLogic;
+namespace UserAwards\BusinessLogic;
 
 /**
  * API for our plugin
@@ -13,7 +13,7 @@ class Core {
 
 	function __construct( $db ) {
 		$this->db = $db;
-		$this->db_table = $this->db->prefix . WP_AWARDS_TABLE_USER_AWARDS;
+		$this->db_table = $this->db->prefix . USER_AWARDS_TABLE_USER_AWARDS;
 
 		// Signal to wordpress to delete all of our user associated links to "awards" if we delete that user from the db
 		add_action( 'delete_user', [$this, 'RemoveUserAward'], 10, 1 );

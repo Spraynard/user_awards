@@ -1,6 +1,6 @@
 <?php
 
-namespace WPAward\Grammar;
+namespace UserAwards\Grammar;
 
 /**
  * Used By:

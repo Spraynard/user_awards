@@ -17,7 +17,7 @@ class Test_User_Awards_Award extends WP_UnitTestCase {
 	private $post_2;
 	private $user;
 	private $wpdb;
-	private $WPAward;
+	private $UserAwards;
 	private $plugin_basename;
 
 
@@ -25,7 +25,7 @@ class Test_User_Awards_Award extends WP_UnitTestCase {
 		parent::tearDown();
 		global $wpdb;
 
-		$tablename = $wpdb->prefix . WP_AWARDS_TABLE_USER_AWARDS;
+		$tablename = $wpdb->prefix . USER_AWARDS_TABLE_USER_AWARDS;
 
 		$wpdb->query( "TRUNCATE TABLE {$tablename}" );
 	}

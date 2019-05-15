@@ -39,7 +39,7 @@
  * greater than 600. If that's the case then we return true, if not we return negative.
  */
 
-namespace WPAward\Grammar;
+namespace UserAwards\Grammar;
 
 class Core implements ParserInterface {
 	public $entity, $trigger_type, $trigger, $input_string;

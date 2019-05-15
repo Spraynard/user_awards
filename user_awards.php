@@ -35,10 +35,10 @@ register_deactivation_hook( __FILE__, [ 'UserAwards\PluginLogic\RegistrationHook
 register_uninstall_hook( __FILE__, [ 'UserAwards\PluginLogic\RegistrationHooks', 'Uninstall' ] );
 
 // Enqueuing our plugin assets such as styles and scripts (if needed)
-add_action( 'admin_enqueue_scripts', 'enqueue_user_award_plugin_assets' );
+add_action( 'admin_enqueue_scripts', 'EnqueueUserAwardsPluginAssets' );
 
 // Wait until the plugins loaded action in order to have wp_get_current_user() function
-add_action( 'plugins_loaded', 'apply_user_award_listeners' );
+add_action( 'plugins_loaded', 'ApplyUserAwardsListeners' );
 
 // Holds our user awards business logic
 $UserAwards = new UserAwards\BusinessLogic\Core($wpdb);
@@ -56,7 +56,7 @@ $UserAwardsPlugin = new UserAwards\PluginLogic\Core( $UserAwards, $UserAwardsMet
  * assign an award to a user based on the actions that they are taking.
  */
 
-function apply_user_award_listeners() {
+function ApplyUserAwardsListeners() {
 	global $UserAwards;
 
 	$current_user = wp_get_current_user();
@@ -89,7 +89,7 @@ function apply_user_award_listeners() {
 /**
  * Function used to enqueue any required JS or CSS assets
  */
-function enqueue_user_award_plugin_assets( $hook ) {
+function EnqueueUserAwardsPluginAssets( $hook ) {
 	// Post Specific page - New Post, Edit Post
 	if ( $hook === "post.php" || $hook === "edit.php" || $hook === "post-new.php" )
 	{

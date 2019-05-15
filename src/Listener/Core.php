@@ -1,22 +1,22 @@
 <?php
-namespace WPAward\Listener;
+namespace UserAwards\Listener;
 
 class Core {
 	private $award_id;
 	private $grammar = null;
 	private $grammarFunction = null;
-	private $WPAward = null;
+	private $UserAwards = null;
 
 	/**
 	 * Class Constructor
 	 * @param string $award_grammar_string - String of our trigger grammar to use that will put a listener up
-	 * @param WPAward $WPAward       - WPAward that performs award operations on a user, such as checking if the user should have an award or what not.
+	 * @param WPAward $UserAwards       - WPAward that performs award operations on a user, such as checking if the user should have an award or what not.
 	 */
-	function __construct( $award_id, $grammar, $WPAward ) {
+	function __construct( $award_id, $grammar, $UserAwards ) {
 		$this->award_id = $award_id;
 		$this->grammar = $grammar;
 		$this->grammarFunction = $this->grammar->entity . '_' . $this->grammar->trigger_type;
-		$this->WPAward = $WPAward;
+		$this->UserAwards = $UserAwards;
 	}
 
 	public function add_listeners( $user ) {
@@ -75,7 +75,7 @@ class Core {
 		}
 
 		// Testing whether we should apply an award to a user.
-		if ( ! $this->WPAward->shouldApplyAward(
+		if ( ! $this->UserAwards->shouldApplyAward(
 			$_meta_value,
 			$this->grammar->trigger->control,
 			$this->grammar->trigger->operator
@@ -85,7 +85,7 @@ class Core {
 		}
 
 		// Finally, assign our award if we make it this far
-		$award_assigned = $this->WPAward->AssignAward( $object_id, $this->award_id );
+		$award_assigned = $this->UserAwards->AssignAward( $object_id, $this->award_id );
 
 		if ( ! $award_assigned )
 		{
