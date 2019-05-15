@@ -30,22 +30,22 @@ class Core {
 		 */
 
 		// Actions that need a post type reference to function
-		if ( defined('WP_AWARDS_POST_TYPE') )
+		if ( defined('USER_AWARDS_POST_TYPE') )
 		{
 			// Adds our custom post type
 			add_action('init', [$this, 'PostType']);
 
 			// Add meta boxes to post type and provide option to edit those values
-			add_action('add_meta_boxes_' . WP_AWARDS_POST_TYPE, [$this->MetaBoxes, 'PostTypeMetaBoxes']);
+			add_action('add_meta_boxes_' . USER_AWARDS_POST_TYPE, [$this->MetaBoxes, 'PostTypeMetaBoxes']);
 
 			// Adding in "User Awards" admin interface
 			add_action('admin_menu', [$this, 'UserAwardsPage']);
 
 			// Adding in data for each of our columns
-			add_action('manage_' . WP_AWARDS_POST_TYPE . '_posts_custom_column', [$this, 'PostTypeAdminColumnsData'] , 10, 2);
+			add_action('manage_' . USER_AWARDS_POST_TYPE . '_posts_custom_column', [$this, 'PostTypeAdminColumnsData'] , 10, 2);
 
 			// Adding in custom columns to our post type.
-			add_filter('manage_' . WP_AWARDS_POST_TYPE . '_posts_columns', [$this, 'PostTypeAdminColumns']);
+			add_filter('manage_' . USER_AWARDS_POST_TYPE . '_posts_columns', [$this, 'PostTypeAdminColumns']);
 		}
 
 		add_action('save_post', [$this->MetaBoxes, 'WPAwardsSaveMetaBoxes']); // Adds ability to save our meta values with our post
@@ -66,10 +66,10 @@ class Core {
 
 
 		// Defining BULK ACTIONS fors our custom post type edit window.
-		add_filter('bulk_actions-edit-' . WP_AWARDS_POST_TYPE, [$this, 'register_wp_awards_cpt_bulk_actions']);
+		add_filter('bulk_actions-edit-' . USER_AWARDS_POST_TYPE, [$this, 'register_wp_awards_cpt_bulk_actions']);
 
 		// Handling submission of the bulk action
-		add_filter('handle_bulk_actions-edit-' . WP_AWARDS_POST_TYPE, [$this, 'handle_wp_awards_cpt_bulk_actions'], 10, 3 );
+		add_filter('handle_bulk_actions-edit-' . USER_AWARDS_POST_TYPE, [$this, 'handle_wp_awards_cpt_bulk_actions'], 10, 3 );
 	}
 
 
@@ -94,7 +94,7 @@ class Core {
 			'show_ui' => true
 		];
 
-		register_post_type(WP_AWARDS_POST_TYPE, $args);
+		register_post_type(USER_AWARDS_POST_TYPE, $args);
 	}
 
 	/**
@@ -102,7 +102,7 @@ class Core {
 	 */
 	public function UserAwardsPage() {
 		add_submenu_page(
-			'edit.php?post_type=' . WP_AWARDS_POST_TYPE,
+			'edit.php?post_type=' . USER_AWARDS_POST_TYPE,
 			'User Awards',
 			'User Awards',
 			'manage_options',

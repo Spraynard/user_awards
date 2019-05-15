@@ -15,9 +15,9 @@ if ( ! defined('WP_AWARDS_DB_VERSION_VALUE') )
 	define('WP_AWARDS_DB_VERSION_VALUE', '0.1');
 }
 
-if ( ! defined('WP_AWARDS_POST_TYPE') )
+if ( ! defined('USER_AWARDS_POST_TYPE') )
 {
-	define('WP_AWARDS_POST_TYPE', 'wp_awards_cpt');
+	define('USER_AWARDS_POST_TYPE', 'wp_awards_cpt');
 }
 
 if ( ! defined('WP_AWARDS_GRAMMAR_META_TYPE') )

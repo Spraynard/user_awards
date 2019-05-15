@@ -26,16 +26,16 @@ class Test_WP_Awards_Listener extends WP_UnitTestCase {
 		global $wpdb;
 		$this->wpdb = $wpdb;
 
-		if ( ! defined('WP_AWARDS_POST_TYPE') )
+		if ( ! defined('USER_AWARDS_POST_TYPE') )
 		{
-			$this->fail("WP_AWARDS_POST_TYPE CONSTANT IS NOT AVIALABLE");
+			$this->fail("USER_AWARDS_POST_TYPE CONSTANT IS NOT AVIALABLE");
 		}
 
 
 
 		// Assigning to our post variable.
 		$this->post = $this->factory->post->create_and_get(array(
-			'post_type' => WP_AWARDS_POST_TYPE,
+			'post_type' => USER_AWARDS_POST_TYPE,
 			'post_title' => 'Fifty Hours Worked',
 			'post_content' => 'Awarded to users if they have more than 50 hours worked for us. They are really nice people',
 			'post_author' => 1,
@@ -46,7 +46,7 @@ class Test_WP_Awards_Listener extends WP_UnitTestCase {
 
 
 		$this->post_2 = $this->factory->post->create_and_get(array(
-			'post_type' => WP_AWARDS_POST_TYPE,
+			'post_type' => USER_AWARDS_POST_TYPE,
 			'post_title' => 'Eighty Hours Worked',
 			'post_content' => 'Awarded to users if they have more than 80 hours worked for us. They are really nice people',
 			'post_author' => 1,
@@ -56,7 +56,7 @@ class Test_WP_Awards_Listener extends WP_UnitTestCase {
 		));
 
 		$this->post_3 = $this->factory->post->create_and_get(array(
-			'post_type' => WP_AWARDS_POST_TYPE,
+			'post_type' => USER_AWARDS_POST_TYPE,
 			'post_title' => '20 Hours Worked',
 			'post_content' => 'Awarded to users if they have more than 20 hours worked for us. They are really nice people',
 			'post_author' => 1,
