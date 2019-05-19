@@ -132,8 +132,8 @@ class Core {
 	}
 
 	function RegisterUserAwardsCptBulkActions( $bulk_actions ) {
-		$bulk_actions['assign_to_user'] = __('Assign to User', 'user_awards');
-		$bulk_actions['give_to_user'] = __('Give to User', 'user_awards');
+		$bulk_actions['UserAwards_Assign'] = __('Assign to User', 'user_awards');
+		$bulk_actions['UserAwards_Give'] = __('Give to User', 'user_awards');
 		return $bulk_actions;
 	}
 
@@ -146,7 +146,10 @@ class Core {
 	 */
 	function HandleUserAwardsCptBulkActions( $redirect_url, $doaction, $items )
 	{
-		$UserAwards_UserID = ( empty($_GET['UserAwards_UserID']) ) ? NULL : (int) $_GET['UserAwards_UserID']; // Ternary to get User ID and assign it.
+		$UserAwards_UserID = ( call_user_func('UserAwards\Utility::CheckUserInput_UserID', $_GET['UserAwards_UserID']) ) ?
+			$_GET['UserAwards_UserID'] // Ternary to get User ID and assign it.
+			:
+			NULL;
 
 		/**
 		 * Remove bulk action params from the URL before we process and potentially add in parameters
@@ -162,12 +165,12 @@ class Core {
 
 		if ( $UserAwards_UserID )
 		{
-			if ( $doaction === 'assign_to_user' )
+			if ( $doaction === 'UserAwards_Assign' )
 			{
 				$bulkAction = "Assigned";
 				$action_completed = $this->UserAwards->AssignAwards( $UserAwards_UserID, $items );
 			}
-			elseif( $doaction === 'give_to_user' )
+			elseif( $doaction === 'UserAwards_Give' )
 			{
 				$bulkAction = "Gave";
 				$action_completed = $this->UserAwards->GiveAwards( $UserAwards_UserID, $items );
@@ -248,7 +251,7 @@ HTML;
 
 		if ( ! empty($_REQUEST['UserAwards_Bulk_Action']) )
 		{
-			$bulk_action =
+			// $bulk_action =
 			$output_format .= "%s "; // Assigned, Gave, Removed
 			$output_params_array[] = (string) $_REQUEST['UserAwards_Bulk_Action'];
 		}

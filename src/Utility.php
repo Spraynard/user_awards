@@ -44,6 +44,39 @@ HTML;
 
 		return $returnHTML;
 	}
+
+	static function CheckUserInput_UserID( $user_id ) {
+		// Are our inputted user ids invals?
+		if ( ! intval( $user_id ) )
+		{
+			return false;
+		}
+
+
+		// Are our inputted user ids actual users?
+		if ( ! get_userdata( $user_id ) )
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+	static function CheckUserInput_PostID( $post_id ) {
+		// Are our award id's invals?
+		if ( ! intval( $post_id ) )
+		{
+			return false;
+		}
+
+		// Does our award exist?
+		if ( ! get_post( $post_id ) )
+		{
+			return false;
+		}
+
+		return true;
+	}
 }
 
 ?>

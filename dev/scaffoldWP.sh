@@ -8,7 +8,7 @@ DB_NAME=somewordpress
 DB_USER=wordpress
 DB_PASS=somewordpresspassword
 DB_HOST=db
-PLUGIN_NAME=wp_awards
+PLUGIN_NAME=user_awards
 
 ABS_PATH="$(cd $(dirname $0) && pwd)"
 
@@ -52,7 +52,7 @@ echo "Running \"install-wp-tests.sh\""
 docker-compose run --rm wordpress_phpunit /app/bin/install-wp-tests.sh somewordpress wordpress somewordpresspassword db >/dev/null
 
 echo "Activating plugin"
-docker-compose run --user="33:33" --rm cli wp plugin activate wp_awards >/dev/null
+docker-compose run --user="33:33" --rm cli wp plugin activate user_awards >/dev/null
 
 # Should only really be one file in there, but I don't know the name of item
 echo "Checking to see if there is any wordpress export data"

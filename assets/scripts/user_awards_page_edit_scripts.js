@@ -1,6 +1,6 @@
 /**
- * Name: wp_award_page_edit_scripts.js
- * Description: Holds all applicable JavaScripts needed for full functionality of the WP_Awards Post Edit page.
+ * Name: user_awards_page_edit_scripts.js
+ * Description: Holds all applicable JavaScripts needed for full functionality of the UserAwards Post Edit page.
  */
 
 function injectUserIDHiddenInput( user_id, elem ) {
@@ -28,7 +28,7 @@ function injectUserIDHiddenInput( user_id, elem ) {
 
 jQuery(document).ready(function($) {
 	/**
-	 * WPAwards Post Edit List screen:
+	 * UserAwards Post Edit List screen:
 	 * - Bulk Actions:
 	 * 		* If the bulk action that we're doing is "Assign to User",
 	 *   		then we have to harvest the user information somehow.

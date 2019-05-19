@@ -6,7 +6,7 @@
 #	* assets/
 #	* vendor/
 #	* constants.php
-#	* wp_awards.php
+#	* user_awards.php
 #	* LICENSE.txt
 #	* readme.txt
 
@@ -21,4 +21,4 @@ fi
 
 # -r --- Recursive zipping?
 # -j --- Junk paths. Don't store our host directory structure.
-zip -r --exclude=*.DS_Store* dist/user_awards.zip src/ assets/ vendor/ constants.php wp_awards.php LICENSE.txt readme.txt
+zip -r --exclude=*.DS_Store* dist/user_awards.zip src/ assets/ vendor/ constants.php user_awards.php LICENSE.txt readme.txt

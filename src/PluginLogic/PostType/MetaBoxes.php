@@ -170,9 +170,14 @@ HTML;
 		}
 
 		// Are we trying to apply awards to users?
-		if ( isset( $_POST['UserAwards_User_Apply'] ) && $_POST['UserAwards_User_Apply'] > 0 )
+		if ( isset( $_POST['UserAwards_User_Apply'] ) )
 		{
 			check_admin_referer( plugin_basename(__FILE__), 'UserAwards_Apply_Award_To_User' );
+
+			if ( ! call_user_func('UserAwards\Utility::CheckUserInput_UserID', $_POST['UserAwards_User_Apply']) )
+			{
+				return;
+			}
 
 			if ( isset( $_POST['UserAwards_User_Give']) )
 			{
