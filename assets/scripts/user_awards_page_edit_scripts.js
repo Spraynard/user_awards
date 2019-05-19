@@ -46,7 +46,7 @@ jQuery(document).ready(function($) {
 	var posts_filter = $("#posts-filter"); // The form used to submit our bulk actions... I think...
 	var bulk_actions_submit = $(".bulkactions input[type=\"submit\"]");
 	var modal_get_user_link = $("#modal-get-user-link");
-	var modal_open_actions = ["assign_to_user", "give_to_user"];
+	var modal_open_actions = ["UserAwards_Assign", "UserAwards_Give"];
 
 	// Thickbox modal will be opened when we click on our bulk actions "submit" button
 	// and have the "assign_to_user" action selected

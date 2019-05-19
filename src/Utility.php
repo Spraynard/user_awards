@@ -25,7 +25,7 @@ class Utility {
 	 */
 	static function UserSelectHTML( $name, $initialText = "Select A User", $users = NULL ) {
 		$users = ( empty( $users ) ) ? get_users() : $users;
-
+		$name = esc_attr($name);
 		$returnHTML = <<<HTML
 		<select id="{$name}" name="{$name}">
 		<option value="0">{$initialText}</option>

@@ -146,24 +146,17 @@ class Core {
 	 */
 	function HandleUserAwardsCptBulkActions( $redirect_url, $doaction, $items )
 	{
+		if ( ! current_user_can('manage_options') )
+		{
+			return $redirect_url;
+		}
+
 		$UserAwards_UserID = ( call_user_func('UserAwards\Utility::CheckUserInput_UserID', $_GET['UserAwards_UserID']) ) ?
 			$_GET['UserAwards_UserID'] // Ternary to get User ID and assign it.
 			:
 			NULL;
 
-		/**
-		 * Remove bulk action params from the URL before we process and potentially add in parameters
-		 */
-		$redirect_url = remove_query_arg(
-			array(
-				'UserAwards_Users_Affected',
-				'UserAwards_UserID',
-				'UserAwards_Bulk_Action'
-			),
-			$redirect_url
-		);
-
-		if ( $UserAwards_UserID )
+		if ( isset( $_GET['UserAwards_UserID'] ) )
 		{
 			if ( $doaction === 'UserAwards_Assign' )
 			{
@@ -181,7 +174,6 @@ class Core {
 				'UserAwards_UserID' => $UserAwards_UserID,
 				'UserAwards_Bulk_Action' => $bulkAction
 			], $redirect_url);
-
 		}
 
 		return $redirect_url;
@@ -203,6 +195,9 @@ class Core {
 		return $columns;
 	}
 
+	/**
+	 * Function to handle the values that are in our edit specific admin columns.
+	 */
 	public function PostTypeAdminColumnsData( $column, $post_id )
 	{
 		switch( $column ) {
@@ -220,6 +215,8 @@ class Core {
 
 	/**
 	 * Outputs a modal that we will use to select our user
+	 *
+	 * @see user_awards_page_edit_scripts.js
 	 */
 	function ModalGetUser() {
 		$UserSelectHTML = call_user_func(["UserAwards\Utility", "UserSelectHTML"], "UserAwards_UserID", "Choose Here");
@@ -253,20 +250,20 @@ HTML;
 		{
 			// $bulk_action =
 			$output_format .= "%s "; // Assigned, Gave, Removed
-			$output_params_array[] = (string) $_REQUEST['UserAwards_Bulk_Action'];
+			$output_params_array[] = (string) esc_html($_REQUEST['UserAwards_Bulk_Action']);
 		}
 
 		if ( ! empty($_REQUEST['UserAwards_Users_Affected']) )
 		{
 			$output_format .= "%d awards ";
-			$output_params_array[] = (int) $_REQUEST['UserAwards_Users_Affected'];
+			$output_params_array[] = (int) esc_html($_REQUEST['UserAwards_Users_Affected']);
 		}
 
 		if ( ! empty($_REQUEST['UserAwards_UserID']) )
 		{
 			$user_assigned = get_user_by( 'ID', (int) $_REQUEST['UserAwards_UserID'] );
 			$output_format .= "to %s";
-			$output_params_array[] = ucfirst($user_assigned->user_nicename);
+			$output_params_array[] = esc_html(ucfirst($user_assigned->user_nicename));
 
 		}
 

@@ -29,11 +29,11 @@ class UserAwardsTable extends \WP_List_Table {
 	 */
 	function get_columns() {
 		return [
-			'cb' => '<input type="checkbox" />',
-			'award' => 'Award',
-			'user' => 'User',
-			'date_assigned' => 'Date Award Assigned',
-			'date_given' => 'Date Award Given',
+			'cb' => __('<input type="checkbox" />', 'user-awards'),
+			'award' => __('Award', 'user-awards'),
+			'user' => __('User', 'user-awards'),
+			'date_assigned' => __('Date Award Assigned', 'user-awards'),
+			'date_given' => __('Date Award Given', 'user-awards'),
 		];
 	}
 
@@ -48,7 +48,7 @@ class UserAwardsTable extends \WP_List_Table {
 			'edit' => sprintf(
 				'<a href="%s/post.php?post=%s&action=%s">%s</a>',
 				admin_url(),
-				$item->award_id,
+				esc_attr($item->award_id),
 				"edit",
 				"Edit"
 			),
@@ -80,7 +80,7 @@ class UserAwardsTable extends \WP_List_Table {
 	 */
 	function column_user( $item ) {
 		$user = get_user_by('id', $item->user_id);
-		return ucfirst($user->data->user_nicename);
+		return esc_html(ucfirst($user->data->user_nicename));
 	}
 
 	/**
@@ -89,7 +89,7 @@ class UserAwardsTable extends \WP_List_Table {
 	 * @return string      - Column value in string form
 	 */
 	function column_date_assigned( $item ) {
-		return $item->date_assigned;
+		return esc_html($item->date_assigned);
 	}
 
 	/**
@@ -115,14 +115,16 @@ class UserAwardsTable extends \WP_List_Table {
 	}
 
 	/**
-	 * Provide a checkbox here that is filled with the item's ID I'm guessing
+	 * Provide a checkbox here that is filled with award ids.
+	 * When a user selects one (or multiple) awards, then we are going to be
+	 * adding an array to our URL as part of the query to specify which awards we are doing an action with.
 	 */
 	function column_cb( $item ) {
 		return sprintf(
 			'<input type="checkbox" name="%s[%d][]" value="%d"/>',
-			$this->_args['plural'], // Singular name is getting used as the name here (award)
-			$item->user_id,
-			$item->award_id
+			esc_attr($this->_args['plural']),
+			esc_attr($item->user_id),
+			esc_attr($item->award_id)
 		);
 	}
 
@@ -145,7 +147,11 @@ class UserAwardsTable extends \WP_List_Table {
 				if ( ! empty($_POST[$this->_args['plural']]) )
 				{
 					$user_award_array = $_POST[$this->_args['plural']];
-					$award_count = 0;
+
+					if ( ! is_array($user_award_array) )
+					{
+						return;
+					}
 
 					foreach( $user_award_array as $user_id => $award_ids )
 					{
@@ -162,7 +168,6 @@ class UserAwardsTable extends \WP_List_Table {
 							}
 
 							$this->UserAwards->RemoveUserAward( $user_id, $award_id );
-							$award_count++;
 						}
 					}
 				}
@@ -179,6 +184,11 @@ class UserAwardsTable extends \WP_List_Table {
 		$user_id = NULL;
 		$nonce = NULL;
 
+		// Checking at first to see if the user that's performing this action can actually perform it
+		if ( ! current_user_can('manage_options') )
+		{
+			return;
+		}
 		if ( ! empty($_GET[$this->_args['singular']]) )
 		{
 			if (! call_user_func(['UserAwards\Utility', 'CheckUserInput_PostID'], $_GET[$this->_args['singular']]) )
@@ -201,7 +211,12 @@ class UserAwardsTable extends \WP_List_Table {
 
 		if ( ! empty($_GET['_wpnonce']) )
 		{
-			$nonce = $_GET['_wpnonce'];
+			$nonce = sanitize_text_field($_GET['_wpnonce']);
+		}
+
+		if ( ! $award_id || ! $user_id )
+		{
+			return;
 		}
 
 		switch ($this->current_action()) {
@@ -240,6 +255,11 @@ class UserAwardsTable extends \WP_List_Table {
 		/**
 		 * WE SHOULD BE PROCESSING OUR NONCE HERE MY DUDES
 		 */
+
+		if ( ! current_user_can('manage_options') )
+		{
+			return;
+		}
 
 		$this->process_bulk_actions();
 		$this->process_singular_actions();
