@@ -1,6 +1,6 @@
 # User Awards - A WordPress Plugin
 
-Let your users know how much you appreciate them! Enhances your site with the abilty to assign and give awards to users based on the actions that they take.
+Let your users know how much you appreciate them! Enhances your site with the ability to assign and give awards to users based on the actions that they take.
 
 Give them a lifetime supply of cherished memories that they can hold dear to their hearts for years to come.
 
