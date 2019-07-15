@@ -9,7 +9,7 @@ Requires PHP: 5.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Let your users know how much you appreciate them! Enhances your site with the abilty to assign and give awards to users based on the actions that they take.
+Let your users know how much you appreciate them! Enhances your site with the ability to assign and give awards to users based on the actions that they take.
 
 == Description ==
 Activating this plugin now means that you are able to award users for specific actions that they take.
