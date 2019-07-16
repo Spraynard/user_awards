@@ -4,7 +4,7 @@ Donate link: N/A
 Tags: awards, user engagement
 Requires at least: 5.1.1
 Tested up to: 5.2.0
-Stable tag: 0.0.1
+Stable tag: 0.0.2
 Requires PHP: 5.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -210,7 +210,7 @@ No frequently asked questions are known at this time.
 == Changelog ==
 
 = Version 0.0.2 =
-Updated readme.txt
+Updating readme.txt
 
 = Version 0.0.1 =
 Initial version of the plugin.
