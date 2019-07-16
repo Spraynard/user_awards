@@ -17,27 +17,41 @@ Activating this plugin now means that you are able to award users for specific a
 **NOTE**: Currently this only works for actions that update or add to user meta values.
 
 At a basic level, the following happens when you activate this plugin:
-* **Awards** _custom post type_ is added to the administration window. Regular post type window but with a few additional meta boxes that provide access to the core behavior of this plugin.
+
+* Awards _custom post type_ is added to the administration window. Regular post type window but with a few additional meta boxes that provide access to the core behavior of this plugin.
 
 * A new table is created under the name of `{wpdb_prefix}user_awards`. This contains all award assignment references to users. The _User Awards_ sub-menu provides an interface to help perform administrative actions on the table.
 
 There is also a `User Awards` sub-menu which gives a tabular view of all the awards that are assigned to users. This is accessible from the `Awards` admin menu in your WordPress administration area.
 
-# __Usage__
----
+== Installation ==
+
+1. Upload the plugin files to the `/wp-content/plugins/user-awards` directory install the plugin through the WordPress plugins screen directly
+2. Activate the plugin through the
+This section describes how to install the plugin and get it working.
+3. Activate the plugin through the ‘Plugins’ screen in WordPress. You should be notified if the plugin activation was successful.
+4. Click on the `Awards` menu item on the administrator sidebar in order to interact with the User Awards plugin administration actions.
+
+== Usage ===
+
 Understanding the different actions you can take in each available window is key to having this plugin work for you.
 
 ## Award List Window
->This window displays all of the specific "Award" post types.
+
+This window displays all of the specific "Award" post types.
 
 There are two different bulk actions available to you:
+
 * __Bulk Assign__ - Assign multiple awards to a user
+
 * __Bulk Give__ - Give multiple awards to a user
 
 ## New Award / Edit Award Window
->These administration windows have three meta boxes associated with them. Below are descriptions of each metabox and why it is included.
+
+These administration windows have three meta boxes associated with them. Below are descriptions of each metabox and why it is included.
 
 ### Awards Trigger
+
 _Text Input_. Accepts an **awards trigger string**, which will describe the behavior of how an award will be assigned to users. Documentation for the awards trigger is shown below.
 
 #### Example
@@ -53,71 +67,68 @@ We've decided to name our award the "User Engagement" award. In order to _assign
 This string tells the award to assign itself to the user if the `post_likes` value of the current user's meta was updated or created to equal a value of `10`.
 
 ### Auto-Give Award
+
 _Checkbox input_. Check this box to automatically have the award be *given* to a user when it would originally be assigned.
 
 ### Apply/Give Award To User
+
 _Select Input combined with a checkbox input_. Select a user from your member list to either assign/give an award by clicking on the *Assign* submit button.
 
 ## User Awards Window
-> This window allows administrators to __physically see and update__ the status of all of the awards that are assigned to users.
+
+This window allows administrators to __physically see and update__ the status of all of the awards that are assigned to users.
 
 This window will allow you to perform the following actions:
+
 * Singular/Bulk remove awards from members
 * Singular give awards to members
 * Edit Awards
 
-# Documentation
----
+== Documentation ==
 
 ## Awards Trigger Syntax
 
-We use a string with this syntax to create an award trigger.
-`[ entity ] [ trigger_type ] WHERE [ trigger ]`
+Explanation of each of the items that make up our trigger string, with accepted values of each listed under.
 
-Below is documentation and explanation, with acceptable values, of each portion of the trigger string syntax.
-
-[ entity ]
+* [ entity ] -- Used to scope your awards trigger to a specific action.
 	- CURRENT_USER_META -- Consider the meta value of the current user
 
-The `entity` is used to scope your Awards Trigger to a specific action.
+* [ trigger_type ] -- Type of action that is performed to the current entity.
+	- UPDATED -- When entity value is updated (Listens to calls of the  update_user_meta() function)
+	- CREATED -- When entity value is created (Listens to calls of the add_user_meta() function)
+	- ASSIGNED -- Listens to calls of both the update_user_meta() and add_user_meta() function.
+	- ~EXCLUDED~ -- Not Implemented
 
-[ trigger_type ] -- Type of action that is performed to the current entity.
-	- UPDATED -- When entity value is updated (in terms of user meta, this will consider the `update_user_meta()` function)
-	- CREATED -- When entity value is created (in terms of user meta, this will consider the `add_user_meta()` function)
-	- ASSIGNED -- Will consider both updates and creations of set up entity.
-	- ~~EXCLUDED~~ -- Currently unused.
-
-[ trigger ] - [ descriptor ] [ operator ] [ control ]
+* [ trigger ] - Made up of three separate values itself, [ descriptor ] [ operator ] [ control ]
 	- [ descriptor ]
-		- [ entity_type ] = [ value ]
-		ex: key = hours
+		- [ entity_type ] = [ value ] ex: key = hours
 
-	- [ operator ]
-		- GT - greater than
-		- LT - less than
-		- EQ - equal to
-	 	- GTEQ - greater than equal to
-	 	- LTEQ - less than equal to
+    - [ operator ]
+    	- GT - greater than
+    	- LT - less than
+    	- EQ - equal to
+    	- GTEQ - greater than equal to
+    	- LTEQ - less than equal to
 
- - [ control ]
- 	- Value used to compare against. e.g. 2
+    - [ control ]
+    	- Value used to compare against. e.g. 2
+    	- *NOTE*: The control *can also be a string*, but in order for this to work, you must use the EQ operator, as shown above.
 
 EXAMPLE:
 
-> CURRENT_USER_META UPDATED WHERE key=total_hours GT 600
+`CURRENT_USER_META UPDATED WHERE key=total_hours GT 600`
 
 This example creates a wp action handler that only applies when a user's meta tags are updated.
 In the handler, we will compare the meta tag being updated to the given comparitors in the [ trigger ].
 i.e. we will look for a meta tag of the current user that is labeled "total_hours" and check to see if the value is
 greater than 600. If that's the case then the award will be assigned. If not then nothing happens.
 
-## `$UserAward` Global Object
+## $UserAward Global Object
 
-The awards trigger syntax, while nice, is too limited in its current form. Our plugin provides a global `$UserAward` variable that allows developers to interact with the core API of the plugin in order to award items through methods that simply are not possible / too complex.
+The awards trigger syntax, while nice, is too limited in its current form. Our plugin provides a global _$UserAward_ variable that allows developers to interact with the core API of the plugin in order to award items through methods that simply are not possible / too complex.
 
 You will find documentation and usage for functions available to you below.
 
-```php
 global $UserAward;
 
 /**
@@ -192,32 +203,29 @@ $UserAwards->RemoveUserAward( $user_id, $award_id = NULL );
  * @return mixed 		- Returnes the value of a $wpdb->get_results() call
  */
 $UserAwards->GetUserAward( $user_id, $award_id = NULL);
-```
-
-== Installation ==
-
-1. Upload the plugin files to the `/wp-content/plugins/user-awards` directory install the plugin through the WordPress plugins screen directly
-2. Activate the plugin through the
-This section describes how to install the plugin and get it working.
-3. Activate the plugin through the ‘Plugins’ screen in WordPress. You should be notified if the plugin activation was successful.
-4. Click on the `Awards` menu item on the administrator sidebar in order to interact with the User Awards plugin administration actions.
 
 == Frequently Asked Questions ==
 No frequently asked questions are known at this time.
 
 == Changelog ==
 
+= Version 0.0.2 =
+Updated readme.txt
+
 = Version 0.0.1 =
 Initial version of the plugin.
 
 == Upgrade Notice ==
+
 No Upgrade notices at this time
 
 == Screenshots ==
+
 1. Award List Window. Shows the awards that are available to give to users.
 2. New/Edit Award Window #1
 3. New/Edit Award Window #2
 4. User Awards window. Shows any awards that are assigned to users.
 
 == Attribution ==
+
 This plugin's icon is not an original piece of work. It was made by [**Freepik** from Flaticon.com](www.flaticon.com)
