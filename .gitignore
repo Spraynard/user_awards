@@ -17,3 +17,6 @@ backups/
 
 # Mac OS General
 .DS_Store
+
+# Don't include my specific buildPlugin script
+dev/buildPlugin.sh

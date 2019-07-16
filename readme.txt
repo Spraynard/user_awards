@@ -4,12 +4,12 @@ Donate link: N/A
 Tags: awards, user engagement
 Requires at least: 5.1.1
 Tested up to: 5.2.0
-Stable tag: 1.0.0
+Stable tag: 0.0.1
 Requires PHP: 5.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Let your users know how much you appreciate them! Enhances your site with the abilty to assign and give awards to users based on the actions that they take.
+Let your users know how much you appreciate them! Enhances your site with the ability to assign and give awards to users based on the actions that they take.
 
 == Description ==
 Activating this plugin now means that you are able to award users for specific actions that they take.

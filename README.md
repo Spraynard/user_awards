@@ -6,7 +6,7 @@ Give them a lifetime supply of cherished memories that they can hold dear to the
 
 ## Installation
 
-Put the plugins files within your `wp-content/plugins/` folder and then activate it from the admin view as you would any regular plugin.
+Put these files within your `wp-content/plugins/user_awards` folder (make the `user_awards` folder if you don't have it), and then activate it from the admin view as you would any regular plugin.
 
 ## Usage
 
@@ -18,18 +18,13 @@ These awards are given to users in two ways. The first and easiest way is to set
 
 If this `trigger` string were applied to our award, then we would "assign" this award to our user if the WordPress specific `user_meta` value with a key of `total_hours` was updated to have a value **greater than or equal to** 50. Documentation for this grammar is located in the documentation section below.
 
-### Global Object
-There is also a `global $UserAwards` object that includes the core functionality that is used within this plugin. Developers should be able to enjoy applying awards to users using their own non-trivial ways. The documentation for this object is located below
-
-## Documentation
-<!-- ### Grammar
-#### Syntax
- -->
 ### WPAward Global Object
 
-This object serves as the core functionality for this plugin. Supplied as a global object to allow for developers who know how to party to bypass the shortcomings that are inherent in our `Trigger Strings`.
+This object serves as the core functionality for this plugin. Supplied as a global object to allow for developers who *know how to party* to bypass the shortcomings that are inherent within the trigger strings implementation.
 
-To use, make sure to signify `global $UserAwards` at the top of your file and use it as you would any other object in PHP.
+To use, the `global $UserAwards` variable must be present in the scope of your function/file.
+
+#### Documentation
 
 ```php
 global $UserAwards;
@@ -110,7 +105,46 @@ $UserAwards->GetUserAward( $user_id, $award_id = NULL);
 
 ### WordPress Award Grammar
 
-TBD
+#### Introduction and Examples
+
+The Grammar of this plugin is used to abstract the details of implementing specific action-based WordPress event handler. The actions, which are specified using the `trigger_type`, and `trigger` portions of our syntax, listen to the supplied `entity`. Once a user fulfills all of the necessary items specified in the trigger string, the user obtains their award.
+
+The following is a high level overview of what the award grammar `trigger string` syntax will look like.
+
+`[ entity ] [ trigger_type ] WHERE [ trigger ]`
+
+Examples of valid strings using this syntax are
+
+* `CURRENT_USER_META CREATED WHERE key=collected_fish EQ 700`
+* `CURRENT_USER_META UPDATED WHERE key=total_hours GT 600`
+
+#### Documentation
+
+Explanation of each of the items that make up our trigger string, with accepted values of each listed under.
+
+* `[ entity ]` -- Used to scope your awards trigger to a specific action.
+	- `CURRENT_USER_META` -- Consider the meta value of the current user
+
+* `[ trigger_type ]` -- Type of action that is performed to the current entity.
+	- `UPDATED` -- When entity value is updated (Listens to calls of the  `update_user_meta()` function)
+	- `CREATED` -- When entity value is created (Listens to calls of the `add_user_meta()` function)
+	- `ASSIGNED` -- Listens to calls of both the `update_user_meta()` and `add_user_meta()` function.
+	- ~`EXCLUDED`~ -- Not Implemented
+
+* `[ trigger ]` - Made up of three separate values itself, [ descriptor ] [ operator ] [ control ]
+	- `[ descriptor ]`
+		- `[ entity_type ] = [ value ]` ex: `key = hours`
+
+    - `[ operator ]`
+    	- `GT` - greater than
+    	- `LT` - less than
+    	- `EQ` - equal to
+    	- `GTEQ` - greater than equal to
+    	- `LTEQ` - less than equal to
+
+    - `[ control ]`
+    	- Value used to compare against. e.g. 2
+    	- *NOTE*: The control *can also be a string*, but in order for this to work, you must use the `EQ` `operator`, as shown above.
 
 ### Todos
 
