@@ -3,7 +3,7 @@ Contributors: kwmartin
 Donate link: N/A
 Tags: awards, user engagement
 Requires at least: 5.1.1
-Tested up to: 5.2.0
+Tested up to: 5.2.2
 Stable tag: 0.0.2
 Requires PHP: 5.6
 License: GPLv2 or later
