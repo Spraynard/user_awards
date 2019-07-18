@@ -20,9 +20,46 @@ if ( ! defined('USER_AWARDS_POST_TYPE') )
 	define('USER_AWARDS_POST_TYPE', 'user_awards_cpt');
 }
 
+/** This is deprecated */
 if ( ! defined('USER_AWARDS_GRAMMAR_META_TYPE') )
 {
 	define('USER_AWARDS_GRAMMAR_META_TYPE', 'UserAwards_Grammar');
+}
+
+/** Name for grammar meta entity input */
+if ( ! defined('USER_AWARDS_GRAMMAR_META_ENTITY') )
+{
+	define('USER_AWARDS_GRAMMAR_META_ENTITY', 'UserAwards_Grammar_Entity');
+}
+
+/** Name for grammar meta trigger type input */
+if ( ! defined('USER_AWARDS_GRAMMAR_META_TRIGGER_TYPE') )
+{
+	define('USER_AWARDS_GRAMMAR_META_TRIGGER_TYPE', 'UserAwards_Grammar_Trigger_Type');
+}
+
+/** Name for grammar meta "where" input */
+if ( ! defined('USER_AWARDS_GRAMMAR_META_WHERE') )
+{
+	define('USER_AWARDS_GRAMMAR_META_WHERE', 'UserAwards_Grammar_Where');
+}
+
+/** Name for grammar meta trigger descriptor input */
+if ( ! defined('USER_AWARDS_GRAMMAR_META_TRIGGER_DESCRIPTOR') )
+{
+	define('USER_AWARDS_GRAMMAR_META_TRIGGER_DESCRIPTOR', 'UserAwards_Grammar_Trigger_Descriptor');
+}
+
+/** Name for grammar meta trigger operator */
+if ( ! defined('USER_AWARDS_GRAMMAR_META_TRIGGER_OPERATOR') )
+{
+	define('USER_AWARDS_GRAMMAR_META_TRIGGER_OPERATOR', 'UserAwards_Grammar_Trigger_Operator');
+}
+
+/** Name for grammar meta trigger control input */
+if ( ! defined('USER_AWARDS_GRAMMAR_META_TRIGGER_CONTROL') )
+{
+	define('USER_AWARDS_GRAMMAR_META_TRIGGER_CONTROL', 'UserAwards_Grammar_Trigger_Control');
 }
 
 if ( ! defined('USER_AWARDS_AUTO_GIVE_TYPE') )
