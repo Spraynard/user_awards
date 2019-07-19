@@ -36,7 +36,7 @@ class Core {
 		// Pre-set our trigger type based on whether the user has a user meta field or not.
 		if ( $this->grammar->trigger_type == "assigned" )
 		{
-			if ( empty( get_user_meta($user->ID, $this->grammar->trigger->descriptor->value, true) ) )
+			if ( empty( get_user_meta($user->ID, $this->grammar->trigger->descriptor, true) ) )
 			{
 				$this->grammar->change_trigger_type("created");
 			}
@@ -66,7 +66,7 @@ class Core {
 	{
 
 		// Award user if our current user's meta key passes the grammar control
-		$descriptor = $this->grammar->trigger->descriptor->value;
+		$descriptor = $this->grammar->trigger->descriptor;
 
 		// Check if the updated meta key is the same as the meta key we are listening for
 		if ( $meta_key !== $descriptor )

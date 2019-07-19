@@ -40,7 +40,7 @@ class Test_User_Awards_Listener extends WP_UnitTestCase {
 			'post_content' => 'Awarded to users if they have more than 50 hours worked for us. They are really nice people',
 			'post_author' => 1,
 			'meta_input' => array(
-				USER_AWARDS_GRAMMAR_META_TYPE => "CURRENT_USER_META UPDATED WHERE key=total_hours GTEQ 50"
+				USER_AWARDS_GRAMMAR_META_TYPE => "CURRENT_USER_META UPDATED WHERE total_hours GTEQ 50"
 			)
 		));
 
@@ -51,7 +51,7 @@ class Test_User_Awards_Listener extends WP_UnitTestCase {
 			'post_content' => 'Awarded to users if they have more than 80 hours worked for us. They are really nice people',
 			'post_author' => 1,
 			'meta_input' => array(
-				USER_AWARDS_GRAMMAR_META_TYPE => "CURRENT_USER_META CREATED WHERE key=total_hours GTEQ 80"
+				USER_AWARDS_GRAMMAR_META_TYPE => "CURRENT_USER_META CREATED WHERE total_hours GTEQ 80"
 			)
 		));
 
@@ -61,7 +61,7 @@ class Test_User_Awards_Listener extends WP_UnitTestCase {
 			'post_content' => 'Awarded to users if they have more than 20 hours worked for us. They are really nice people',
 			'post_author' => 1,
 			'meta_input' => array(
-				USER_AWARDS_GRAMMAR_META_TYPE => "CURRENT_USER_META ASSIGNED WHERE key=total_hours GTEQ 20"
+				USER_AWARDS_GRAMMAR_META_TYPE => "CURRENT_USER_META ASSIGNED WHERE total_hours GTEQ 20"
 			)
 		));
 
@@ -84,7 +84,7 @@ class Test_User_Awards_Listener extends WP_UnitTestCase {
 		$UserAwards_Grammar = get_post_meta( $post->ID, USER_AWARDS_GRAMMAR_META_TYPE, true);
 		$Grammar->parse($UserAwards_Grammar);
 
-		$user_meta_updated = update_user_meta( $user->ID, $Grammar->trigger->descriptor->value, 5 );
+		$user_meta_updated = update_user_meta( $user->ID, $Grammar->trigger->descriptor, 5 );
 
 		// Fail test if we do not listen correctly
 		try {
@@ -95,7 +95,7 @@ class Test_User_Awards_Listener extends WP_UnitTestCase {
 		}
 
 		// Listeners should be available now. Add meta to our users.
-		$user_meta_updated = update_user_meta( $user->ID, $Grammar->trigger->descriptor->value, 60 );
+		$user_meta_updated = update_user_meta( $user->ID, $Grammar->trigger->descriptor, 60 );
 
 		if ( ! $user_meta_updated ) {
 			$this->fail("User Meta was not updated correctly");
@@ -128,7 +128,7 @@ class Test_User_Awards_Listener extends WP_UnitTestCase {
 		}
 
 		// Listeners should be available now. Add meta to our users.
-		$user_meta_updated = add_user_meta( $user->ID, $Grammar->trigger->descriptor->value, 60 );
+		$user_meta_updated = add_user_meta( $user->ID, $Grammar->trigger->descriptor, 60 );
 
 		if ( ! $user_meta_updated ) {
 			$this->fail("User Meta was not updated correctly");
@@ -161,7 +161,7 @@ class Test_User_Awards_Listener extends WP_UnitTestCase {
 		}
 
 		// Listeners should be available now. Add meta to our users.
-		$user_meta_updated = add_user_meta( $user->ID, $Grammar->trigger->descriptor->value, 80 );
+		$user_meta_updated = add_user_meta( $user->ID, $Grammar->trigger->descriptor, 80 );
 
 		if ( ! $user_meta_updated ) {
 			$this->fail("User Meta was not updated correctly");
@@ -187,7 +187,7 @@ class Test_User_Awards_Listener extends WP_UnitTestCase {
 		$Grammar->parse($UserAwards_Grammar);
 
 		// Update our user meta to a certain point
-		$user_meta_added = add_user_meta( $user->ID, $Grammar->trigger->descriptor->value, 5, false );
+		$user_meta_added = add_user_meta( $user->ID, $Grammar->trigger->descriptor, 5, false );
 
 		if ( ! $user_meta_added )
 		{
@@ -203,7 +203,7 @@ class Test_User_Awards_Listener extends WP_UnitTestCase {
 		}
 
 		// Listeners should be available now. Add meta to our users.
-		$user_meta_updated = update_user_meta( $user->ID, $Grammar->trigger->descriptor->value, 80 );
+		$user_meta_updated = update_user_meta( $user->ID, $Grammar->trigger->descriptor, 80 );
 
 		if ( ! $user_meta_updated ) {
 			$this->fail("User Meta was not updated correctly");

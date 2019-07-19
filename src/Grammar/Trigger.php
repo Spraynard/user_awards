@@ -72,7 +72,7 @@ class Trigger extends AutoParser implements ParserInterface {
 			throw new \InvalidArgumentException("AwardGrammarTrigger parse string must not be empty");
 		}
 
-		$this->descriptor = new TriggerDescriptor( $serialized[0] );
+		$this->descriptor = $serialized[0];
 		$this->operator = $this->validateOperator($serialized[1]);
 		$this->control = $this->validateTriggerControl($serialized[2]);
 	}
