@@ -11,7 +11,7 @@
  * functionality needed for this plugin
  * is supported.
  */
-class Test_User_Awards_Listener extends WP_UnitTestCase {
+class Test_Listener_Updated_Meta extends WP_UnitTestCase {
 	// Post type to test against.
 	private $post;
 	private $user;
@@ -28,10 +28,8 @@ class Test_User_Awards_Listener extends WP_UnitTestCase {
 
 		if ( ! defined('USER_AWARDS_POST_TYPE') )
 		{
-			$this->fail("USER_AWARDS_POST_TYPE CONSTANT IS NOT AVIALABLE");
+			$this->fail("USER_AWARDS_POST_TYPE CONSTANT IS NOT AVAILABLE");
 		}
-
-
 
 		// Assigning to our post variable.
 		$this->post = $this->factory->post->create_and_get(array(
@@ -44,24 +42,13 @@ class Test_User_Awards_Listener extends WP_UnitTestCase {
 			)
 		));
 
-
 		$this->post_2 = $this->factory->post->create_and_get(array(
 			'post_type' => USER_AWARDS_POST_TYPE,
-			'post_title' => 'Eighty Hours Worked',
-			'post_content' => 'Awarded to users if they have more than 80 hours worked for us. They are really nice people',
+			'post_title' => 'Zero Fish Available',
+			'post_content' => 'Awarded to users if they have no fish in their bucket',
 			'post_author' => 1,
 			'meta_input' => array(
-				USER_AWARDS_GRAMMAR_META_TYPE => "CURRENT_USER_META CREATED WHERE total_hours GTEQ 80"
-			)
-		));
-
-		$this->post_3 = $this->factory->post->create_and_get(array(
-			'post_type' => USER_AWARDS_POST_TYPE,
-			'post_title' => '20 Hours Worked',
-			'post_content' => 'Awarded to users if they have more than 20 hours worked for us. They are really nice people',
-			'post_author' => 1,
-			'meta_input' => array(
-				USER_AWARDS_GRAMMAR_META_TYPE => "CURRENT_USER_META ASSIGNED WHERE total_hours GTEQ 20"
+				USER_AWARDS_GRAMMAR_META_TYPE => "CURRENT_USER_META ASSIGNED WHERE total_hours eq 0"
 			)
 		));
 
@@ -72,7 +59,7 @@ class Test_User_Awards_Listener extends WP_UnitTestCase {
 		wp_set_current_user( $this->user->get('ID') );
 	}
 
-	// Test whether a user who passes an award's trigger recieves an award.
+	// Updating meta on a user to where we satisfy award requirements should award people.
 	public function testSuccessfulAwardOnUpdate() {
 		$post = $this->post;
 		$user = wp_get_current_user();
@@ -95,7 +82,7 @@ class Test_User_Awards_Listener extends WP_UnitTestCase {
 		}
 
 		// Listeners should be available now. Add meta to our users.
-		$user_meta_updated = update_user_meta( $user->ID, $Grammar->trigger->descriptor, 60 );
+		$user_meta_updated = update_user_meta( $user->ID, $Grammar->trigger->descriptor, 50 );
 
 		if ( ! $user_meta_updated ) {
 			$this->fail("User Meta was not updated correctly");
@@ -107,76 +94,10 @@ class Test_User_Awards_Listener extends WP_UnitTestCase {
 		$this->assertNotEmpty($award_data, "Should have an award assigned to our user, but our data does not show as such.");
 	}
 
-	// Test whether or not we will assign an award on creation of a meta value that passes the requirements
-	public function testSuccessfulAwardOnCreate() {
-		$post = $this->post_3;
-		$user = wp_get_current_user();
-
-		// Update/Create before we trip the successful award update.
-		$UserAwards = new UserAwards\BusinessLogic\Core( $this->wpdb );
-		$Grammar = new UserAwards\Grammar\Core();
-
-		$UserAwards_Grammar = get_post_meta( $post->ID, USER_AWARDS_GRAMMAR_META_TYPE, true);
-		$Grammar->parse($UserAwards_Grammar);
-
-		// Fail test if we do not listen correctly
-		try {
-			$listener = new UserAwards\Listener\Core( $post->ID, $Grammar, $UserAwards );
-			$listener->add_listeners( $user );
-		} catch ( Exception $e ) {
-			$this->fail("Test Failure Occured: " . $e->getMessage() . "\nFile: " . $e->getFile() . "\nLine: " . $e->getLine() );
-		}
-
-		// Listeners should be available now. Add meta to our users.
-		$user_meta_updated = add_user_meta( $user->ID, $Grammar->trigger->descriptor, 60 );
-
-		if ( ! $user_meta_updated ) {
-			$this->fail("User Meta was not updated correctly");
-		}
-
-		// Check to see if our listener assigned an award to this user
-		$award_data = $UserAwards->GetUserAward( $user->ID );
-
-		$this->assertNotEmpty($award_data, "Should have an award assigned to our user, but our data does not show as such.");
-	}
-
-
-	// Test whether a user who passes an award's trigger recieves an award.
-	public function testSuccessfulAwardOnCreateAssignedTriggerType() {
+	// Should be able to award a user on update of user meta.
+	// An award requirement of when a user needs to have *zero* of something should still pass this test.
+	public function testSuccessfulAwardWhenUserMetaIsZero() {
 		$post = $this->post_2;
-		$user = wp_get_current_user();
-
-		$UserAwards = new UserAwards\BusinessLogic\Core( $this->wpdb );
-		$Grammar = new UserAwards\Grammar\Core();
-
-		$UserAwards_Grammar = get_post_meta( $post->ID, USER_AWARDS_GRAMMAR_META_TYPE, true);
-		$Grammar->parse($UserAwards_Grammar);
-
-		// Fail test if we do not listen correctly
-		try {
-			$listener = new UserAwards\Listener\Core( $post->ID, $Grammar, $UserAwards );
-			$listener->add_listeners( $user );
-		} catch ( Exception $e ) {
-			$this->fail("Test Failure Occured: " . $e->getMessage() . "\nFile: " . $e->getFile() . "\nLine: " . $e->getLine() );
-		}
-
-		// Listeners should be available now. Add meta to our users.
-		$user_meta_updated = add_user_meta( $user->ID, $Grammar->trigger->descriptor, 80 );
-
-		if ( ! $user_meta_updated ) {
-			$this->fail("User Meta was not updated correctly");
-		}
-
-		// Check to see if our listener assigned an award to this user
-		$award_data = $UserAwards->GetUserAward( $user->ID );
-
-		$this->assertNotEmpty($award_data, "Should have an award assigned to our user, but our data does not show as such.");
-
-	}
-
-	// When our grammar's trigger type has a value of assigned, we should be able to assign an award to a person based on whether or not the user is getting their meta `added` or `updated`.
-	public function testSuccessfulAwardOnUpdateAssignedTriggerType() {
-		$post = $this->post_3;
 		$user = wp_get_current_user();
 
 
@@ -203,7 +124,7 @@ class Test_User_Awards_Listener extends WP_UnitTestCase {
 		}
 
 		// Listeners should be available now. Add meta to our users.
-		$user_meta_updated = update_user_meta( $user->ID, $Grammar->trigger->descriptor, 80 );
+		$user_meta_updated = update_user_meta( $user->ID, $Grammar->trigger->descriptor, 0 );
 
 		if ( ! $user_meta_updated ) {
 			$this->fail("User Meta was not updated correctly");
