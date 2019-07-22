@@ -48,7 +48,7 @@ class Test_Listener_Updated_Meta extends WP_UnitTestCase {
 			'post_content' => 'Awarded to users if they have no fish in their bucket',
 			'post_author' => 1,
 			'meta_input' => array(
-				USER_AWARDS_GRAMMAR_META_TYPE => "CURRENT_USER_META ASSIGNED WHERE total_hours eq 0"
+				USER_AWARDS_GRAMMAR_META_TYPE => "CURRENT_USER_META UPDATED WHERE fish_in_bucket eq 0"
 			)
 		));
 

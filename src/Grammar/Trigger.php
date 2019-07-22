@@ -28,6 +28,7 @@ class Trigger extends AutoParser implements ParserInterface {
 	}
 
 	private $valid_operators = [
+		'',
 		'gt',
 		'lt',
 		'eq',
@@ -52,15 +53,21 @@ class Trigger extends AutoParser implements ParserInterface {
 	}
 
 	private function validateTriggerControl( $input ) {
-		if ( $this->operator !== "eq" )
+		if ( ! is_numeric( $input ) && $this->operator !== "eq" )
+		{
+			throw new \InvalidArgumentException("Trigger control must be a numeric if you're not testing equality");
+		}
+
+		// Force numeric inputs to be an int value
+		if ( is_numeric( $input ) )
 		{
 			$input = intval( $input );
 		}
 
-		if ( empty( $input ) )
-		{
-			throw new \InvalidArgumentException("Trigger control must be a numeric if you're not testing equality");
-		}
+		// if ( $this->operator !== "eq" )
+		// {
+		// 	$input = intval( $input );
+		// }
 
 		return $input;
 	}
