@@ -44,13 +44,6 @@ class Test_Grammar extends TestCase {
 		$this->grammar->parse($unacceptGrammarString);
 	}
 
-	public function testAcceptableParsingTriggerControlCanBeZero() {
-		$grammarString = $this->typeString . " WHERE hours eq 0";
-		$this->grammar->parse($grammarString);
-
-		$this->assertEquals($this->grammar->trigger->control, 0);
-	}
-
 	public function testAcceptableParsingTriggerControlStringOperator() {
 		$acceptGrammarString = $this->typeString . " WHERE hours eq hello";
 		$this->grammar->parse($acceptGrammarString);
