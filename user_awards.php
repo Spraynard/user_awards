@@ -15,8 +15,6 @@ defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
  * While I was creating this plugin I had it in my mind that I would be naming this plugin something like UserAwardss or something around there, so that's why that prefix is pretty much all over the place. Please forgive me and don't kill my family for some weird naming. It had to be done... And it can always be refactored!!!
  */
 
-
-
 // Plugin Constants
 require_once plugin_dir_path( __FILE__ ) . "/constants.php";
 
@@ -64,10 +62,10 @@ function ApplyUserAwardsListeners() {
 	if ( $current_user->ID > 0 )
 	{
 		$awards = get_posts([ 'post_type' => USER_AWARDS_POST_TYPE ]);
-		$grammar = new UserAwards\Grammar\Core();
 
 		foreach( $awards as $award )
 		{
+			$grammar = new UserAwards\Grammar\Core();
 			$award_grammar = get_post_meta( $award->ID, USER_AWARDS_GRAMMAR_META_TYPE, true );
 
 			// The parse function can throw errors, so wrap it in a try block
@@ -82,6 +80,8 @@ function ApplyUserAwardsListeners() {
 
 			// Apply our listener. Set it and forget it. Include a parsed grammar and inject the UserAwards dependency
 			$listener = new UserAwards\Listener\Core( $award->ID, $grammar, $UserAwards );
+			$listener->add_listeners( $current_user );
+
 		}
 	}
 }
@@ -90,7 +90,8 @@ function ApplyUserAwardsListeners() {
  * Function used to enqueue any required JS or CSS assets
  */
 function EnqueueUserAwardsPluginAssets( $hook ) {
-	// Post Specific page - New Post, Edit Post
+	// Enqueue these scripts on post specific pages, i.e. New Post, Edit Post.
+	// Awards are a custom post type so that's why this matters.
 	if ( $hook === "post.php" || $hook === "edit.php" || $hook === "post-new.php" )
 	{
 		wp_enqueue_style(
