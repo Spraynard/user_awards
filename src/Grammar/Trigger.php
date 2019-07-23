@@ -53,7 +53,7 @@ class Trigger extends AutoParser implements ParserInterface {
 	}
 
 	private function validateTriggerControl( $input ) {
-		if ( ! is_numeric( $input ) && $this->operator !== "eq" )
+		if ( $this->operator === "eq" && ! is_numeric( $input ) )
 		{
 			throw new \InvalidArgumentException("Trigger control must be a numeric if you're not testing equality");
 		}
@@ -63,11 +63,6 @@ class Trigger extends AutoParser implements ParserInterface {
 		{
 			$input = intval( $input );
 		}
-
-		// if ( $this->operator !== "eq" )
-		// {
-		// 	$input = intval( $input );
-		// }
 
 		return $input;
 	}

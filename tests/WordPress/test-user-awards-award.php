@@ -91,8 +91,6 @@ class Test_User_Awards_Award extends WP_UnitTestCase {
 		$assigned_action_1 = $this->UserAwards->AssignAward($this->user->ID, $this->post->ID);
 		$assigned_action_2 = $this->UserAwards->AssignAward($this->user->ID, $this->post->ID);
 
-		$this->assertFalse($assigned_action_2);
-
 		if ( ! $assigned_action_1 )
 		{
 			$this->fail("Award not assigned");
