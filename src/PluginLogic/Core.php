@@ -200,10 +200,14 @@ class Core {
 	 */
 	public function PostTypeAdminColumnsData( $column, $post_id )
 	{
+		$parser = new \UserAwards\Grammar\PluginParser();
 		switch( $column ) {
 			case 'trigger':
 				$value = get_post_meta( $post_id, USER_AWARDS_GRAMMAR_META_TYPE, true);
-				$value = empty($value) ? "[No Trigger Currently]" : $value;
+				$parser->parse($value);
+
+				// This needs changed.
+				$value = ($parser->nonUsableGrammar()) ? "[No Trigger Currently]" : $value;
 				break;
 			case 'auto_give':
 				$value = empty( get_post_meta( $post_id, USER_AWARDS_AUTO_GIVE_TYPE, true) ) ? "No" : "Yes";
