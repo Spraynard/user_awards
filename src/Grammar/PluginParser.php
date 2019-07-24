@@ -12,13 +12,6 @@
 namespace UserAwards\Grammar;
 
 class PluginParser extends Core implements ParserInterface {
-
-	public $nonUsableGrammar;
-
-	function __construct() {
-		$this->nonUsableGrammar = false;
-	}
-
 	private function setDefaultValues() {
 		$this->entity = '';
 		$this->trigger_type = '';
@@ -35,22 +28,11 @@ class PluginParser extends Core implements ParserInterface {
 	public function parse( $grammar_string = NULL ) {
 		try {
 			parent::parse( $grammar_string );
-			$log = <<<TXT
-Entity: {$this->entity}
-Trigger Type: {$this->trigger_type}
-Trigger Descriptor: {$this->trigger->descriptor}
-Trigger Operator: {$this->trigger->operator}
-Trigger Control: {$this->trigger->control}
-TXT;
-			error_log($log);
-
-
 		}
 		catch (\InvalidArgumentException $e)
 		{
 			// Either there was an error with the parsing and/or there is currently no grammar string available. Set back to default empty values.
 			$this->setDefaultValues();
-			$this->nonUsableGrammar = true;
 		}
 	}
 }
