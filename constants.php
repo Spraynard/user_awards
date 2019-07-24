@@ -20,7 +20,27 @@ if ( ! defined('USER_AWARDS_POST_TYPE') )
 	define('USER_AWARDS_POST_TYPE', 'user_awards_cpt');
 }
 
-/** This is deprecated */
+/**
+ * Awards Create/Update Action Type Names
+ */
+
+/** Action name of the auto give input */
+if ( ! defined('USER_AWARDS_AUTO_GIVE_TYPE') )
+{
+	define('USER_AWARDS_AUTO_GIVE_TYPE', 'UserAwards_Auto_Give');
+}
+
+/** Action name of the user apply input */
+if ( ! defined('USER_AWARDS_USER_APPLY_TYPE') )
+{
+	define('USER_AWARDS_USER_APPLY_TYPE', 'UserAwards_User_Apply');
+}
+
+/**
+ * Action name of the grammar meta type input.
+ * This is the name of the meta value that we apply to "posts", i.e. awards, whenever a user
+ * creates or updates an award. Very useful.
+ */
 if ( ! defined('USER_AWARDS_GRAMMAR_META_TYPE') )
 {
 	define('USER_AWARDS_GRAMMAR_META_TYPE', 'UserAwards_Grammar');
@@ -62,12 +82,9 @@ if ( ! defined('USER_AWARDS_GRAMMAR_META_TRIGGER_CONTROL') )
 	define('USER_AWARDS_GRAMMAR_META_TRIGGER_CONTROL', 'UserAwards_Grammar_Trigger_Control');
 }
 
-if ( ! defined('USER_AWARDS_AUTO_GIVE_TYPE') )
-{
-	define('USER_AWARDS_AUTO_GIVE_TYPE', 'UserAwards_Auto_Give');
-}
-
-// Table defined in our database that contains the awards that users have.
+/**
+ * Database Level Constants
+ */
 if ( ! defined('USER_AWARDS_TABLE_USER_AWARDS') )
 {
 	define('USER_AWARDS_TABLE_USER_AWARDS', 'user_awards');

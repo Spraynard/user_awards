@@ -127,7 +127,7 @@ HTML;
 		$eGrammarString = esc_attr( $grammarString );
 
 		// Parse our string out
-		$parser = new \UserAwards\Grammar\Core();
+		$parser = new \UserAwards\Grammar\PluginParser();
 		$parser->parse($grammarString);
 
 		wp_nonce_field( plugin_basename(__FILE__), 'UserAwards_Save_Grammar_Meta');
@@ -136,7 +136,7 @@ HTML;
 		echo $this->_grammarMetaTriggerTypeHTML($parser->trigger_type, USER_AWARDS_GRAMMAR_META_TRIGGER_TYPE);
 		echo $this->_grammarMetaWhere( USER_AWARDS_GRAMMAR_META_WHERE );
 		echo $this->_grammarMetaTriggerDescriptorHTML(
-			$parser->trigger->descriptor->value,
+			$parser->trigger->descriptor,
 			USER_AWARDS_GRAMMAR_META_TRIGGER_DESCRIPTOR
 		);
 		echo $this->_grammarMetaTriggerOperatorHTML(
@@ -260,9 +260,14 @@ HTML;
 		}
 
 		$skip_autosave_actions = [
-			USER_AWARDS_GRAMMAR_META_TYPE,
-			'UserAwards_Auto_Give',
-			'UserAwards_User_Apply'
+			USER_AWARDS_GRAMMAR_META_ENTITY,
+			USER_AWARDS_GRAMMAR_META_TRIGGER_TYPE,
+			USER_AWARDS_GRAMMAR_META_WHERE,
+			USER_AWARDS_GRAMMAR_META_TRIGGER_DESCRIPTOR,
+			USER_AWARDS_GRAMMAR_META_TRIGGER_OPERATOR,
+			USER_AWARDS_GRAMMAR_META_TRIGGER_CONTROL,
+			USER_AWARDS_AUTO_GIVE_TYPE,
+			USER_AWARDS_USER_APPLY_TYPE
 		];
 
 		// Reduce an array to a truthy/falsy boolean that will indicate whether any of our skip_autosave_actions are occuring.
@@ -293,7 +298,7 @@ HTML;
 			$grammarTrCn = sanitize_text_field($_POST[USER_AWARDS_GRAMMAR_META_TRIGGER_CONTROL]);
 
 			// ex. CURRENT_USER_META UPDATED WHERE key=hours EQ 2
-			$grammarString = "{$grammarEntity} {$grammarTrType} {$grammarWhere} key={$grammarTrDesc} {$grammarTrOp} {$grammarTrCn}";
+			$grammarString = "{$grammarEntity} {$grammarTrType} {$grammarWhere} {$grammarTrDesc} {$grammarTrOp} {$grammarTrCn}";
 
 			// Save the meta box data as post meta
 			update_post_meta( $post_id, USER_AWARDS_GRAMMAR_META_TYPE, $grammarString );
