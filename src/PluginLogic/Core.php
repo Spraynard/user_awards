@@ -206,7 +206,6 @@ class Core {
 				$value = get_post_meta( $post_id, USER_AWARDS_GRAMMAR_META_TYPE, true);
 				$parser->parse($value);
 
-				// This needs changed.
 				$value = ($parser->nonUsableGrammar()) ? "[No Trigger Currently]" : $value;
 				break;
 			case 'auto_give':
