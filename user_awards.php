@@ -3,7 +3,7 @@
 Plugin Name: User Awards
 Description: Let your registered members know how much you appreciate them! Enhances your site with the abilty to assign and give awards to members based on the actions that they take. Your members will have a lifetime supply of cherished memories that they can hold dear to their hearts for years to come.
 Author: Kellan Martin
-Version: 0.2.0
+Version: 0.1.0
 Author URI: http://kellanmartin.com
 */
 
