@@ -38,7 +38,7 @@ echo "Installing Core WordPress Files on our docker container"
 # Install wordpress files on our server through CLI
 
 docker-compose run --user="33:33" --rm cli wp core install --url=localhost:8080 \
---title=Example --admin_user=kellan --admin_email=kellan.martin@gmail.com
+--title=Example --admin_user=test_admin --admin_email=test@admin.com --admin_password=testerino
 
 # Update our current file system with the wp scaffold items if the information is not available
 if [ ! -f $(dirname "$ABS_PATH")/bin/install-wp-tests.sh ]; then
@@ -62,6 +62,9 @@ for filename in $(dirname "$ABS_PATH")/backups/wp/*.xml; do
 	docker-compose run --user="33:33" --rm cli wp import /backups/wp/"${filename##*/}" --authors="skip"
 	break
 done
+
+# Copy our test page over for testing purposes, over to the twentynineteen theme folder on our docker image.
+docker cp $(dirname "$ABS_PATH")/web_tests/page-example-test.php "$(docker-compose ps -q wordpress)":/var/www/html/wp-content/themes/twentynineteen
 
 echo "All done, should be able to run commands like"
 echo "docker-compose run --rm wordpress_phpunit phpunit --configuration phpunit.xml.dist"
