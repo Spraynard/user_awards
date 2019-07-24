@@ -33,6 +33,13 @@
 .award-grammar-section {
 	display: flex;
 	flex-direction: column;
+	flex: 0 2 auto;
+	margin-left: 5px;
+	margin-right: 5px;
+}
+
+.award-grammar-section input[type="text"] {
+	width: 100%;
 }
 
 .award-grammar-section.smaller {
@@ -44,7 +51,7 @@
 }
 
 .award-grammar-section.where-container {
-	flex: 0 1 60px;
+	flex: 0 1 80px;
 }
 
 .where-container input {
