@@ -19,7 +19,12 @@ class Core {
 		add_action( 'delete_user', [$this, 'RemoveUserAward'], 10, 1 );
 	}
 
-	private function __auto_give_award( $award_id ) {
+	/**
+	 * Have we marked our award with the "Auto Give Award" meta?
+	 * @param  int $award_id - ID of award to check
+	 * @return boolean           - Raw value of WP meta that is stored.
+	 */
+	private function _auto_give_Award( $award_id ) {
 		return get_post_meta( $award_id, 'WPAward_Auto_Give', true );
 	}
 
@@ -58,7 +63,7 @@ class Core {
 	}
 
 	/**
-	 * Function that marks an award as assigned to a user.
+	 * Assign an award to a user.
 	 * We insert a new record into our awards table that relates the award to the user.
 	 *
 	 * We do check to see if there is an auto-assignment of the award before we finish up our function though.
@@ -68,9 +73,13 @@ class Core {
 	 */
 	public function AssignAward( $user_id, $award_id ) {
 
+		/**
+		 * We don't want to return false because that means that we may trigger behavior that says we have not actually
+		 * assigned an award to a person.
+		 */
 		if ( $this->UserHasAward( $user_id, $award_id ) )
 		{
-			return false;
+			return true;
 		}
 
 		$award_assigned = $this->db->insert(
@@ -90,7 +99,7 @@ class Core {
 			return false;
 		}
 
-		if ( ! empty( $this->__auto_give_award( $award_id ) ) )
+		if ( ! empty( $this->_auto_give_Award( $award_id ) ) )
 		{
 			$award_given = $this->GiveAward( $user_id, $award_id );
 		}
@@ -140,10 +149,7 @@ class Core {
 		{
 			$this->AssignAward( $user_id, $award_id );
 		}
-		// else if ( ! empty( $award->date_given ) )
-		// {
-		// 	return false;
-		// }
+
 		if ( ! empty( $award[0]->date_given ) )
 		{
 			return 0;
@@ -165,7 +171,7 @@ class Core {
 				'award_id' => '%d'
 			]
 		);
-		// echo "This is award given: {$award_given}\n";
+
 		return $award_given;
 	}
 
@@ -262,6 +268,8 @@ class Core {
 				return $val_1 >= $val_2;
 			case 'lteq':
 				return $val_1 <= $val_2;
+			default: // This will be the path we take if our operator is blank.
+				return false;
 		}
 	}
 }

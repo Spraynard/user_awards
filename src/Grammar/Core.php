@@ -117,7 +117,7 @@ class Core implements ParserInterface {
 
 			switch ( $parseCount ) {
 				case 0:
-					$this->entity = $this->_validate($parseValue, $this->valid_entities, "Entity not");
+					$this->entity = $this->_validate($parseValue, $this->valid_entities, "Entity not valid");
 					break;
 				case 1:
 					$this->trigger_type = $this->_validate($parseValue, $this->valid_trigger_types, "Trigger type not valid");
